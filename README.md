@@ -141,4 +141,10 @@ Templates contributed by the security community. See [CONTRIBUTORS.md](CONTRIBUT
 
 ---
 
+[![GitHub Stars](https://img.shields.io/github/stars/BugB-Tech/cert-x-gen-templates?style=social)](https://github.com/BugB-Tech/cert-x-gen-templates/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/BugB-Tech/cert-x-gen-templates?style=social)](https://github.com/BugB-Tech/cert-x-gen-templates/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/BugB-Tech/cert-x-gen-templates)](https://github.com/BugB-Tech/cert-x-gen-templates/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/BugB-Tech/cert-x-gen-templates)](https://github.com/BugB-Tech/cert-x-gen-templates/pulls)
+[![CI](https://github.com/BugB-Tech/cert-x-gen-templates/workflows/Validate%20Templates/badge.svg)](https://github.com/BugB-Tech/cert-x-gen-templates/actions)
+
 **Made with ❤️ by the BugB-Tech team and contributors**
