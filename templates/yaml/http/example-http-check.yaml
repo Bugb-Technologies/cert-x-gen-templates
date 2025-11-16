@@ -1,0 +1,89 @@
+# Example HTTP Security Check Template
+# This is a sample YAML template demonstrating the template structure
+
+id: example-http-check
+name: "Example HTTP Security Check"
+author:
+  name: "CERT-X-GEN Team"
+  email: "team@cert-x-gen.io"
+  github: "@cert-x-gen"
+
+severity: info
+description: |
+  This is an example template that demonstrates how to create
+  YAML-based security checks for HTTP services.
+
+classification:
+  cvss-metrics: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N"
+  cvss-score: 0.0
+  cve-id: []
+  cwe-id: []
+
+tags:
+  - example
+  - http
+  - demo
+
+metadata:
+  created: 2024-01-15
+  updated: 2024-01-15
+  version: "1.0"
+  confidence: high
+  false-positive-rate: low
+
+template:
+  language: yaml
+  timeout: 10s
+  max-redirects: 3
+
+# HTTP request specifications
+http:
+  - method: GET
+    path:
+      - "/"
+      - "/index.html"
+    
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+    
+    # Matchers define what constitutes a vulnerability
+    matchers-condition: and
+    matchers:
+      # Check HTTP status code
+      - type: status
+        status:
+          - 200
+          - 301
+          - 302
+      
+      # Check for specific words in response
+      - type: word
+        words:
+          - "Server"
+        part: header
+        condition: or
+    
+    # Extractors pull data from responses
+    extractors:
+      - type: regex
+        name: server_version
+        regex:
+          - "Server: ([\\w/\\.]+)"
+        group: 1
+        part: header
+
+# Additional template configurations
+flows:
+  - name: detection
+    steps:
+      - action: http_request
+        method: GET
+        path: /
+
+remediation: |
+  This is an example template for demonstration purposes.
+  No remediation is required.
+
+references:
+  - https://cert-x-gen.io/docs/templates
+  - https://github.com/cert-x-gen/templates

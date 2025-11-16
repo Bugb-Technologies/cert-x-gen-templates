@@ -1,0 +1,429 @@
+#!/usr/bin/env node
+/**
+ * Prometheus Exporters Multi-Scanner
+ * 
+ * Scans for various Prometheus exporters exposed without authentication:
+ * - Node Exporter (system metrics)
+ * - cAdvisor (container metrics)
+ * - MySQL Exporter
+ * - PostgreSQL Exporter
+ * - Redis Exporter
+ * - MongoDB Exporter
+ * - Nginx Exporter
+ * - Blackbox Exporter
+ * - Process Exporter
+ * - Kubernetes Metrics
+ * 
+ * Author: CERT-X-GEN Security Team
+ * Severity: High to Critical
+ * CWE: CWE-200 (Exposure of Sensitive Information)
+ */
+
+const https = require('https');
+const http = require('http');
+
+const TEMPLATE_METADATA = {
+    id: 'prometheus-exporters-multi-scanner',
+    name: 'Prometheus Exporters Multi-Scanner',
+    author: 'CERT-X-GEN Security Team',
+    severity: 'high',
+    language: 'javascript',
+    tags: ['prometheus', 'exporters', 'metrics', 'monitoring', 'information-disclosure'],
+    confidence: 95
+};
+
+// Get ports to scan based on environment configuration
+function getPortsToScan() {
+    // Check for port override
+    if (process.env.CERT_X_GEN_OVERRIDE_PORTS) {
+        const ports = process.env.CERT_X_GEN_OVERRIDE_PORTS
+            .split(',')
+            .map(p => parseInt(p.trim()))
+            .filter(p => !isNaN(p));
+        return { ports, isOverride: true };
+    }
+    
+    // Get default ports from exporters
+    const defaultPorts = DEFAULT_EXPORTERS.flatMap(exp => exp.ports);
+    
+    // Add additional ports if specified
+    if (process.env.CERT_X_GEN_ADD_PORTS) {
+        const additionalPorts = process.env.CERT_X_GEN_ADD_PORTS
+            .split(',')
+            .map(p => parseInt(p.trim()))
+            .filter(p => !isNaN(p));
+        const allPorts = [...new Set([...defaultPorts, ...additionalPorts])];
+        return { ports: allPorts.sort((a, b) => a - b), isOverride: false };
+    }
+    
+    return { ports: [...new Set(defaultPorts)].sort((a, b) => a - b), isOverride: false };
+}
+
+// Build exporters list based on port configuration
+function buildExportersList() {
+    const { ports, isOverride } = getPortsToScan();
+    
+    if (isOverride) {
+        // Override mode: create generic exporters for specified ports
+        return ports.map(port => ({
+            name: `Prometheus Endpoint (port ${port})`,
+            ports: [port],
+            paths: ['/metrics'],
+            signatures: ['# HELP', '# TYPE'], // Generic Prometheus signatures
+            severity: 'high',
+            info: 'Prometheus metrics endpoint'
+        }));
+    }
+    
+    // Additive mode: use defaults but filter by configured ports
+    return DEFAULT_EXPORTERS.filter(exp => 
+        exp.ports.some(port => ports.includes(port))
+    );
+}
+
+// Default exporter definitions
+const DEFAULT_EXPORTERS = [
+    {
+        name: 'Node Exporter',
+        ports: [9100],
+        paths: ['/metrics'],
+        signatures: ['node_cpu_seconds_total', 'node_memory_MemTotal_bytes', 'node_exporter'],
+        severity: 'high',
+        info: 'Exposes system metrics (CPU, memory, disk, network)'
+    },
+    {
+        name: 'cAdvisor',
+        ports: [8080, 8081, 4194],
+        paths: ['/metrics', '/containers/', '/docker/'],
+        signatures: ['container_cpu_usage_seconds_total', 'container_memory_usage_bytes', 'cadvisor'],
+        severity: 'high',
+        info: 'Exposes container runtime metrics'
+    },
+    {
+        name: 'MySQL Exporter',
+        ports: [9104],
+        paths: ['/metrics'],
+        signatures: ['mysql_up', 'mysql_global_status', 'mysqld_exporter'],
+        severity: 'critical',
+        info: 'Exposes MySQL database metrics and queries'
+    },
+    {
+        name: 'PostgreSQL Exporter',
+        ports: [9187],
+        paths: ['/metrics'],
+        signatures: ['pg_up', 'pg_database_size_bytes', 'postgres_exporter'],
+        severity: 'critical',
+        info: 'Exposes PostgreSQL database metrics'
+    },
+    {
+        name: 'Redis Exporter',
+        ports: [9121],
+        paths: ['/metrics'],
+        signatures: ['redis_up', 'redis_connected_clients', 'redis_exporter'],
+        severity: 'high',
+        info: 'Exposes Redis cache metrics and keys'
+    },
+    {
+        name: 'MongoDB Exporter',
+        ports: [9216],
+        paths: ['/metrics'],
+        signatures: ['mongodb_up', 'mongodb_connections', 'mongodb_exporter'],
+        severity: 'critical',
+        info: 'Exposes MongoDB database metrics'
+    },
+    {
+        name: 'Nginx Exporter',
+        ports: [9113],
+        paths: ['/metrics'],
+        signatures: ['nginx_up', 'nginx_http_requests_total', 'nginxexporter'],
+        severity: 'medium',
+        info: 'Exposes Nginx web server metrics'
+    },
+    {
+        name: 'Blackbox Exporter',
+        ports: [9115],
+        paths: ['/metrics', '/probe'],
+        signatures: ['probe_success', 'probe_duration_seconds', 'blackbox'],
+        severity: 'medium',
+        info: 'Exposes network probe results'
+    },
+    {
+        name: 'Process Exporter',
+        ports: [9256],
+        paths: ['/metrics'],
+        signatures: ['namedprocess_', 'process_cpu_seconds_total'],
+        severity: 'high',
+        info: 'Exposes process-level system metrics'
+    },
+    {
+        name: 'Kubernetes Metrics',
+        ports: [10250, 10255],
+        paths: ['/metrics', '/stats/summary'],
+        signatures: ['kubelet_', 'apiserver_', 'kubernetes_'],
+        severity: 'critical',
+        info: 'Exposes Kubernetes cluster metrics'
+    },
+    {
+        name: 'Prometheus Server',
+        ports: [9090],
+        paths: ['/metrics', '/api/v1/targets', '/api/v1/label/__name__/values'],
+        signatures: ['prometheus_build_info', 'prometheus_tsdb_'],
+        severity: 'high',
+        info: 'Exposes Prometheus server metrics and targets'
+    }
+];
+
+class PrometheusExporterScanner {
+    constructor(target) {
+        this.target = target;
+        this.findings = [];
+    }
+
+    async scan() {
+        // Check if running in engine mode (suppress human-readable output)
+        const engineMode = process.env.CERT_X_GEN_MODE === 'engine' || process.argv.includes('--json');
+        
+        if (!engineMode) {
+            console.log(`\n╔══════════════════════════════════════════════════════════════╗`);
+            console.log(`║  Prometheus Exporters Multi-Scanner                          ║`);
+            console.log(`║  CERT-X-GEN Security Template                                ║`);
+            console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
+            console.log(`Target: ${this.target}`);
+            console.log(`Scan started: ${new Date().toISOString()}\n`);
+        }
+
+        // Build exporters list based on port configuration
+        const exporters = buildExportersList();
+        
+        for (const exporter of exporters) {
+            await this.testExporter(exporter);
+        }
+
+        if (!engineMode) {
+            this.printSummary();
+            this.printRemediation();
+        }
+
+        return this.findings;
+    }
+
+    async testExporter(exporter) {
+        const engineMode = process.env.CERT_X_GEN_MODE === 'engine' || process.argv.includes('--json');
+        if (!engineMode) {
+            console.log(`[*] Testing ${exporter.name}...`);
+        }
+
+        for (const port of exporter.ports) {
+            for (const path of exporter.paths) {
+                const result = await this.httpGet(this.target, port, path);
+
+                if (result.success) {
+                    // Check for signatures
+                    const matchedSignatures = exporter.signatures.filter(sig =>
+                        result.body.includes(sig)
+                    );
+
+                    if (matchedSignatures.length > 0) {
+                        const finding = {
+                            severity: exporter.severity,
+                            title: `${exporter.name} Exposed Without Authentication`,
+                            description: `${exporter.name} at ${this.target}:${port}${path} is accessible without authentication. ${exporter.info}`,
+                            evidence: {
+                                exporter: exporter.name,
+                                endpoint: `http://${this.target}:${port}${path}`,
+                                port: port,
+                                matched_signatures: matchedSignatures,
+                                response_size: result.body.length
+                            },
+                            cwe: 'CWE-200',
+                            cvss_score: exporter.severity === 'critical' ? 9.0 : 7.5,
+                            remediation: 'Enable authentication using reverse proxy or configure with TLS and basic auth',
+                            references: [
+                                'https://prometheus.io/docs/guides/basic-auth/',
+                                'https://cwe.mitre.org/data/definitions/200.html'
+                            ]
+                        };
+                        
+                        this.findings.push(finding);
+                        
+                        const engineMode = process.env.CERT_X_GEN_MODE === 'engine' || process.argv.includes('--json');
+                        if (!engineMode) {
+                            this.printFinding(finding);
+                            // Extract interesting information
+                            this.extractInfo(result.body);
+                        }
+                    } 
+                    // Don't test other paths for this exporter
+                    return;
+                }
+            }
+        }
+    }
+
+    httpGet(host, port, path) {
+        return new Promise((resolve) => {
+            const options = {
+                hostname: host,
+                port: port,
+                path: path,
+                method: 'GET',
+                timeout: 5000,
+                headers: {
+                    'User-Agent': 'CERT-X-GEN/1.0'
+                }
+            };
+
+            const req = http.request(options, (res) => {
+                let body = '';
+
+                res.on('data', (chunk) => {
+                    body += chunk;
+                });
+
+                res.on('end', () => {
+                    resolve({
+                        success: res.statusCode === 200,
+                        statusCode: res.statusCode,
+                        body: body
+                    });
+                });
+            });
+
+            req.on('error', () => {
+                resolve({ success: false });
+            });
+
+            req.on('timeout', () => {
+                req.destroy();
+                resolve({ success: false });
+            });
+
+            req.end();
+        });
+    }
+
+    extractMetrics(exporterName, body) {
+        const interestingPatterns = {
+            'hostname': /node_uname_info{.*nodename="([^"]+)"/,
+            'version': /version="([^"]+)"/,
+            'ip_address': /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/,
+            'database': /database="([^"]+)"/,
+            'user': /user="([^"]+)"/
+        };
+
+        console.log(`    [+] Extracting sensitive information...`);
+
+        for (const [name, pattern] of Object.entries(interestingPatterns)) {
+            const matches = body.match(pattern);
+            if (matches && matches[1]) {
+                console.log(`        - ${name}: ${matches[1]}`);
+            }
+        }
+    }
+
+    printFinding(finding) {
+        const color = finding.severity === 'critical' ? '\x1b[31m' :  // Red
+                     finding.severity === 'high' ? '\x1b[33m' :      // Yellow
+                     '\x1b[36m';                                      // Cyan
+        const reset = '\x1b[0m';
+
+        console.log(`${color}[${finding.severity.toUpperCase()}]${reset} ${finding.title}`);
+        console.log(`    ${finding.description}`);
+        console.log(`    Endpoint: ${finding.evidence.endpoint}`);
+        console.log(`    CVSS Score: ${finding.cvss_score}`);
+        console.log('');
+    }
+
+    printSummary() {
+        console.log(`\n╔══════════════════════════════════════════════════════════════╗`);
+        console.log(`║  SCAN SUMMARY                                                ║`);
+        console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
+
+        const critical = this.findings.filter(f => f.severity === 'critical').length;
+        const high = this.findings.filter(f => f.severity === 'high').length;
+        const medium = this.findings.filter(f => f.severity === 'medium').length;
+
+        console.log(`Total Findings: ${this.findings.length}`);
+        console.log(`  - Critical: ${critical}`);
+        console.log(`  - High: ${high}`);
+        console.log(`  - Medium: ${medium}`);
+        console.log('');
+
+        if (this.findings.length > 0) {
+            console.log('Exposed Exporters:');
+            this.findings.forEach(f => {
+                console.log(`  - ${f.evidence.exporter} on port ${f.evidence.port}`);
+            });
+            console.log('');
+        }
+    }
+
+    printRemediation() {
+        console.log(`╔══════════════════════════════════════════════════════════════╗`);
+        console.log(`║  REMEDIATION RECOMMENDATIONS                                 ║`);
+        console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
+
+        console.log(`1. Enable Authentication:`);
+        console.log(`   Use reverse proxy (Nginx/Apache) with Basic Auth:`);
+        console.log(`   
+   location /metrics {
+       auth_basic "Metrics";
+       auth_basic_user_file /etc/nginx/.htpasswd;
+       proxy_pass http://localhost:9100;
+   }`);
+
+        console.log(`\n2. Network Segmentation:`);
+        console.log(`   - Bind exporters to localhost: --web.listen-address="127.0.0.1:9100"`);
+        console.log(`   - Use firewall rules to restrict access`);
+        console.log(`   - Deploy in private subnet with VPN access`);
+
+        console.log(`\n3. TLS Encryption:`);
+        console.log(`   Configure exporters with TLS using web-config.yml`);
+
+        console.log(`\n4. Prometheus Federation:`);
+        console.log(`   Use Prometheus federation instead of exposing exporters directly`);
+
+        console.log(`\n5. Monitoring:`);
+        console.log(`   - Enable access logging`);
+        console.log(`   - Monitor for unauthorized access`);
+        console.log(`   - Alert on unusual metric queries`);
+
+        console.log(`\n6. References:`);
+        console.log(`   - https://prometheus.io/docs/guides/basic-auth/`);
+        console.log(`   - https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md`);
+        console.log(`   - CWE-200: https://cwe.mitre.org/data/definitions/200.html\n`);
+    }
+}
+
+// Main execution
+if (require.main === module) {
+    // Get target from args or environment
+    let target = process.argv[2];
+    if (!target || target.startsWith('--')) {
+        target = process.env.CERT_X_GEN_TARGET_HOST;
+    }
+
+    if (!target) {
+        console.error('Usage: node prometheus-exporters-scanner.js <target>');
+        console.error('Example: node prometheus-exporters-scanner.js 192.168.1.100');
+        process.exit(1);
+    }
+
+    const scanner = new PrometheusExporterScanner(target);
+    scanner.scan().then(findings => {
+        const engineMode = process.env.CERT_X_GEN_MODE === 'engine' || process.argv.includes('--json');
+        
+        if (engineMode) {
+            // Output ONLY JSON for CERT-X-GEN integration
+            if (process.env.CERT_X_GEN_MODE === 'engine') {
+                // Special marker for engine parsing
+                process.stdout.write('__CERT_X_GEN_FINDINGS__:');
+            }
+            console.log(JSON.stringify(findings, null, 2));
+        } else {
+            console.log(`\nScan completed: ${new Date().toISOString()}`);
+        }
+    });
+}
+
+module.exports = { PrometheusExporterScanner, TEMPLATE_METADATA };

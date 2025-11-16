@@ -1,0 +1,37 @@
+id: http-service-detection
+name: "HTTP Service Detection"
+author:
+  name: "CERT-X-GEN Team"
+  email: "team@cert-x-gen.io"
+severity: info
+description: |
+  Detects HTTP/HTTPS services and extracts server information.
+  This is a basic connectivity and server identification template.
+
+tags:
+  - http
+  - detection
+  - info-gathering
+
+language: yaml
+confidence: 95
+
+# HTTP request specifications
+http:
+  - method: GET
+    path:
+      - "/"
+    
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+    
+    # Match successful HTTP responses
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 301
+          - 302
+          - 401
+          - 403

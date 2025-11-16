@@ -1,0 +1,171 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-10-30T20:35:45.305294Z",
+  "total_templates": 32,
+  "languages": {
+    "yaml": 12,
+    "python": 9,
+    "javascript": 3,
+    "c": 4,
+    "rust": 2,
+    "shell": 2
+  },
+  "categories": {
+    "network": 3,
+    "web": 10,
+    "other": 8
+  },
+  "templates": [
+    {
+      "id": "memcached-unauthenticated-access",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/memcached-unauthenticated.yaml",
+      "category": "network"
+    },
+    {
+      "id": "zookeeper-unauthenticated-access",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/zookeeper-unauthenticated.yaml",
+      "category": "network"
+    },
+    {
+      "id": "redis-unauthenticated-access",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/redis-unauthenticated.yaml",
+      "category": "network"
+    },
+    {
+      "id": "prometheus-node-exporter-exposed",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/prometheus-node-exporter-exposed.yaml",
+      "category": "web"
+    },
+    {
+      "id": "cockroachdb-unauthenticated-access",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/cockroachdb-unauthenticated.yaml",
+      "category": "web"
+    },
+    {
+      "id": "sql-injection-basic",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/sql-injection-detection.yaml",
+      "category": "web"
+    },
+    {
+      "id": "http-service-detection",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/http-detection.yaml",
+      "category": "web"
+    },
+    {
+      "id": "timing-attack-sqli",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/timing-attack-detection.yaml",
+      "category": "web"
+    },
+    {
+      "id": "auth-bypass-flow",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/auth-bypass-flow.yaml",
+      "category": "web"
+    },
+    {
+      "id": "example-http-check",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/example-http-check.yaml",
+      "category": "web"
+    },
+    {
+      "id": "sensitive-data-exposure",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/sensitive-data-exposure.yaml",
+      "category": "web"
+    },
+    {
+      "id": "response-manipulation",
+      "name": "",
+      "severity": "info",
+      "language": "yaml",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/response-manipulation-detection.yaml",
+      "category": "web"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/prometheus-server-exposed-https.py",
+      "severity": "High",
+      "category": "web"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/redis-exporter-exposed.py",
+      "severity": "High",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/prometheus-server-exposed.py",
+      "severity": "High",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/node-exporter-exposed.py",
+      "severity": "High",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/cadvisor-exposed.py",
+      "severity": "Critical",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/mongodb-unauthenticated.py",
+      "severity": "Critical",
+      "id": "",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/rabbitmq-default-credentials.py",
+      "severity": "Critical",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/mysql-exporter-exposed.py",
+      "severity": "Critical",
+      "category": "other"
+    },
+    {
+      "language": "python",
+      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/postgresql-exporter-exposed.py",
+      "severity": "Critical",
+      "category": "other"
+    }
+  ]
+}
