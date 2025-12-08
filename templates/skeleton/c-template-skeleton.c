@@ -1,16 +1,24 @@
+//go:build ignore
+// +build ignore
+
 /*
  * CERT-X-GEN C Template Skeleton
  * 
- * This is a skeleton template for writing security scanning templates in C.
- * Copy this file and customize it for your specific security check.
- * 
  * Template Metadata:
- *   ID: template-skeleton
+ *   ID: c-template-skeleton
  *   Name: C Template Skeleton
- *   Author: Your Name
- *   Severity: high
- *   Tags: skeleton, example
+ *   Author: CERT-X-GEN Security Team
+ *   Severity: info
+ *   Description: Skeleton template for writing security scanning templates in C.
+ *                Copy this file and customize it for your specific security check.
+ *                Includes HTTP request handling, JSON output, and finding reporting.
+ *   Tags: skeleton, example, template, documentation, c
  *   Language: c
+ *   CWE: CWE-1008 (Architectural Concepts)
+ *   References:
+ *     - https://cwe.mitre.org/data/definitions/1008.html
+ *     - https://github.com/cert-x-gen/templates
+ *     - https://curl.se/libcurl/c/
  * 
  * Compilation:
  *   gcc template.c -o template -O2 -std=c11 -lcurl -ljson-c
@@ -58,6 +66,9 @@ static TemplateConfig config;
 static char target_host[256] = {0};
 static int target_port = 80;
 static int json_output = 0;
+static char context_raw[1024] = {0};
+static char context_add_ports[512] = {0};
+static char context_override_ports[512] = {0};
 
 // ========================================
 // HELPER FUNCTIONS
@@ -214,34 +225,29 @@ int execute_scan() {
     Finding findings[64];
     int finding_count = 0;
     
-    // Get ports to scan
-    int ports[64];
-    int port_count = get_ports_to_scan(ports, 64);
+    int port = target_port;
+    char response[8192] = {0};
     
-    for (int i = 0; i < port_count && finding_count < 64; i++) {
-        char response[8192] = {0};
-        
-        // Test HTTP endpoint
-        if (test_http_endpoint(target_host, ports[i], response, sizeof(response))) {
-            if (check_vulnerability(response)) {
-                char evidence[2048];
-                char title[512];
-                char description[1024];
-                
-                snprintf(evidence, sizeof(evidence), 
-                        "{\"endpoint\": \"http://%s:%d\", \"response_size\": %zu}", 
-                        target_host, ports[i], strlen(response));
-                
-                snprintf(title, sizeof(title), "Potential Vulnerability on %s:%d", 
-                        target_host, ports[i]);
-                
-                snprintf(description, sizeof(description), 
-                        "Found potential vulnerability indicators on %s:%d", 
-                        target_host, ports[i]);
-                
-                create_finding(&findings[finding_count], title, description, evidence, "high");
-                finding_count++;
-            }
+    // Test HTTP endpoint
+    if (test_http_endpoint(target_host, port, response, sizeof(response))) {
+        if (check_vulnerability(response)) {
+            char evidence[2048];
+            char title[512];
+            char description[1024];
+            
+            snprintf(evidence, sizeof(evidence), 
+                    "{\"endpoint\": \"http://%s:%d\", \"response_size\": %zu}", 
+                    target_host, port, strlen(response));
+            
+            snprintf(title, sizeof(title), "Potential Vulnerability on %s:%d", 
+                    target_host, port);
+            
+            snprintf(description, sizeof(description), 
+                    "Found potential vulnerability indicators on %s:%d", 
+                    target_host, port);
+            
+            create_finding(&findings[finding_count], title, description, evidence, "high");
+            finding_count++;
         }
     }
     
@@ -336,6 +342,21 @@ int parse_args(int argc, char* argv[]) {
     
     if (get_env_var("CERT_X_GEN_MODE")) {
         json_output = 1;
+    }
+
+    char* ctx = get_env_var("CERT_X_GEN_CONTEXT");
+    if (ctx) {
+        strncpy(context_raw, ctx, sizeof(context_raw) - 1);
+    }
+
+    char* add_ports = get_env_var("CERT_X_GEN_ADD_PORTS");
+    if (add_ports) {
+        strncpy(context_add_ports, add_ports, sizeof(context_add_ports) - 1);
+    }
+
+    char* override_ports = get_env_var("CERT_X_GEN_OVERRIDE_PORTS");
+    if (override_ports) {
+        strncpy(context_override_ports, override_ports, sizeof(context_override_ports) - 1);
     }
     
     if (!target_host[0]) {

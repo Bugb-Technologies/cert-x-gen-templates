@@ -1,0 +1,209 @@
+# CERT-X-GEN YAML Template Skeleton
+#
+# Copy this file and customize it for your specific security check.
+# This skeleton shows the common structure used by CERT-X-GEN YAML templates.
+#
+# Basic metadata -----------------------------------------------------------
+
+id: change-me-template-id
+name: "Change Me Template Name"
+author:
+  name: "Your Name"
+  email: "you@example.com"
+  github: "your-github-handle"
+severity: medium  # critical | high | medium | low | info
+description: |
+  Short description of what this template detects.
+  Explain the vulnerability or misconfiguration being tested
+  and any important context for defenders.
+
+tags:
+  - skeleton
+  - example
+  - yaml
+  - security
+
+language: yaml
+confidence: 90  # 0-100
+
+cve_ids:
+  - "CVE-2024-XXXX"  # Optional: associated CVE IDs (if applicable)
+cwe_ids:
+  - "CWE-000"        # Replace with a real CWE ID, e.g. CWE-306
+cvss_score: 0.0       # Optional: CVSS base score
+version: "1.0.0"     # Template version (semantic, not engine version)
+
+references:
+  - https://cwe.mitre.org/
+  - https://owasp.org/
+
+# HTTP-based template example ---------------------------------------------
+#
+# Use this section when your check is primarily HTTP/HTTPS based.
+# Remove or comment out this block if you are only using `network:`.
+# The engine will only run HTTP checks on HTTP-like ports (80, 443, 8080, etc.).
+# Use --ports/--top-ports/--override-ports to control which HTTP ports are tested.
+
+http:
+  - method: GET
+    path:
+      - "/"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    # Matchers: pick the ones that make sense for your check.
+    # You do NOT need to keep all of these; they are examples of supported types.
+    matchers-condition: or  # and | or
+    matchers:
+      # Status matcher: HTTP status codes to match
+      - type: status
+        status:
+          - 200
+          - 301
+          - 302
+
+      # Word matcher: substrings to look for in body/header/all
+      - type: word
+        words:
+          - "example-indicator"
+          - "another-indicator"
+        condition: or      # and | or (defaults to or)
+        part: body         # body | header | all
+
+      # Regex matcher: regular expressions with optional capture group
+      - type: regex
+        regex:
+          - "ExampleService\\/(\\d+\\.\\d+\\.\\d+)"
+        group: 1           # Optional: capture group index
+
+      # Size matcher: compares response body length in bytes
+      - type: size
+        condition: greater # greater | less | equal
+        size: 100000       # Body size threshold in bytes
+
+      # Time matcher: compares response time
+      - type: time
+        condition: greater # greater | less
+        time: 3s           # Response took longer than 3 seconds
+
+      # Hash matcher: compares hash of response body
+      # Supported algorithms in engine today: sha256, blake3
+      - type: hash
+        algorithm: sha256
+        hash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+
+      # Binary matcher: looks for raw byte sequences (hex-encoded)
+      - type: binary
+        binary:
+          - "0x89504E47"   # Example: PNG header bytes
+
+      # TLS matcher: checks for TLS versions or known vulnerabilities
+      # NOTE: Current implementation is heuristic and header-based.
+      - type: tls
+        versions:
+          - "1.0"
+          - "1.1"
+        vulnerabilities:
+          - "heartbleed"
+
+      # DNS matcher: for DNS-related responses (limited support)
+      - type: dns
+        record_type: "TXT"
+        pattern: "v=spf1"
+        value: "include:example.com"
+
+      # Diff matcher: compares response to a baseline string
+      - type: diff
+        baseline: "baseline response body here"
+        threshold: 30      # % difference before considering it a match
+
+    # Optional extractors for capturing data from responses
+    extractors:
+      - type: regex
+        name: example_value
+        regex:
+          - "example=(\\w+)"
+
+# Network-based template example ------------------------------------------
+#
+# Use this section when your check talks directly to a TCP/UDP service.
+# Remove or comment out this block if you are only using `http:`.
+# Engine behavior: if the incoming target already has a port, that port overrides
+# this default. Otherwise, the engine uses this `port` value as the default.
+
+network:
+  - protocol: tcp
+    port: 12345  # Default port for the service being tested
+
+    # Payloads sent to the target service
+    payloads:
+      - "EXAMPLE \r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "example-banner"
+        part: body
+
+      - type: regex
+        regex:
+          - "ExampleService/(\\d+\\.\\d+\\.\\d+)"
+
+    extractors:
+      - type: regex
+        name: service_version
+        regex:
+          - "ExampleService/(\\d+\\.\\d+\\.\\d+)"
+
+# Flow-based multi-step example ------------------------------------------
+#
+# Flows let you chain multiple HTTP steps with variables and simple conditions.
+# They currently manipulate context (cookies/variables) rather than creating
+# findings directly. Use them when you need login or token exchange before
+# running normal `http`/`network` checks.
+
+flows:
+  - name: login_and_token_flow
+    depends_on: []           # Other flow names that must run first
+    condition: null          # Optional condition, e.g. token != ""
+    optional: true           # If true, failures won't fail the whole template
+    steps:
+      # Step 1: Perform a login request and store the response
+      - action: http_request
+        method: POST
+        path: /login
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+        body: "username=admin&password={{Password}}"
+        store: login_response   # Saves raw body into flow variable
+
+      # Step 2: Extract an auth token from the stored response
+      - action: extract
+        from: login_response
+        pattern: "token=([A-Za-z0-9_-]+)"
+        store: auth_token
+
+      # Step 3: Set a variable that can be used in later requests
+      - action: set_variable
+        name: Authorization
+        value: "Bearer {{auth_token}}"
+
+      # Step 4: Optional wait before subsequent steps
+      - action: wait
+        duration_ms: 500
+
+      # Step 5: Sanity check that the token was extracted
+      - action: check
+        condition: auth_token != ""
+        message: "Login succeeded and auth_token was extracted"
+
+# Remediation guidance ----------------------------------------------------
+#
+# Provide actionable steps for fixing the detected issue.
+
+remediation: |
+  1. Describe how to remediate or mitigate the detected issue.
+  2. Include configuration changes, patches, or architectural guidance.
+  3. Link to vendor or community best-practice documentation.

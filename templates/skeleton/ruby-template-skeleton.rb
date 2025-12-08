@@ -75,6 +75,7 @@ class CertXGenTemplate
     @target_host = nil
     @target_port = 80
     @json_output = false
+    @context = {}
   end
   
   # ========================================
@@ -173,21 +174,19 @@ class CertXGenTemplate
   
   def execute_scan
     findings = []
-    ports = get_ports_to_scan
-    
-    ports.each do |port|
-      response = test_http_endpoint(@target_host, port)
-      next unless response && check_vulnerability(response)
-      
+    port = @target_port
+
+    response = test_http_endpoint(@target_host, port)
+    if response && check_vulnerability(response)
       evidence = {
         'endpoint' => "http://#{@target_host}:#{port}",
         'response_size' => response.length.to_s,
         'status' => 'vulnerable'
       }
-      
+
       title = "Potential Vulnerability on #{@target_host}:#{port}"
       description = "Found potential vulnerability indicators on #{@target_host}:#{port}"
-      
+
       findings << create_finding(title, description, evidence, 'high')
     end
     
@@ -245,6 +244,22 @@ class CertXGenTemplate
     @target_port = port_str.to_i if port_str && !port_str.empty?
     
     @json_output = true if get_env_var('CERT_X_GEN_MODE')
+
+    if (env = get_env_var('CERT_X_GEN_CONTEXT'))
+      begin
+        @context = JSON.parse(env)
+      rescue JSON::ParserError
+        @context = {}
+      end
+    end
+
+    if (add = get_env_var('CERT_X_GEN_ADD_PORTS'))
+      @context['add_ports'] = add
+    end
+
+    if (override_ports = get_env_var('CERT_X_GEN_OVERRIDE_PORTS'))
+      @context['override_ports'] = override_ports
+    end
     
     if @target_host.nil? || @target_host.empty?
       $stderr.puts 'Error: No target specified'

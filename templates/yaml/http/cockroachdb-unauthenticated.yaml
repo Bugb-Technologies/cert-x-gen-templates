@@ -18,10 +18,18 @@ tags:
   - unauthenticated
   - sql
   - distributed
-  - cwe-306
+  - cluster
 
 language: yaml
 confidence: 95
+
+cwe:
+  - CWE-306
+
+references:
+  - https://cwe.mitre.org/data/definitions/306.html
+  - https://www.cockroachlabs.com/docs/stable/security-reference/
+  - https://owasp.org/www-community/vulnerabilities/Broken_Authentication
 
 http:
   # Admin UI endpoints

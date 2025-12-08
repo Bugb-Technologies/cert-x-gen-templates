@@ -13,9 +13,20 @@ tags:
   - sensitive-data
   - owasp-a02
   - data-leakage
+  - credentials
+  - web
 
 language: yaml
 confidence: 95
+
+cwe:
+  - CWE-200
+  - CWE-312
+
+references:
+  - https://cwe.mitre.org/data/definitions/200.html
+  - https://owasp.org/www-community/vulnerabilities/Information_exposure
+  - https://portswigger.net/web-security/information-disclosure
 
 # HTTP request specifications
 http:

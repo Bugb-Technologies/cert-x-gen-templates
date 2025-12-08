@@ -20,21 +20,47 @@ tags:
   - metrics
   - information-disclosure
   - monitoring
-  - cwe-200
+  - system-info
 
-language: yaml
-confidence: 95
+classification:
+  cwe_id: "CWE-200"
+  cvss_score: 7.5
+  confidence: 95
+
+metadata:
+  version: "1.0.0"
+  created: "2024-01-01"
+  updated: "2024-01-01"
+  category: "information-disclosure"
+
+references:
+  - "https://cwe.mitre.org/data/definitions/200.html"
+  - "https://github.com/prometheus/node_exporter"
+  - "https://prometheus.io/docs/guides/node-exporter/"
+  - "https://prometheus.io/docs/guides/basic-auth/"
+  - "https://github.com/prometheus/node_exporter#tls-and-basic-authentication"
+  - "https://prometheus.io/docs/prometheus/latest/configuration/https/"
 
 http:
   - method: GET
     path:
       - "/metrics"
       - "/node_exporter/metrics"
-      - ":9100/metrics"
-      - ":9100/"
+      - "/"
+    
+    # Rate limiting to prevent overwhelming targets
+    max-redirects: 2
+    race-count: 1
+    threads: 1
     
     matchers-condition: and
     matchers:
+      # Check for successful HTTP response
+      - type: status
+        status:
+          - 200
+      
+      # Look for node_exporter indicators in body
       - type: word
         words:
           - "node_exporter"
@@ -42,6 +68,7 @@ http:
         condition: or
         part: body
       
+      # Prometheus metrics format indicators
       - type: word
         words:
           - "# HELP"
@@ -49,35 +76,33 @@ http:
         condition: or
         part: body
       
+      # Node exporter specific metrics patterns
       - type: regex
         regex:
           - 'node_cpu_seconds_total'
           - 'node_memory_.*_bytes'
-          - 'node_filesystem_.*_bytes'
-          - 'node_network_.*_bytes'
-          - 'node_uname_info'
+          - 'node_filesystem_.*'
         condition: or
+        part: body
 
 extractors:
-  - type: regex
-    name: os_info
-    regex:
-      - 'node_uname_info{.*domainname="([^"]*)",.*nodename="([^"]*)",.*release="([^"]*)",.*sysname="([^"]*)".*}'
-  
   - type: regex
     name: hostname
     regex:
       - 'nodename="([^"]*)"'
+    part: body
   
   - type: regex
     name: kernel_version
     regex:
       - 'release="([^"]*)"'
+    part: body
   
   - type: regex
     name: os_type
     regex:
       - 'sysname="([^"]*)"'
+    part: body
 
 severity-details:
   high:
@@ -117,12 +142,6 @@ remediation: |
 
   10. Regularly audit exposed metrics
 
-references:
-  - "https://prometheus.io/docs/guides/basic-auth/"
-  - "https://github.com/prometheus/node_exporter#tls-and-basic-authentication"
-  - "https://prometheus.io/docs/prometheus/latest/configuration/https/"
-  - "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
-  
 exposed_metrics_impact:
   - "System hostname and domain"
   - "Kernel version (vulnerability identification)"

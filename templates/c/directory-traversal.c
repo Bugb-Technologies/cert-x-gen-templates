@@ -4,11 +4,18 @@
  * Template Metadata:
  *   ID: directory-traversal
  *   Name: Directory Traversal Detection
- *   Author: CERT-X-GEN Team
+ *   Author: CERT-X-GEN Security Team
  *   Severity: high
- *   Tags: directory-traversal, path-traversal, file-inclusion
+ *   Description: Detects directory traversal vulnerabilities that allow attackers to access
+ *                files and directories outside the intended directory structure using path
+ *                manipulation techniques. Tests multiple encoding methods and common parameters.
+ *   Tags: directory-traversal, path-traversal, file-inclusion, lfi, owasp-a01
  *   Language: c
- *   CWE: CWE-22
+ *   CWE: CWE-22 (Improper Limitation of a Pathname to a Restricted Directory)
+ *   References:
+ *     - https://cwe.mitre.org/data/definitions/22.html
+ *     - https://owasp.org/www-community/attacks/Path_Traversal
+ *     - https://portswigger.net/web-security/file-path-traversal
  */
 
 #include <stdio.h>

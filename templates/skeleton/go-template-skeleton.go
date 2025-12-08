@@ -62,6 +62,7 @@ var config TemplateConfig
 var targetHost string
 var targetPort int = 80
 var jsonOutput bool = false
+var contextData map[string]interface{}
 
 // ========================================
 // HELPER FUNCTIONS
@@ -198,26 +199,23 @@ func createFinding(title, description string, evidence map[string]string, severi
 
 func executeScan() []Finding {
 	var findings []Finding
-	ports := getPortsToScan()
+	port := targetPort
+	response, err := testHTTPEndpoint(targetHost, port)
+	if err != nil {
+		return findings
+	}
 
-	for _, port := range ports {
-		response, err := testHTTPEndpoint(targetHost, port)
-		if err != nil {
-			continue
+	if checkVulnerability(response) {
+		evidence := map[string]string{
+			"endpoint":      fmt.Sprintf("http://%s:%d", targetHost, port),
+			"response_size": fmt.Sprintf("%d", len(response)),
+			"status":        "vulnerable",
 		}
 
-		if checkVulnerability(response) {
-			evidence := map[string]string{
-				"endpoint":      fmt.Sprintf("http://%s:%d", targetHost, port),
-				"response_size": fmt.Sprintf("%d", len(response)),
-				"status":        "vulnerable",
-			}
+		title := fmt.Sprintf("Potential Vulnerability on %s:%d", targetHost, port)
+		description := fmt.Sprintf("Found potential vulnerability indicators on %s:%d", targetHost, port)
 
-			title := fmt.Sprintf("Potential Vulnerability on %s:%d", targetHost, port)
-			description := fmt.Sprintf("Found potential vulnerability indicators on %s:%d", targetHost, port)
-
-			findings = append(findings, createFinding(title, description, evidence, "high"))
-		}
+		findings = append(findings, createFinding(title, description, evidence, "high"))
 	}
 
 	return findings
@@ -302,6 +300,27 @@ func parseArgs(args []string) bool {
 
 	if getEnvVar("CERT_X_GEN_MODE") != "" {
 		jsonOutput = true
+	}
+
+	if ctx := getEnvVar("CERT_X_GEN_CONTEXT"); ctx != "" {
+		var parsed map[string]interface{}
+		if err := json.Unmarshal([]byte(ctx), &parsed); err == nil {
+			contextData = parsed
+		}
+	}
+
+	if add := getEnvVar("CERT_X_GEN_ADD_PORTS"); add != "" {
+		if contextData == nil {
+			contextData = make(map[string]interface{})
+		}
+		contextData["add_ports"] = add
+	}
+
+	if override := getEnvVar("CERT_X_GEN_OVERRIDE_PORTS"); override != "" {
+		if contextData == nil {
+			contextData = make(map[string]interface{})
+		}
+		contextData["override_ports"] = override
 	}
 
 	if targetHost == "" {

@@ -2,13 +2,20 @@
  * CERT-X-GEN SQL Injection Detection Template
  * 
  * Template Metadata:
- *   ID: sql-injection-detection
+ *   ID: sql-injection-detection-c
  *   Name: SQL Injection Detection
- *   Author: CERT-X-GEN Team
- *   Severity: high
- *   Tags: sql-injection, database, web
+ *   Author: CERT-X-GEN Security Team
+ *   Severity: critical
+ *   Description: Detects SQL injection vulnerabilities through error-based and blind injection
+ *                techniques, identifying improper input validation in database queries. Tests
+ *                multiple SQL dialects and injection vectors.
+ *   Tags: sql-injection, injection, database, sqli, owasp-a03, web
  *   Language: c
- *   CWE: CWE-89
+ *   CWE: CWE-89 (Improper Neutralization of Special Elements used in an SQL Command)
+ *   References:
+ *     - https://cwe.mitre.org/data/definitions/89.html
+ *     - https://owasp.org/www-community/attacks/SQL_Injection
+ *     - https://portswigger.net/web-security/sql-injection
  * 
  * Compilation:
  *   gcc sql-injection-detection.c -o sql-injection-detection -O2 -std=c11 -lcurl -ljson-c

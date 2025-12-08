@@ -16,10 +16,19 @@ tags:
   - unauthenticated
   - cache
   - amplification
-  - cwe-306
+  - network
+  - ddos
 
 language: yaml
 confidence: 95
+
+cwe:
+  - CWE-306
+
+references:
+  - https://cwe.mitre.org/data/definitions/306.html
+  - https://github.com/memcached/memcached/wiki/SASLHowto
+  - https://www.cloudflare.com/learning/ddos/memcached-ddos-attack/
 
 network:
   - protocol: tcp

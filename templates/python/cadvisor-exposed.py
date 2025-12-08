@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """
-cAdvisor Exposed Without Authentication
+CERT-X-GEN cAdvisor Metrics Exposed Template
 
-Detects exposed cAdvisor (Container Advisor) instances that reveal
-container runtime metrics and sensitive infrastructure information.
-
-Author: CERT-X-GEN Security Team
-Severity: Critical
-CWE: CWE-200 (Information Exposure)
+Template Metadata:
+  ID: cadvisor-exposed
+  Name: cAdvisor Metrics Exposed
+  Author: CERT-X-GEN Security Team
+  Severity: medium
+  Description: Detects exposed cAdvisor (Container Advisor) instances that reveal
+               container metrics, resource usage, and infrastructure information without
+               authentication. Useful for reconnaissance of containerized environments.
+  Tags: cadvisor, container, metrics, information-disclosure, kubernetes, docker
+  Language: python
+  CWE: CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor)
+  References:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://github.com/google/cadvisor/security
+    - https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/
 """
 
 import json

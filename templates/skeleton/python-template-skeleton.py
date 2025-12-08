@@ -2,16 +2,21 @@
 """
 CERT-X-GEN Python Template Skeleton
 
-This is a skeleton template for writing security scanning templates in Python.
-Copy this file and customize it for your specific security check.
-
 Template Metadata:
-    ID: template-skeleton
-    Name: Python Template Skeleton
-    Author: Your Name
-    Severity: high
-    Tags: skeleton, example
-    Language: python
+  ID: python-template-skeleton
+  Name: Python Template Skeleton
+  Author: CERT-X-GEN Security Team
+  Severity: info
+  Description: Skeleton template for writing security scanning templates in Python.
+               Copy this file and customize it for your specific security check.
+               Includes HTTP request handling, JSON output, and finding reporting.
+  Tags: skeleton, example, template, documentation, python
+  Language: python
+  CWE: CWE-1008 (Architectural Concepts)
+  References:
+    - https://cwe.mitre.org/data/definitions/1008.html
+    - https://github.com/cert-x-gen/templates
+    - https://docs.python.org/3/library/urllib.request.html
 """
 
 import json
@@ -263,6 +268,15 @@ class CertXGenTemplate:
                 self.context = json.loads(os.environ["CERT_X_GEN_CONTEXT"])
             except json.JSONDecodeError:
                 pass
+
+        # Expose additional/override ports (advanced usage) via context
+        add_ports = os.environ.get("CERT_X_GEN_ADD_PORTS")
+        if add_ports:
+            self.context["add_ports"] = add_ports
+
+        override_ports = os.environ.get("CERT_X_GEN_OVERRIDE_PORTS")
+        if override_ports:
+            self.context["override_ports"] = override_ports
         
         # Execute the template
         findings = self.execute(target, port)

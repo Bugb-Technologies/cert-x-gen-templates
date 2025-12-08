@@ -1,13 +1,20 @@
-/*!
- * Elasticsearch Unauthenticated Access Detection
- * 
- * Detects Elasticsearch clusters exposed without authentication.
- * Tests for open access to cluster info, indices, and data.
- * 
- * Author: CERT-X-GEN Security Team
- * Severity: Critical
- * CWE: CWE-306 (Missing Authentication for Critical Function)
- */
+//! CERT-X-GEN Elasticsearch Unauthenticated Access Detection Template
+//!
+//! Template Metadata:
+//!   ID: elasticsearch-unauthenticated
+//!   Name: Elasticsearch Unauthenticated Access Detection
+//!   Author: CERT-X-GEN Security Team
+//!   Severity: critical
+//!   Description: Detects Elasticsearch clusters accessible without authentication, exposing
+//!                indexed data, cluster configuration, and allowing unauthorized operations.
+//!                Tests for open cluster API, index enumeration, and data access.
+//!   Tags: elasticsearch, search-engine, authentication, nosql, data-exposure, cluster
+//!   Language: rust
+//!   CWE: CWE-306 (Missing Authentication for Critical Function)
+//!   References:
+//!     - https://cwe.mitre.org/data/definitions/306.html
+//!     - https://www.elastic.co/guide/en/elasticsearch/reference/current/security-minimal-setup.html
+//!     - https://owasp.org/www-community/vulnerabilities/Broken_Authentication
 
 use reqwest;
 use serde::{Deserialize, Serialize};

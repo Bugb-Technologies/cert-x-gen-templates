@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """
-MongoDB Unauthenticated Access Detection
+CERT-X-GEN MongoDB Unauthenticated Access Detection Template
 
-Detects MongoDB instances running without authentication enabled.
-Tests for open admin access and ability to list databases.
-
-Author: CERT-X-GEN Security Team
-Severity: Critical
-CWE: CWE-306 (Missing Authentication for Critical Function)
+Template Metadata:
+  ID: mongodb-unauthenticated
+  Name: MongoDB Unauthenticated Access
+  Author: CERT-X-GEN Security Team
+  Severity: critical
+  Description: Detects MongoDB instances accessible without authentication, allowing
+               unauthorized access to databases, collections, and sensitive data. Tests
+               for open admin access and database enumeration capabilities.
+  Tags: mongodb, database, authentication, nosql, data-exposure
+  Language: python
+  CWE: CWE-306 (Missing Authentication for Critical Function)
+  References:
+    - https://cwe.mitre.org/data/definitions/306.html
+    - https://www.mongodb.com/docs/manual/security/
+    - https://owasp.org/www-community/vulnerabilities/Broken_Authentication
 """
 
 import socket

@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
 """
-RabbitMQ Default Credentials Detection
+CERT-X-GEN RabbitMQ Default Credentials Template
 
-Tests for default credentials (guest:guest) on RabbitMQ instances.
-Also tests for weak/common passwords on admin account.
-
-Author: CERT-X-GEN Security Team
-Severity: Critical
-CWE: CWE-798 (Use of Hard-coded Credentials)
+Template Metadata:
+  ID: rabbitmq-default-credentials
+  Name: RabbitMQ Default Credentials
+  Author: CERT-X-GEN Security Team
+  Severity: critical
+  Description: Detects RabbitMQ message broker instances using default credentials (guest/guest),
+               allowing unauthorized access to queues, exchanges, and message data. Tests common
+               default credentials and authentication bypass.
+  Tags: rabbitmq, message-queue, default-credentials, authentication, amqp
+  Language: python
+  CWE: CWE-798 (Use of Hard-coded Credentials)
+  References:
+    - https://cwe.mitre.org/data/definitions/798.html
+    - https://www.rabbitmq.com/access-control.html
+    - https://www.rabbitmq.com/production-checklist.html
 """
 
-import requests
 import json
+import sys
+import os
+import argparse
+import requests
 from typing import List, Dict, Any
 from requests.auth import HTTPBasicAuth
 import urllib3
@@ -19,15 +31,252 @@ import urllib3
 # Disable SSL warnings for testing
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-class RabbitMQDefaultCredsTemplate:
+# CERT-X-GEN Template Base Class
+class CertXGenTemplate:
+    """Base class for CERT-X-GEN Python templates"""
+    
+    def __init__(self):
+        # Template metadata
+        self.id = "rabbitmq-default-credentials"
+        self.name = "RabbitMQ Default Credentials Detection"
+        self.author = "CERT-X-GEN Security Team"
+        self.severity = "critical"  # critical, high, medium, low, info
+        self.tags = ["rabbitmq", "default-credentials", "authentication", "cwe-798"]
+        self.confidence = 95  # 0-100
+        self.cwe = "CWE-798"  # CWE ID if applicable
+        
+        # Target information (will be populated from command line)
+        self.target = None
+        self.context = {}
+    
+    def execute(self, target: str, port: int = 80) -> List[Dict[str, Any]]:
+        """
+        Main execution method for the template.
+        
+        Args:
+            target: Target host/IP address
+            port: Target port
+            
+        Returns:
+            List of findings in CERT-X-GEN format
+        """
+        findings = []
+        
+        try:
+            # ========================================
+            # YOUR CUSTOM SCANNING LOGIC HERE
+            # ========================================
+            
+            # Example: Test HTTP endpoint
+            response = self.test_http_endpoint(target, port)
+            
+            if response and self.check_vulnerability(response):
+                finding = self.create_finding(
+                    title="Vulnerability Detected",
+                    description=f"Found vulnerability on {target}:{port}",
+                    evidence={"response": response}
+                )
+                findings.append(finding)
+            
+            # Example: Test network service
+            result = self.test_network_service(target, port)
+            if result:
+                findings.append(result)
+            
+        except Exception as e:
+            # Log error as JSON finding for CERT-X-GEN engine
+            error_finding = self.create_finding(
+                title="Scan Error",
+                description=f"Error during scan execution: {str(e)}",
+                evidence={"error": str(e), "type": type(e).__name__},
+                severity="info"
+            )
+            findings.append(error_finding)
+        
+        return findings
+    
+    def test_http_endpoint(self, host: str, port: int) -> Dict[str, Any]:
+        """
+        Example: Test HTTP/HTTPS endpoint
+        """
+        try:
+            scheme = "https" if port == 443 else "http"
+            url = f"{scheme}://{host}:{port}/"
+            
+            response = requests.get(url, timeout=5, verify=False)
+            
+            return {
+                "status_code": response.status_code,
+                "headers": dict(response.headers),
+                "body": response.text[:1000]  # First 1000 chars
+            }
+        except Exception:
+            return None
+    
+    def create_finding(
+        self,
+        title: str,
+        description: str,
+        evidence: Dict[str, Any],
+        severity: str = None,
+        remediation: str = None
+    ) -> Dict[str, Any]:
+        """
+        Create a finding in CERT-X-GEN format
+        """
+        return {
+            "template_id": self.id,
+            "severity": severity or self.severity,
+            "confidence": self.confidence,
+            "title": title,
+            "description": description,
+            "evidence": evidence,
+            "cwe": self.cwe,
+            "cvss_score": self.calculate_cvss_score(severity or self.severity),
+            "remediation": remediation or self.get_remediation(),
+            "references": self.get_references()
+        }
+    
+    def calculate_cvss_score(self, severity: str) -> float:
+        """Calculate CVSS score based on severity"""
+        scores = {
+            "critical": 9.0,
+            "high": 7.5,
+            "medium": 5.0,
+            "low": 3.0,
+            "info": 0.0
+        }
+        return scores.get(severity.lower(), 5.0)
+    
+    def get_remediation(self) -> str:
+        """
+        Get remediation steps
+        
+        Override this with specific remediation advice
+        """
+        return """
+1. Review the identified vulnerability
+2. Apply appropriate security patches
+3. Implement security best practices
+4. Monitor for suspicious activity
+"""
+    
+    def get_references(self) -> List[str]:
+        """
+        Get references and documentation
+        
+        Override with relevant references
+        """
+        return [
+            "https://cwe.mitre.org/",
+            "https://nvd.nist.gov/"
+        ]
+    
+    def parse_arguments(self) -> argparse.Namespace:
+        """Parse command line arguments"""
+        parser = argparse.ArgumentParser(
+            description=self.name,
+            formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        
+        parser.add_argument(
+            "target",
+            nargs="?",
+            help="Target host or IP address"
+        )
+        
+        parser.add_argument(
+            "--target",
+            dest="target_flag",
+            help="Target host (alternative)"
+        )
+        
+        parser.add_argument(
+            "--port",
+            type=int,
+            default=80,
+            help="Target port (default: 80)"
+        )
+        
+        parser.add_argument(
+            "--json",
+            action="store_true",
+            help="Output findings as JSON"
+        )
+        
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="Verbose output"
+        )
+        
+        return parser.parse_args()
+    
+    def run(self):
+        """Main entry point for the template"""
+        args = self.parse_arguments()
+        
+        # Get target from arguments or environment
+        target = args.target or args.target_flag
+        if not target and "CERT_X_GEN_TARGET_HOST" in os.environ:
+            target = os.environ["CERT_X_GEN_TARGET_HOST"]
+        
+        if not target:
+            print("Error: No target specified", file=sys.stderr)
+            sys.exit(1)
+        
+        # Get port
+        port = args.port
+        if "CERT_X_GEN_TARGET_PORT" in os.environ:
+            port = int(os.environ["CERT_X_GEN_TARGET_PORT"])
+        
+        # Get context from environment
+        if "CERT_X_GEN_CONTEXT" in os.environ:
+            try:
+                self.context = json.loads(os.environ["CERT_X_GEN_CONTEXT"])
+            except json.JSONDecodeError:
+                pass
+
+        # Expose additional/override ports (advanced usage) via context
+        add_ports = os.environ.get("CERT_X_GEN_ADD_PORTS")
+        if add_ports:
+            self.context["add_ports"] = add_ports
+
+        override_ports = os.environ.get("CERT_X_GEN_OVERRIDE_PORTS")
+        if override_ports:
+            self.context["override_ports"] = override_ports
+        
+        # Execute the template
+        findings = self.execute(target, port)
+        
+        # Output results
+        if args.json or os.environ.get("CERT_X_GEN_MODE") == "engine":
+            # JSON output for CERT-X-GEN engine integration
+            print(json.dumps(findings, indent=2))
+        else:
+            # Human-readable output
+            if findings:
+                print(f"\n[+] Found {len(findings)} issue(s):\n")
+                for finding in findings:
+                    print(f"[{finding['severity'].upper()}] {finding['title']}")
+                    print(f"    {finding['description']}")
+                    if args.verbose:
+                        print(f"    Evidence: {finding['evidence']}")
+                    print()
+            else:
+                print("\n[-] No issues found")
+
+class RabbitMQDefaultCredsTemplate(CertXGenTemplate):
     """Template for detecting RabbitMQ default/weak credentials"""
     
     def __init__(self):
+        super().__init__()
         self.id = "rabbitmq-default-credentials"
         self.name = "RabbitMQ Default Credentials Detection"
         self.severity = "critical"
         self.tags = ["rabbitmq", "default-credentials", "authentication", "cwe-798"]
         self.confidence = 95
+        self.cwe = "CWE-798"
         self.ports = [15672, 15671, 5672]  # Management UI, AMQPS, AMQP
         
         # Default and common credentials to test
@@ -41,12 +290,13 @@ class RabbitMQDefaultCredsTemplate:
             ("test", "test"),
         ]
     
-    def execute(self, target: str) -> List[Dict[str, Any]]:
+    def execute(self, target: str, port: int = 80) -> List[Dict[str, Any]]:
         """
         Execute template against target
         
         Args:
             target: Target hostname or IP
+            port: Target port (not used directly, we test multiple ports)
             
         Returns:
             List of findings
@@ -83,61 +333,59 @@ class RabbitMQDefaultCredsTemplate:
                     # Authentication successful
                     user_info = response.json()
                     
-                    findings.append({
-                        "severity": "critical",
-                        "title": f"RabbitMQ Default/Weak Credentials: {username}:{password}",
-                        "description": f"RabbitMQ Management API accessible with credentials {username}:{password}",
-                        "evidence": {
+                    findings.append(self.create_finding(
+                        title=f"RabbitMQ Default/Weak Credentials: {username}:{password}",
+                        description=f"RabbitMQ Management API accessible with credentials {username}:{password}",
+                        evidence={
                             "username": username,
                             "password": password,
                             "endpoint": url,
                             "user_info": user_info,
                             "tags": user_info.get("tags", [])
                         },
-                        "remediation": self._get_remediation(),
-                        "cwe": "CWE-798",
-                        "cvss_score": 9.8
-                    })
+                        severity="critical",
+                        remediation=self._get_remediation()
+                    ))
                     
                     # Try to enumerate more info
                     overview = self._get_cluster_overview(base_url, username, password)
                     if overview:
-                        findings.append({
-                            "severity": "high",
-                            "title": "RabbitMQ Cluster Information Exposed",
-                            "description": "Successfully retrieved cluster configuration",
-                            "evidence": {
+                        findings.append(self.create_finding(
+                            title="RabbitMQ Cluster Information Exposed",
+                            description="Successfully retrieved cluster configuration",
+                            evidence={
                                 "rabbitmq_version": overview.get("rabbitmq_version"),
                                 "cluster_name": overview.get("cluster_name"),
                                 "node": overview.get("node"),
                                 "erlang_version": overview.get("erlang_version")
-                            }
-                        })
+                            },
+                            severity="high"
+                        ))
                     
                     # Try to list vhosts
                     vhosts = self._list_vhosts(base_url, username, password)
                     if vhosts:
-                        findings.append({
-                            "severity": "high",
-                            "title": "RabbitMQ Virtual Hosts Enumeration",
-                            "description": f"Successfully enumerated {len(vhosts)} virtual hosts",
-                            "evidence": {
+                        findings.append(self.create_finding(
+                            title="RabbitMQ Virtual Hosts Enumeration",
+                            description=f"Successfully enumerated {len(vhosts)} virtual hosts",
+                            evidence={
                                 "vhosts": [v.get("name") for v in vhosts]
-                            }
-                        })
+                            },
+                            severity="high"
+                        ))
                     
                     # Try to list queues
                     queues = self._list_queues(base_url, username, password)
                     if queues:
-                        findings.append({
-                            "severity": "high",
-                            "title": "RabbitMQ Queues Enumeration",
-                            "description": f"Successfully enumerated {len(queues)} queues",
-                            "evidence": {
+                        findings.append(self.create_finding(
+                            title="RabbitMQ Queues Enumeration",
+                            description=f"Successfully enumerated {len(queues)} queues",
+                            evidence={
                                 "queue_count": len(queues),
                                 "queue_names": [q.get("name") for q in queues[:10]]
-                            }
-                        })
+                            },
+                            severity="high"
+                        ))
                     
                     # Only test first working credentials
                     break
@@ -214,20 +462,18 @@ class RabbitMQDefaultCredsTemplate:
                     
                     connection = pika.BlockingConnection(parameters)
                     
-                    findings.append({
-                        "severity": "critical",
-                        "title": f"RabbitMQ AMQP Authentication with {username}:{password}",
-                        "description": "Successfully authenticated to AMQP protocol",
-                        "evidence": {
+                    findings.append(self.create_finding(
+                        title=f"RabbitMQ AMQP Authentication with {username}:{password}",
+                        description="Successfully authenticated to AMQP protocol",
+                        evidence={
                             "username": username,
                             "password": password,
                             "protocol": "AMQP",
                             "port": 5672
                         },
-                        "remediation": self._get_remediation(),
-                        "cwe": "CWE-798",
-                        "cvss_score": 9.8
-                    })
+                        severity="critical",
+                        remediation=self._get_remediation()
+                    ))
                     
                     connection.close()
                     break
@@ -276,32 +522,11 @@ class RabbitMQDefaultCredsTemplate:
 9. Regular security audits
 10. Keep RabbitMQ updated to latest version
 """
-
-# Template metadata
-TEMPLATE_METADATA = {
-    "id": "rabbitmq-default-credentials",
-    "name": "RabbitMQ Default Credentials Detection",
-    "author": "CERT-X-GEN Security Team",
-    "severity": "critical",
-    "language": "python",
-    "tags": ["rabbitmq", "default-credentials", "weak-password", "authentication"],
-    "confidence": 95,
-    "references": [
-        "https://www.rabbitmq.com/access-control.html",
-        "https://www.rabbitmq.com/management.html",
-        "https://cwe.mitre.org/data/definitions/798.html"
-    ]
-}
-
-if __name__ == "__main__":
-    import sys
     
-    if len(sys.argv) < 2:
-        print("Usage: python rabbitmq-default-credentials.py <target>")
-        sys.exit(1)
-    
-    template = RabbitMQDefaultCredsTemplate()
-    findings = template.execute(sys.argv[1])
-    
-    print(json.dumps(findings, indent=2))
-    print(f"\n[+] Total findings: {len(findings)}")
+    def get_references(self) -> List[str]:
+        """Get references and documentation"""
+        return [
+            "https://www.rabbitmq.com/access-control.html",
+            "https://www.rabbitmq.com/management.html"
+        ]
+if __name

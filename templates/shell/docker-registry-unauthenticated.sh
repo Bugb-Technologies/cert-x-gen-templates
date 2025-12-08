@@ -1,13 +1,22 @@
 #!/bin/bash
-################################################################################
-# Docker Registry v2 Unauthenticated Access Detection
 #
-# Detects Docker Registry v2 instances exposed without authentication.
-# Tests for catalog listing, image enumeration, and manifest access.
+# CERT-X-GEN Docker Registry Unauthenticated Access Detection Template
 #
-# Author: CERT-X-GEN Security Team
-# Severity: Critical
-# CWE: CWE-306 (Missing Authentication for Critical Function)
+# Template Metadata:
+#   ID: docker-registry-unauthenticated
+#   Name: Docker Registry Unauthenticated Access Detection
+#   Author: CERT-X-GEN Security Team
+#   Severity: high
+#   Description: Detects Docker Registry instances accessible without authentication,
+#                allowing unauthorized access to container images and potentially sensitive
+#                data. Tests for catalog listing, image enumeration, and manifest access.
+#   Tags: docker, registry, container, authentication, devops, image-repository
+#   Language: shell
+#   CWE: CWE-306 (Missing Authentication for Critical Function)
+#   References:
+#     - https://cwe.mitre.org/data/definitions/306.html
+#     - https://docs.docker.com/registry/deploying/
+#     - https://docs.docker.com/registry/configuration/#auth
 ################################################################################
 
 # Template metadata

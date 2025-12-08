@@ -2,16 +2,21 @@
 /**
  * CERT-X-GEN JavaScript/Node.js Template Skeleton
  * 
- * This is a skeleton template for writing security scanning templates in JavaScript.
- * Copy this file and customize it for your specific security check.
- * 
  * Template Metadata:
- *   ID: template-skeleton
+ *   ID: javascript-template-skeleton
  *   Name: JavaScript Template Skeleton
- *   Author: Your Name
- *   Severity: high
- *   Tags: skeleton, example
+ *   Author: CERT-X-GEN Security Team
+ *   Severity: info
+ *   Description: Skeleton template for writing security scanning templates in JavaScript/Node.js.
+ *                Copy this file and customize it for your specific security check.
+ *                Includes HTTP request handling, JSON output, and finding reporting.
+ *   Tags: skeleton, example, template, documentation, javascript, nodejs
  *   Language: javascript
+ *   CWE: CWE-1008 (Architectural Concepts)
+ *   References:
+ *     - https://cwe.mitre.org/data/definitions/1008.html
+ *     - https://github.com/cert-x-gen/templates
+ *     - https://nodejs.org/api/http.html
  * 
  * Usage:
  *   node template.js <target> [--port 80] [--json]
@@ -229,6 +234,7 @@ class CertXGenTemplate {
         this.findings = [];
         this.target = null;
         this.port = 80;
+        this.context = {};
     }
 
     /**
@@ -329,6 +335,24 @@ class CertXGenTemplate {
         }
         if (process.env.CERT_X_GEN_MODE === 'engine') {
             global.jsonOutput = true;
+        }
+
+        if (process.env.CERT_X_GEN_CONTEXT) {
+            try {
+                this.context = JSON.parse(process.env.CERT_X_GEN_CONTEXT);
+            } catch (e) {
+                this.context = {};
+            }
+        }
+
+        const addPortsEnv = process.env.CERT_X_GEN_ADD_PORTS;
+        if (addPortsEnv) {
+            this.context.add_ports = addPortsEnv;
+        }
+
+        const overridePortsEnv = process.env.CERT_X_GEN_OVERRIDE_PORTS;
+        if (overridePortsEnv) {
+            this.context.override_ports = overridePortsEnv;
         }
 
         if (!this.target) {

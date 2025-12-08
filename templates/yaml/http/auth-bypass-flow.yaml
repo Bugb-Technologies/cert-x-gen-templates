@@ -13,9 +13,19 @@ tags:
   - authorization
   - bypass
   - owasp-a01
+  - access-control
+  - web
 
 language: yaml
 confidence: 90
+
+cwe:
+  - CWE-287
+
+references:
+  - https://cwe.mitre.org/data/definitions/287.html
+  - https://owasp.org/www-community/attacks/Bypassing_Authentication
+  - https://portswigger.net/web-security/authentication
 
 # Multi-step flow execution
 flows:

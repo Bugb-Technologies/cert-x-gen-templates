@@ -3,19 +3,30 @@ name: "SQL Injection Detection (Basic)"
 author:
   name: "CERT-X-GEN Security Team"
   email: "security@cert-x-gen.io"
-severity: high
+severity: critical
 description: |
-  Detects basic SQL injection vulnerabilities through error-based detection.
-  Tests common SQL injection payloads and analyzes responses for database errors.
+  Detects SQL injection vulnerabilities through error-based detection techniques.
+  Tests common SQL injection payloads across multiple database types and analyzes
+  responses for database error messages indicating improper input validation.
 
 tags:
   - sql-injection
   - injection
   - database
+  - sqli
   - owasp-a03
+  - web
 
 language: yaml
 confidence: 85
+
+cwe:
+  - CWE-89
+
+references:
+  - https://cwe.mitre.org/data/definitions/89.html
+  - https://owasp.org/www-community/attacks/SQL_Injection
+  - https://portswigger.net/web-security/sql-injection
 
 # HTTP request specifications
 http:

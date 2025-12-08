@@ -13,9 +13,20 @@ tags:
   - hpp
   - response-manipulation
   - web-cache
+  - parameter-pollution
+  - web
 
 language: yaml
 confidence: 75
+
+cwe:
+  - CWE-444
+  - CWE-113
+
+references:
+  - https://cwe.mitre.org/data/definitions/444.html
+  - https://portswigger.net/web-security/web-cache-poisoning
+  - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/04-Testing_for_HTTP_Parameter_Pollution
 
 # HTTP request specifications
 http:

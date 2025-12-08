@@ -1,15 +1,20 @@
-/*!
- * CouchDB Default Credentials & Unauthenticated Access Detection
- * 
- * Tests for:
- * - Unauthenticated access (Party Mode)
- * - Default admin credentials
- * - Weak passwords
- * 
- * Author: CERT-X-GEN Security Team
- * Severity: Critical
- * CWE: CWE-798 (Use of Hard-coded Credentials)
- */
+//! CERT-X-GEN CouchDB Default Credentials Detection Template
+//!
+//! Template Metadata:
+//!   ID: couchdb-default-credentials
+//!   Name: CouchDB Default Credentials Detection
+//!   Author: CERT-X-GEN Security Team
+//!   Severity: critical
+//!   Description: Detects CouchDB instances using default administrative credentials or running
+//!                in Party Mode (no authentication), allowing unauthorized database access and
+//!                manipulation. Tests common default credentials and authentication bypass.
+//!   Tags: couchdb, database, default-credentials, nosql, authentication, party-mode
+//!   Language: rust
+//!   CWE: CWE-798 (Use of Hard-coded Credentials)
+//!   References:
+//!     - https://cwe.mitre.org/data/definitions/798.html
+//!     - https://docs.couchdb.org/en/stable/intro/security.html
+//!     - https://owasp.org/www-community/vulnerabilities/Use_of_hard-coded_password
 
 use reqwest;
 use serde::{Deserialize, Serialize};

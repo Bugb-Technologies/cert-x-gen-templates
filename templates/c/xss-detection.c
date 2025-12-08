@@ -1,14 +1,21 @@
 /*
- * CERT-X-GEN XSS Detection Template
+ * CERT-X-GEN Cross-Site Scripting (XSS) Detection Template
  * 
  * Template Metadata:
- *   ID: xss-detection
+ *   ID: xss-detection-c
  *   Name: Cross-Site Scripting (XSS) Detection
- *   Author: CERT-X-GEN Team
+ *   Author: CERT-X-GEN Security Team
  *   Severity: high
- *   Tags: xss, injection, web, client-side
+ *   Description: Detects reflected and stored XSS vulnerabilities by testing input reflection
+ *                and JavaScript execution in web application responses. Tests multiple encoding
+ *                methods and common XSS vectors.
+ *   Tags: xss, cross-site-scripting, injection, javascript, owasp-a03, web, client-side
  *   Language: c
- *   CWE: CWE-79
+ *   CWE: CWE-79 (Improper Neutralization of Input During Web Page Generation)
+ *   References:
+ *     - https://cwe.mitre.org/data/definitions/79.html
+ *     - https://owasp.org/www-community/attacks/xss/
+ *     - https://portswigger.net/web-security/cross-site-scripting
  * 
  * Compilation:
  *   gcc xss-detection.c -o xss-detection -O2 -std=c11 -lcurl -ljson-c

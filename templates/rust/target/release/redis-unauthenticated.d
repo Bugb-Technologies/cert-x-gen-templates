@@ -1,0 +1,1 @@
+/Users/zippon/Documents/Time\ Traveler/Bugb/Certificate\ CXG/CERT-X-GEN-V2/cert-x-gen-cli/templates/rust/target/release/redis-unauthenticated: /Users/zippon/Documents/Time\ Traveler/Bugb/Certificate\ CXG/CERT-X-GEN-V2/cert-x-gen-cli/templates/rust/redis-unauthenticated.rs

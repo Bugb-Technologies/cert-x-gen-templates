@@ -7,21 +7,39 @@ severity: critical
 description: |
   Detects Redis instances exposed without authentication (requirepass disabled).
   Unauthenticated Redis allows arbitrary command execution and data exfiltration.
+  
+  This template tests the Redis protocol directly on port 6379 (or 6380 for replicas).
+  For Redis exporter detection, use the 'redis-exporter-exposed' template.
+  
+  PROTOCOL FLEXIBILITY:
+  - Uses 'network: protocol: tcp' for direct Redis protocol testing
+  - Engine automatically detects supported protocol: TCP
+  - Recommended ports: 6379 (default), 6380 (replica)
 
 tags:
   - redis
   - unauthenticated
   - database
   - nosql
-  - cwe-306
+  - cache
+  - network
 
 language: yaml
 confidence: 95
 
-# Redis typically runs on port 6379
+cwe:
+  - CWE-306
+
+references:
+  - https://cwe.mitre.org/data/definitions/306.html
+  - https://redis.io/docs/management/security/
+  - https://owasp.org/www-community/vulnerabilities/Broken_Authentication
+
+# Redis typically runs on port 6379 (default) or 6380 (replica)
+# Default port: 6379 (can be overridden with --add-ports)
 network:
   - protocol: tcp
-    port: 6379
+    port: 6379  # Default port (overridden by target's port if specified)
     
     payloads:
       # Test INFO command without auth
@@ -55,18 +73,6 @@ network:
         regex:
           - "\\$\\d+\\r\\nrequirepass\\r\\n"
           - "# Server\\r\\nredis_version"
-
-http:
-  - method: GET
-    path:
-      - "/"
-      - "/metrics"
-    
-    matchers:
-      - type: word
-        words:
-          - "redis_version"
-          - "redis_exporter"
 
 extractors:
   - type: regex

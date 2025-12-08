@@ -62,6 +62,7 @@ static TemplateConfig config;
 static std::string target_host;
 static int target_port = 80;
 static bool json_output = false;
+static std::map<std::string, std::string> context_data;
 
 // ========================================
 // HELPER FUNCTIONS
@@ -239,24 +240,21 @@ void output_finding_json(const Finding& finding) {
 
 std::vector<Finding> execute_scan() {
     std::vector<Finding> findings;
-    std::vector<int> ports = get_ports_to_scan();
+    int port = target_port;
+    std::string response;
     
-    for (int port : ports) {
-        std::string response;
-        
-        // Test HTTP endpoint
-        if (test_http_endpoint(target_host, port, response)) {
-            if (check_vulnerability(response)) {
-                std::map<std::string, std::string> evidence;
-                evidence["endpoint"] = "http://" + target_host + ":" + std::to_string(port);
-                evidence["response_size"] = std::to_string(response.length());
-                evidence["status"] = "vulnerable";
-                
-                std::string title = "Potential Vulnerability on " + target_host + ":" + std::to_string(port);
-                std::string description = "Found potential vulnerability indicators on " + target_host + ":" + std::to_string(port);
-                
-                findings.push_back(create_finding(title, description, evidence, "high"));
-            }
+    // Test HTTP endpoint
+    if (test_http_endpoint(target_host, port, response)) {
+        if (check_vulnerability(response)) {
+            std::map<std::string, std::string> evidence;
+            evidence["endpoint"] = "http://" + target_host + ":" + std::to_string(port);
+            evidence["response_size"] = std::to_string(response.length());
+            evidence["status"] = "vulnerable";
+            
+            std::string title = "Potential Vulnerability on " + target_host + ":" + std::to_string(port);
+            std::string description = "Found potential vulnerability indicators on " + target_host + ":" + std::to_string(port);
+            
+            findings.push_back(create_finding(title, description, evidence, "high"));
         }
     }
     
@@ -325,9 +323,22 @@ bool parse_args(int argc, char* argv[]) {
     if (!get_env_var("CERT_X_GEN_MODE").empty()) {
         json_output = true;
     }
+
+    std::string ctx = get_env_var("CERT_X_GEN_CONTEXT");
+    if (!ctx.empty()) {
+        context_data["raw_context"] = ctx;
+    }
+    std::string add_ports = get_env_var("CERT_X_GEN_ADD_PORTS");
+    if (!add_ports.empty()) {
+        context_data["add_ports"] = add_ports;
+    }
+    std::string override_ports = get_env_var("CERT_X_GEN_OVERRIDE_PORTS");
+    if (!override_ports.empty()) {
+        context_data["override_ports"] = override_ports;
+    }
     
     if (target_host.empty()) {
-        std::cerr << "Error: No target specified\n";
+        std::cerr << "Error: No target specified" << std::endl;
         return false;
     }
     

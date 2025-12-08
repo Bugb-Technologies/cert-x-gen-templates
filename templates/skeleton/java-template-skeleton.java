@@ -62,6 +62,7 @@ public class Template {
     private static String targetHost = "";
     private static int targetPort = 80;
     private static boolean jsonOutput = false;
+    private static Map<String, String> contextData = new HashMap<>();
     
     // ========================================
     // HELPER FUNCTIONS
@@ -238,21 +239,18 @@ public class Template {
     
     private static List<Finding> executeScan() {
         List<Finding> findings = new ArrayList<>();
-        List<Integer> ports = getPortsToScan();
-        
-        for (int port : ports) {
-            String response = testHttpEndpoint(targetHost, port);
-            if (response != null && checkVulnerability(response)) {
-                Map<String, String> evidence = new HashMap<>();
-                evidence.put("endpoint", "http://" + targetHost + ":" + port);
-                evidence.put("response_size", String.valueOf(response.length()));
-                evidence.put("status", "vulnerable");
-                
-                String title = "Potential Vulnerability on " + targetHost + ":" + port;
-                String description = "Found potential vulnerability indicators on " + targetHost + ":" + port;
-                
-                findings.add(createFinding(title, description, evidence, "high"));
-            }
+        int port = targetPort;
+        String response = testHttpEndpoint(targetHost, port);
+        if (response != null && checkVulnerability(response)) {
+            Map<String, String> evidence = new HashMap<>();
+            evidence.put("endpoint", "http://" + targetHost + ":" + port);
+            evidence.put("response_size", String.valueOf(response.length()));
+            evidence.put("status", "vulnerable");
+            
+            String title = "Potential Vulnerability on " + targetHost + ":" + port;
+            String description = "Found potential vulnerability indicators on " + targetHost + ":" + port;
+            
+            findings.add(createFinding(title, description, evidence, "high"));
         }
         
         return findings;
@@ -336,6 +334,19 @@ public class Template {
         
         if (getEnvVar("CERT_X_GEN_MODE") != null) {
             jsonOutput = true;
+        }
+        
+        String ctx = getEnvVar("CERT_X_GEN_CONTEXT");
+        if (ctx != null && !ctx.isEmpty()) {
+            contextData.put("raw_context", ctx);
+        }
+        String addPorts = getEnvVar("CERT_X_GEN_ADD_PORTS");
+        if (addPorts != null && !addPorts.isEmpty()) {
+            contextData.put("add_ports", addPorts);
+        }
+        String overridePorts = getEnvVar("CERT_X_GEN_OVERRIDE_PORTS");
+        if (overridePorts != null && !overridePorts.isEmpty()) {
+            contextData.put("override_ports", overridePorts);
         }
         
         if (targetHost.isEmpty()) {

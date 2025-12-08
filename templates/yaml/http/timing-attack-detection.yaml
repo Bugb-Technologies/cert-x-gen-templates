@@ -13,9 +13,19 @@ tags:
   - blind-sqli
   - timing-attack
   - database
+  - time-based
+  - web
 
 language: yaml
 confidence: 80
+
+cwe:
+  - CWE-89
+
+references:
+  - https://cwe.mitre.org/data/definitions/89.html
+  - https://owasp.org/www-community/attacks/Blind_SQL_Injection
+  - https://portswigger.net/web-security/sql-injection/blind
 
 # HTTP request specifications
 http:

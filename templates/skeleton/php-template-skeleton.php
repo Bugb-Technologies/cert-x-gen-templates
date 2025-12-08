@@ -71,12 +71,14 @@ class CertXGenTemplate {
     private $target_host;
     private $target_port;
     private $json_output;
+    private $context;
     
     public function __construct() {
         $this->config = new TemplateConfig();
         $this->target_host = null;
         $this->target_port = 80;
         $this->json_output = false;
+        $this->context = [];
     }
     
     // ========================================
@@ -214,22 +216,20 @@ class CertXGenTemplate {
     
     private function executeScan() {
         $findings = [];
-        $ports = $this->getPortsToScan();
+        $port = $this->target_port;
         
-        foreach ($ports as $port) {
-            $response = $this->testHttpEndpoint($this->target_host, $port);
-            if ($response && $this->checkVulnerability($response)) {
-                $evidence = [
-                    'endpoint' => "http://{$this->target_host}:{$port}",
-                    'response_size' => strlen($response),
-                    'status' => 'vulnerable'
-                ];
-                
-                $title = "Potential Vulnerability on {$this->target_host}:{$port}";
-                $description = "Found potential vulnerability indicators on {$this->target_host}:{$port}";
-                
-                $findings[] = $this->createFinding($title, $description, $evidence, 'high');
-            }
+        $response = $this->testHttpEndpoint($this->target_host, $port);
+        if ($response && $this->checkVulnerability($response)) {
+            $evidence = [
+                'endpoint' => "http://{$this->target_host}:{$port}",
+                'response_size' => strlen($response),
+                'status' => 'vulnerable'
+            ];
+            
+            $title = "Potential Vulnerability on {$this->target_host}:{$port}";
+            $description = "Found potential vulnerability indicators on {$this->target_host}:{$port}";
+            
+            $findings[] = $this->createFinding($title, $description, $evidence, 'high');
         }
         
         return $findings;
@@ -293,6 +293,27 @@ class CertXGenTemplate {
         
         if ($this->getEnvVar('CERT_X_GEN_MODE')) {
             $this->json_output = true;
+        }
+
+        if ($ctx = $this->getEnvVar('CERT_X_GEN_CONTEXT')) {
+            $decoded = json_decode($ctx, true);
+            if (is_array($decoded)) {
+                $this->context = $decoded;
+            }
+        }
+
+        if ($add = $this->getEnvVar('CERT_X_GEN_ADD_PORTS')) {
+            if (!is_array($this->context)) {
+                $this->context = [];
+            }
+            $this->context['add_ports'] = $add;
+        }
+
+        if ($override = $this->getEnvVar('CERT_X_GEN_OVERRIDE_PORTS')) {
+            if (!is_array($this->context)) {
+                $this->context = [];
+            }
+            $this->context['override_ports'] = $override;
         }
         
         if (!$this->target_host) {

@@ -42,6 +42,7 @@ my %config = (
 my $target_host = '';
 my $target_port = 80;
 my $json_output = 0;
+my %context_data;
 
 # ========================================
 # HELPER FUNCTIONS
@@ -161,21 +162,19 @@ sub create_finding {
 
 sub execute_scan {
     my @findings;
-    my @ports = get_ports_to_scan();
-    
-    for my $port (@ports) {
-        my $response = test_http_endpoint($target_host, $port);
-        next unless $response && check_vulnerability($response);
-        
+    my $port = $target_port;
+
+    my $response = test_http_endpoint($target_host, $port);
+    if ($response && check_vulnerability($response)) {
         my $evidence = {
             endpoint => "http://$target_host:$port",
             response_size => length($response),
             status => 'vulnerable'
         };
-        
+
         my $title = "Potential Vulnerability on $target_host:$port";
         my $description = "Found potential vulnerability indicators on $target_host:$port";
-        
+
         push @findings, create_finding($title, $description, $evidence, 'high');
     }
     
@@ -219,6 +218,16 @@ sub parse_args {
     $target_port = int($port_str) if $port_str && $port_str =~ /^\d+$/;
     
     $json_output = 1 if get_env_var('CERT_X_GEN_MODE');
+
+    if (my $ctx = get_env_var('CERT_X_GEN_CONTEXT')) {
+        $context_data{raw_context} = $ctx;
+    }
+    if (my $add = get_env_var('CERT_X_GEN_ADD_PORTS')) {
+        $context_data{add_ports} = $add;
+    }
+    if (my $override = get_env_var('CERT_X_GEN_OVERRIDE_PORTS')) {
+        $context_data{override_ports} = $override;
+    }
     
     unless ($target_host) {
         print STDERR "Error: No target specified\n";

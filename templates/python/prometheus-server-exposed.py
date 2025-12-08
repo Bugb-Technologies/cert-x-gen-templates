@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """
-Prometheus Server Exposed Without Authentication
+CERT-X-GEN Prometheus Server Exposed Template
 
-Detects exposed Prometheus server instances by checking multiple endpoints:
-- /metrics - Metrics endpoint
-- /api/v1/targets - Active targets
-- /api/v1/rules - Alert rules
-- /api/v1/alerts - Active alerts
-- /graph - Web UI
-- /targets - Legacy targets page
-
-Author: CERT-X-GEN Security Team
-Severity: High
-CWE: CWE-200 (Information Exposure)
+Template Metadata:
+  ID: prometheus-server-exposed
+  Name: Prometheus Server Exposed
+  Author: CERT-X-GEN Security Team
+  Severity: high
+  Description: Detects exposed Prometheus server instances accessible without authentication,
+               revealing all collected metrics, targets, and monitoring configuration. Provides
+               comprehensive view of monitored infrastructure and services.
+  Tags: prometheus, monitoring, metrics, information-disclosure, time-series
+  Language: python
+  CWE: CWE-306 (Missing Authentication for Critical Function)
+  References:
+    - https://cwe.mitre.org/data/definitions/306.html
+    - https://prometheus.io/docs/prometheus/latest/security/
+    - https://prometheus.io/docs/operating/security/
 """
 
 import json

@@ -1,21 +1,24 @@
-/*!
- * CERT-X-GEN Rust Template Skeleton
- * 
- * This is a skeleton template for writing security scanning templates in Rust.
- * Copy this file and customize it for your specific security check.
- * 
- * Template Metadata:
- *   ID: template-skeleton
- *   Name: Rust Template Skeleton
- *   Author: Your Name
- *   Severity: high
- *   Tags: skeleton, example
- *   Language: rust
- * 
- * Compilation:
- *   rustc template.rs -o template
- *   ./template --target example.com --json
- */
+//! CERT-X-GEN Rust Template Skeleton
+//!
+//! Template Metadata:
+//!   ID: rust-template-skeleton
+//!   Name: Rust Template Skeleton
+//!   Author: CERT-X-GEN Security Team
+//!   Severity: info
+//!   Description: Skeleton template for writing security scanning templates in Rust.
+//!                Copy this file and customize it for your specific security check.
+//!                Includes HTTP request handling, JSON output, and finding reporting.
+//!   Tags: skeleton, example, template, documentation, rust
+//!   Language: rust
+//!   CWE: CWE-1008 (Architectural Concepts)
+//!   References:
+//!     - https://cwe.mitre.org/data/definitions/1008.html
+//!     - https://github.com/cert-x-gen/templates
+//!     - https://docs.rs/reqwest/
+//!
+//! Compilation:
+//!   rustc template.rs -o template
+//!   ./template --target example.com --json
 
 use std::collections::HashMap;
 use std::env;
@@ -124,6 +127,7 @@ struct CertXGenTemplate {
     target: String,
     port: u16,
     json_output: bool,
+    context: HashMap<String, String>,
 }
 
 impl CertXGenTemplate {
@@ -133,6 +137,7 @@ impl CertXGenTemplate {
             target: String::new(),
             port: 80,
             json_output: false,
+            context: HashMap::new(),
         }
     }
     
@@ -332,6 +337,18 @@ impl CertXGenTemplate {
         
         if env::var("CERT_X_GEN_MODE").unwrap_or_default() == "engine" {
             self.json_output = true;
+        }
+
+        if let Ok(ctx) = env::var("CERT_X_GEN_CONTEXT") {
+            self.context.insert("raw_context".to_string(), ctx);
+        }
+
+        if let Ok(add) = env::var("CERT_X_GEN_ADD_PORTS") {
+            self.context.insert("add_ports".to_string(), add);
+        }
+
+        if let Ok(override_ports) = env::var("CERT_X_GEN_OVERRIDE_PORTS") {
+            self.context.insert("override_ports".to_string(), override_ports);
         }
         
         if self.target.is_empty() {

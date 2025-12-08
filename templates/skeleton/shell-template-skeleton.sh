@@ -1,17 +1,22 @@
 #!/bin/bash
-################################################################################
+#
 # CERT-X-GEN Shell Template Skeleton
 #
-# This is a skeleton template for writing security scanning templates in Bash.
-# Copy this file and customize it for your specific security check.
-#
 # Template Metadata:
-#   ID: template-skeleton
+#   ID: shell-template-skeleton
 #   Name: Shell Template Skeleton
-#   Author: Your Name
-#   Severity: high
-#   Tags: skeleton, example
+#   Author: CERT-X-GEN Security Team
+#   Severity: info
+#   Description: Skeleton template for writing security scanning templates in Bash/Shell.
+#                Copy this file and customize it for your specific security check.
+#                Includes HTTP request handling, JSON output, and finding reporting.
+#   Tags: skeleton, example, template, documentation, shell, bash
 #   Language: shell
+#   CWE: CWE-1008 (Architectural Concepts)
+#   References:
+#     - https://cwe.mitre.org/data/definitions/1008.html
+#     - https://github.com/cert-x-gen/templates
+#     - https://www.gnu.org/software/bash/manual/
 ################################################################################
 
 # ========================================
@@ -24,6 +29,10 @@ SEVERITY="high"  # critical, high, medium, low, info
 CONFIDENCE=90
 TAGS="skeleton,example"
 CWE="CWE-XXX"
+
+CONTEXT_JSON="${CERT_X_GEN_CONTEXT:-}"
+ADD_PORTS_ENV="${CERT_X_GEN_ADD_PORTS:-}"
+OVERRIDE_PORTS_ENV="${CERT_X_GEN_OVERRIDE_PORTS:-}"
 
 # ========================================
 # COLORS AND OUTPUT HELPERS

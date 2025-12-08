@@ -16,10 +16,19 @@ tags:
   - apache
   - unauthenticated
   - distributed-systems
-  - cwe-306
+  - coordination
+  - network
 
 language: yaml
 confidence: 95
+
+cwe:
+  - CWE-306
+
+references:
+  - https://cwe.mitre.org/data/definitions/306.html
+  - https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html#sc_ZooKeeperAccessControl
+  - https://cwiki.apache.org/confluence/display/ZOOKEEPER/Zookeeper+and+SASL
 
 network:
   - protocol: tcp
@@ -59,6 +68,25 @@ network:
           - "Zookeeper version: \\d+\\.\\d+\\.\\d+"
           - "Mode: (standalone|leader|follower)"
           - "Node count: \\d+"
+      
+      # Matchers for "dump" command output
+      - type: word
+        words:
+          - "SessionTracker dump"
+          - "Session Sets"
+          - "ephemeral nodes dump"
+          - "Sessions with Ephemerals"
+        condition: or
+        part: body
+      
+      - type: regex
+        regex:
+          - "SessionTracker dump:"
+          - "Session Sets \\(\\d+\\):"
+          - "ephemeral nodes dump:"
+          - "Sessions with Ephemerals \\(\\d+\\):"
+        condition: or
+        part: body
 
 http:
   - method: GET
