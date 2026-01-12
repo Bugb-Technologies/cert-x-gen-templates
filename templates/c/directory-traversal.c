@@ -1,21 +1,15 @@
 /*
- * CERT-X-GEN Directory Traversal Detection Template
- * 
- * Template Metadata:
- *   ID: directory-traversal
- *   Name: Directory Traversal Detection
- *   Author: CERT-X-GEN Security Team
- *   Severity: high
- *   Description: Detects directory traversal vulnerabilities that allow attackers to access
- *                files and directories outside the intended directory structure using path
- *                manipulation techniques. Tests multiple encoding methods and common parameters.
- *   Tags: directory-traversal, path-traversal, file-inclusion, lfi, owasp-a01
- *   Language: c
- *   CWE: CWE-22 (Improper Limitation of a Pathname to a Restricted Directory)
- *   References:
- *     - https://cwe.mitre.org/data/definitions/22.html
- *     - https://owasp.org/www-community/attacks/Path_Traversal
- *     - https://portswigger.net/web-security/file-path-traversal
+ * @id: directory-traversal
+ * @name: Directory Traversal Detection
+ * @author: CERT-X-GEN Security Team
+ * @severity: high
+ * @description: Detects directory traversal vulnerabilities allowing unauthorized file access
+ * @tags: directory-traversal, path-traversal, file-inclusion, lfi, cwe-22
+ * @cwe: CWE-22
+ * @cvss: 7.5
+ * @references: https://cwe.mitre.org/data/definitions/22.html, https://owasp.org/www-community/attacks/Path_Traversal
+ * @confidence: 90
+ * @version: 1.0.0
  */
 
 #include <stdio.h>
@@ -429,13 +423,13 @@ char* get_env_var(const char* name) {
 // Parse arguments
 int parse_args(int argc, char* argv[]) {
     // Initialize default config
-    strcpy(config.id, "directory-traversal");
-    strcpy(config.name, "Directory Traversal Detection");
-    strcpy(config.author, "CERT-X-GEN Team");
-    strcpy(config.severity, "high");
+    strncpy(config.id, "directory-traversal", sizeof(config.id) - 1);
+    strncpy(config.name, "Directory Traversal Detection", sizeof(config.name) - 1);
+    strncpy(config.author, "CERT-X-GEN Team", sizeof(config.author) - 1);
+    strncpy(config.severity, "high", sizeof(config.severity) - 1);
     config.confidence = 85;
-    strcpy(config.tags, "directory-traversal,path-traversal,file-inclusion");
-    strcpy(config.cwe, "CWE-22");
+    strncpy(config.tags, "directory-traversal,path-traversal,file-inclusion", sizeof(config.tags) - 1);
+    strncpy(config.cwe, "CWE-22", sizeof(config.cwe) - 1);
     
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {

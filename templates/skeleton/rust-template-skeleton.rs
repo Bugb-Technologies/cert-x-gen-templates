@@ -1,24 +1,23 @@
 //! CERT-X-GEN Rust Template Skeleton
 //!
-//! Template Metadata:
-//!   ID: rust-template-skeleton
-//!   Name: Rust Template Skeleton
-//!   Author: CERT-X-GEN Security Team
-//!   Severity: info
-//!   Description: Skeleton template for writing security scanning templates in Rust.
-//!                Copy this file and customize it for your specific security check.
-//!                Includes HTTP request handling, JSON output, and finding reporting.
-//!   Tags: skeleton, example, template, documentation, rust
-//!   Language: rust
-//!   CWE: CWE-1008 (Architectural Concepts)
-//!   References:
-//!     - https://cwe.mitre.org/data/definitions/1008.html
-//!     - https://github.com/cert-x-gen/templates
-//!     - https://docs.rs/reqwest/
+//! @id: rust-template-skeleton
+//! @name: Rust Template Skeleton
+//! @author: CERT-X-GEN Security Team
+//! @severity: info
+//! @description: Skeleton template for writing security scanning templates in Rust. Copy this file and customize it for your specific security check.
+//! @tags: skeleton, example, template, rust
+//! @cwe: CWE-1008
+//! @confidence: 90
+//! @references: https://cwe.mitre.org/data/definitions/1008.html, https://github.com/cert-x-gen/templates
 //!
 //! Compilation:
 //!   rustc template.rs -o template
 //!   ./template --target example.com --json
+//!
+//! When run by CERT-X-GEN engine, environment variables are set:
+//!   CERT_X_GEN_TARGET_HOST - Target host/IP
+//!   CERT_X_GEN_TARGET_PORT - Target port
+//!   CERT_X_GEN_MODE=engine - Indicates engine mode (JSON output required)
 
 use std::collections::HashMap;
 use std::env;

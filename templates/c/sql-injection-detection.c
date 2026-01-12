@@ -1,28 +1,15 @@
 /*
- * CERT-X-GEN SQL Injection Detection Template
- * 
- * Template Metadata:
- *   ID: sql-injection-detection-c
- *   Name: SQL Injection Detection
- *   Author: CERT-X-GEN Security Team
- *   Severity: critical
- *   Description: Detects SQL injection vulnerabilities through error-based and blind injection
- *                techniques, identifying improper input validation in database queries. Tests
- *                multiple SQL dialects and injection vectors.
- *   Tags: sql-injection, injection, database, sqli, owasp-a03, web
- *   Language: c
- *   CWE: CWE-89 (Improper Neutralization of Special Elements used in an SQL Command)
- *   References:
- *     - https://cwe.mitre.org/data/definitions/89.html
- *     - https://owasp.org/www-community/attacks/SQL_Injection
- *     - https://portswigger.net/web-security/sql-injection
- * 
- * Compilation:
- *   gcc sql-injection-detection.c -o sql-injection-detection -O2 -std=c11 -lcurl -ljson-c
- * 
- * Dependencies:
- *   - libcurl (for HTTP requests)
- *   - json-c (for JSON parsing)
+ * @id: sql-injection-detection-c
+ * @name: SQL Injection Detection
+ * @author: CERT-X-GEN Security Team
+ * @severity: critical
+ * @description: Detects SQL injection vulnerabilities through error-based and blind injection techniques
+ * @tags: sql-injection, injection, database, sqli, cwe-89, web
+ * @cwe: CWE-89
+ * @cvss: 9.8
+ * @references: https://cwe.mitre.org/data/definitions/89.html, https://owasp.org/www-community/attacks/SQL_Injection
+ * @confidence: 90
+ * @version: 1.0.0
  */
 
 #include <stdio.h>
@@ -362,13 +349,13 @@ char* get_env_var(const char* name) {
 // Parse arguments
 int parse_args(int argc, char* argv[]) {
     // Initialize default config
-    strcpy(config.id, "sql-injection-detection");
-    strcpy(config.name, "SQL Injection Detection");
-    strcpy(config.author, "CERT-X-GEN Team");
-    strcpy(config.severity, "high");
+    strncpy(config.id, "sql-injection-detection", sizeof(config.id) - 1);
+    strncpy(config.name, "SQL Injection Detection", sizeof(config.name) - 1);
+    strncpy(config.author, "CERT-X-GEN Team", sizeof(config.author) - 1);
+    strncpy(config.severity, "high", sizeof(config.severity) - 1);
     config.confidence = 85;
-    strcpy(config.tags, "sql-injection,database,web");
-    strcpy(config.cwe, "CWE-89");
+    strncpy(config.tags, "sql-injection,database,web", sizeof(config.tags) - 1);
+    strncpy(config.cwe, "CWE-89", sizeof(config.cwe) - 1);
     
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {

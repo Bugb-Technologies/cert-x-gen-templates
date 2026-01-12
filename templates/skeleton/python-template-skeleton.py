@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
-"""
-CERT-X-GEN Python Template Skeleton
-
-Template Metadata:
-  ID: python-template-skeleton
-  Name: Python Template Skeleton
-  Author: CERT-X-GEN Security Team
-  Severity: info
-  Description: Skeleton template for writing security scanning templates in Python.
-               Copy this file and customize it for your specific security check.
-               Includes HTTP request handling, JSON output, and finding reporting.
-  Tags: skeleton, example, template, documentation, python
-  Language: python
-  CWE: CWE-1008 (Architectural Concepts)
-  References:
-    - https://cwe.mitre.org/data/definitions/1008.html
-    - https://github.com/cert-x-gen/templates
-    - https://docs.python.org/3/library/urllib.request.html
-"""
+# CERT-X-GEN Python Template Skeleton
+#
+# @id: python-template-skeleton
+# @name: Python Template Skeleton
+# @author: CERT-X-GEN Security Team
+# @severity: info
+# @description: Skeleton template for writing security scanning templates in Python. Copy this file and customize it for your specific security check.
+# @tags: skeleton, example, template, python
+# @cwe: CWE-1008
+# @confidence: 90
+# @references: https://cwe.mitre.org/data/definitions/1008.html, https://github.com/cert-x-gen/templates
+#
+# Usage:
+#   python3 template.py <target> [--port 80] [--json]
+#   python3 template.py example.com --port 443 --json
+#
+# When run by CERT-X-GEN engine, environment variables are set:
+#   CERT_X_GEN_TARGET_HOST - Target host/IP
+#   CERT_X_GEN_TARGET_PORT - Target port
+#   CERT_X_GEN_MODE=engine - Indicates engine mode (JSON output required)
+#
 
 import json
 import sys

@@ -103,8 +103,3 @@ remediation: |
   4. Configure TLS/SSL for the exporter endpoint
   5. Disable unnecessary metrics that expose sensitive information
   6. Use Prometheus service discovery instead of exposing exporters publicly
-
-references:
-  - "https://github.com/oliver006/redis_exporter#security"
-  - "https://prometheus.io/docs/operating/security/"
-  - "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"

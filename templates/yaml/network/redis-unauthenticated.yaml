@@ -91,8 +91,3 @@ remediation: |
   3. Use Redis ACLs (Redis 6+) for fine-grained access control
   4. Enable TLS encryption for network traffic
   5. Disable dangerous commands: rename-command CONFIG ""
-
-references:
-  - "https://redis.io/docs/management/security/"
-  - "https://owasp.org/www-community/vulnerabilities/Unauthenticated_Access"
-  - "CWE-306: Missing Authentication for Critical Function"

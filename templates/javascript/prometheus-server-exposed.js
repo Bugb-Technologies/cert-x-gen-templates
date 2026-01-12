@@ -1,17 +1,22 @@
 #!/usr/bin/env node
+// @id: prometheus-server-exposed
+// @name: Prometheus Server Exposed Without Authentication
+// @author: CERT-X-GEN Security Team
+// @severity: high
+// @description: Detects exposed Prometheus server instances revealing targets, rules, alerts and metrics
+// @tags: prometheus, monitoring, api, information-disclosure, cwe-200
+// @cwe: CWE-200
+// @cvss: 7.5
+// @references: https://cwe.mitre.org/data/definitions/200.html, https://prometheus.io/docs/prometheus/latest/security/
+// @confidence: 95
+// @version: 1.0.0
 /**
- * Prometheus Server Exposed Without Authentication
- * 
  * Detects exposed Prometheus server instances by checking multiple API endpoints:
  * - /api/v1/targets - Active targets configuration
  * - /api/v1/rules - Alert rules
  * - /api/v1/alerts - Active alerts
  * - /metrics - Metrics endpoint
  * - /graph - Web UI
- * 
- * Author: CERT-X-GEN Security Team
- * Severity: High to Critical
- * CWE: CWE-200 (Information Exposure)
  */
 
 const http = require('http');

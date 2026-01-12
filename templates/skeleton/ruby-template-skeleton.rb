@@ -1,25 +1,25 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-
 #
 # CERT-X-GEN Ruby Template Skeleton
-# 
-# This is a skeleton template for writing security scanning templates in Ruby.
-# Copy this file and customize it for your specific security check.
-# 
-# Template Metadata:
-#   ID: template-skeleton
-#   Name: Ruby Template Skeleton
-#   Author: Your Name
-#   Severity: high
-#   Tags: skeleton, example
-#   Language: ruby
-# 
+#
+# @id: ruby-template-skeleton
+# @name: Ruby Template Skeleton
+# @author: CERT-X-GEN Security Team
+# @severity: info
+# @description: Skeleton template for writing security scanning templates in Ruby. Copy this file and customize it for your specific security check.
+# @tags: skeleton, example, template, ruby
+# @cwe: CWE-1008
+# @confidence: 90
+# @references: https://cwe.mitre.org/data/definitions/1008.html, https://github.com/cert-x-gen/templates
+#
 # Execution:
 #   ruby template.rb --target example.com --json
-# 
-# Dependencies:
-#   - Ruby standard library (net/http, json, etc.)
+#
+# When run by CERT-X-GEN engine, environment variables are set:
+#   CERT_X_GEN_TARGET_HOST - Target host/IP
+#   CERT_X_GEN_TARGET_PORT - Target port
+#   CERT_X_GEN_MODE=engine - Indicates engine mode (JSON output required)
 #
 
 require 'net/http'

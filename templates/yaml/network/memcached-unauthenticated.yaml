@@ -109,9 +109,3 @@ remediation: |
   6. Monitor for unusual traffic patterns
   
   7. Regularly update Memcached to latest version
-
-references:
-  - "https://github.com/memcached/memcached/wiki/SASLHowto"
-  - "https://www.cvedetails.com/vulnerability-list/vendor_id-14636/Memcached.html"
-  - "CWE-306: Missing Authentication for Critical Function"
-  - "CVE-2018-1000115: Memcached UDP Amplification"

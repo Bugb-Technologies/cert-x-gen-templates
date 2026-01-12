@@ -1,22 +1,15 @@
 #!/bin/bash
-#
-# CERT-X-GEN Apache Kafka Unauthenticated Access Detection Template
-#
-# Template Metadata:
-#   ID: kafka-unauthenticated
-#   Name: Apache Kafka Unauthenticated Access Detection
-#   Author: CERT-X-GEN Security Team
-#   Severity: high
-#   Description: Detects Apache Kafka brokers accessible without authentication, exposing
-#                message streams, topics, and allowing unauthorized data access. Tests broker
-#                connectivity, topic enumeration, consumer groups, and admin API access.
-#   Tags: kafka, message-queue, streaming, authentication, apache, messaging
-#   Language: shell
-#   CWE: CWE-306 (Missing Authentication for Critical Function)
-#   References:
-#     - https://cwe.mitre.org/data/definitions/306.html
-#     - https://kafka.apache.org/documentation/#security
-#     - https://docs.confluent.io/platform/current/security/index.html
+# @id: kafka-unauthenticated
+# @name: Apache Kafka Unauthenticated Access Detection
+# @author: CERT-X-GEN Security Team
+# @severity: high
+# @description: Detects Apache Kafka brokers accessible without authentication, exposing message streams and topics
+# @tags: kafka, apache, messaging, unauthenticated, streaming, cwe-306
+# @cwe: CWE-306
+# @cvss: 8.6
+# @references: https://cwe.mitre.org/data/definitions/306.html, https://kafka.apache.org/documentation/#security
+# @confidence: 90
+# @version: 1.0.0
 ################################################################################
 
 set -e

@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
+# @id: redis-exporter-exposed
+# @name: Redis Exporter Metrics Exposed
+# @author: CERT-X-GEN Security Team
+# @severity: high
+# @description: Detects exposed Prometheus Redis Exporter instances revealing Redis metrics and configuration
+# @tags: redis, prometheus, exporter, metrics, cache, information-disclosure, cwe-200
+# @cwe: CWE-200
+# @cvss: 7.5
+# @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/oliver006/redis_exporter
+# @confidence: 95
+# @version: 1.0.0
 """
-CERT-X-GEN Redis Exporter Metrics Exposed Template
-
-Template Metadata:
-  ID: redis-exporter-exposed
-  Name: Redis Exporter Metrics Exposed
-  Author: CERT-X-GEN Security Team
-  Severity: high
-  Description: Detects exposed Prometheus Redis Exporter instances that reveal Redis
-               database metrics, memory usage, and configuration without authentication.
-               Exposes sensitive operational data useful for reconnaissance.
-  Tags: redis, prometheus, exporter, metrics, cache, information-disclosure
-  Language: python
-  CWE: CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor)
-  References:
-    - https://cwe.mitre.org/data/definitions/200.html
-    - https://github.com/oliver006/redis_exporter
-    - https://redis.io/docs/management/security/
+Detects exposed Prometheus Redis Exporter instances that reveal Redis
+database metrics, memory usage, and configuration.
 """
 
 import json

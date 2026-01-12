@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
+# @id: rabbitmq-default-credentials
+# @name: RabbitMQ Default Credentials Detection
+# @author: CERT-X-GEN Security Team
+# @severity: critical
+# @description: Detects RabbitMQ instances using default credentials (guest/guest), allowing unauthorized access to queues and messages
+# @tags: rabbitmq, message-queue, default-credentials, authentication, amqp, cwe-798
+# @cwe: CWE-798
+# @cvss: 9.8
+# @references: https://cwe.mitre.org/data/definitions/798.html, https://www.rabbitmq.com/access-control.html
+# @confidence: 95
+# @version: 1.0.0
 """
 CERT-X-GEN RabbitMQ Default Credentials Template
 
-Template Metadata:
-  ID: rabbitmq-default-credentials
-  Name: RabbitMQ Default Credentials
-  Author: CERT-X-GEN Security Team
-  Severity: critical
-  Description: Detects RabbitMQ message broker instances using default credentials (guest/guest),
-               allowing unauthorized access to queues, exchanges, and message data. Tests common
-               default credentials and authentication bypass.
-  Tags: rabbitmq, message-queue, default-credentials, authentication, amqp
-  Language: python
-  CWE: CWE-798 (Use of Hard-coded Credentials)
-  References:
-    - https://cwe.mitre.org/data/definitions/798.html
-    - https://www.rabbitmq.com/access-control.html
-    - https://www.rabbitmq.com/production-checklist.html
+Detects RabbitMQ message broker instances using default credentials (guest/guest),
+allowing unauthorized access to queues, exchanges, and message data.
 """
 
 import json

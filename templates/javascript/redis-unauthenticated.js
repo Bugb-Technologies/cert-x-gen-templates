@@ -1,7 +1,16 @@
 #!/usr/bin/env node
+// @id: redis-unauthenticated-javascript
+// @name: Redis Unauthenticated Access Detection (JavaScript)
+// @author: CERT-X-GEN Security Team
+// @severity: critical
+// @description: Detects Redis instances exposed without authentication using JavaScript
+// @tags: redis, unauthenticated, database, nosql, cwe-306
+// @cwe: CWE-306
+// @cvss: 9.8
+// @references: https://redis.io/docs/management/security/, https://cwe.mitre.org/data/definitions/306.html
+// @confidence: 95
+// @version: 1.0.0
 /**
- * Redis Unauthenticated Access Detection - JavaScript Template
- * 
  * Tests for Redis instances exposed without authentication.
  */
 

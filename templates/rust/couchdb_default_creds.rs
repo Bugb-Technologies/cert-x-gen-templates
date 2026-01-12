@@ -1,369 +1,292 @@
-//! CERT-X-GEN CouchDB Default Credentials Detection Template
-//!
-//! Template Metadata:
-//!   ID: couchdb-default-credentials
-//!   Name: CouchDB Default Credentials Detection
-//!   Author: CERT-X-GEN Security Team
-//!   Severity: critical
-//!   Description: Detects CouchDB instances using default administrative credentials or running
-//!                in Party Mode (no authentication), allowing unauthorized database access and
-//!                manipulation. Tests common default credentials and authentication bypass.
-//!   Tags: couchdb, database, default-credentials, nosql, authentication, party-mode
-//!   Language: rust
-//!   CWE: CWE-798 (Use of Hard-coded Credentials)
-//!   References:
-//!     - https://cwe.mitre.org/data/definitions/798.html
-//!     - https://docs.couchdb.org/en/stable/intro/security.html
-//!     - https://owasp.org/www-community/vulnerabilities/Use_of_hard-coded_password
+//! @id: couchdb-default-credentials
+//! @name: CouchDB Default Credentials Detection
+//! @author: CERT-X-GEN Security Team
+//! @severity: critical
+//! @description: Detects CouchDB instances using default credentials or running in Party Mode
+//! @tags: couchdb, database, default-credentials, nosql, authentication
+//! @cwe: CWE-798
+//! @confidence: 95
 
-use reqwest;
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use std::env;
+use std::io::{Read, Write};
+use std::net::TcpStream;
 use std::time::Duration;
 
-pub const TEMPLATE_ID: &str = "couchdb-default-credentials";
-pub const TEMPLATE_NAME: &str = "CouchDB Default Credentials Detection";
-pub const SEVERITY: &str = "critical";
-pub const CONFIDENCE: u8 = 95;
+const TEMPLATE_ID: &str = "couchdb-default-credentials";
+const TIMEOUT_SECS: u64 = 5;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CouchDBInfo {
-    pub couchdb: String,
-    pub version: String,
-    pub git_sha: Option<String>,
-    pub uuid: Option<String>,
-    pub features: Option<Vec<String>>,
+fn escape_json(s: &str) -> String {
+    let mut result = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '"' => result.push_str("\\\""),
+            '\\' => result.push_str("\\\\"),
+            '\n' => result.push_str("\\n"),
+            '\r' => result.push_str("\\r"),
+            '\t' => result.push_str("\\t"),
+            c if c.is_control() => {}
+            c => result.push(c),
+        }
+    }
+    result
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Finding {
-    pub severity: String,
-    pub title: String,
-    pub description: String,
-    pub evidence: Value,
-    pub remediation: String,
-    pub cwe: String,
-    pub cvss_score: f32,
-}
-
-pub struct CouchDBTemplate {
-    client: reqwest::Client,
-    credentials: Vec<(&'static str, &'static str)>,
-}
-
-impl CouchDBTemplate {
-    pub fn new() -> Self {
-        let client = reqwest::Client::builder()
-            .timeout(Duration::from_secs(10))
-            .danger_accept_invalid_certs(true)
-            .build()
-            .expect("Failed to build HTTP client");
+fn base64_encode(input: &str) -> String {
+    const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let bytes = input.as_bytes();
+    let mut result = String::new();
+    
+    for chunk in bytes.chunks(3) {
+        let mut n: u32 = 0;
+        for (i, &b) in chunk.iter().enumerate() {
+            n |= (b as u32) << (16 - 8 * i);
+        }
         
-        // Common default/weak credentials
-        let credentials = vec![
-            ("admin", "admin"),
-            ("admin", "password"),
-            ("admin", "couchdb"),
-            ("couchdb", "couchdb"),
-            ("administrator", "password"),
-            ("", ""),  // No auth (Party Mode)
-        ];
+        let chars = match chunk.len() {
+            3 => 4,
+            2 => 3,
+            1 => 2,
+            _ => 0,
+        };
         
-        Self { client, credentials }
+        for i in 0..chars {
+            let idx = ((n >> (18 - 6 * i)) & 0x3F) as usize;
+            result.push(ALPHABET[idx] as char);
+        }
+        
+        for _ in chars..4 {
+            result.push('=');
+        }
     }
     
-    pub async fn execute(&self, target: &str) -> Vec<Finding> {
-        let mut findings = Vec::new();
-        
-        // Test common CouchDB ports
-        for port in &[5984, 6984] {
-            let scheme = if *port == 6984 { "https" } else { "http" };
-            let base_url = format!("{}://{}:{}", scheme, target, port);
+    result
+}
+
+fn make_http_request(host: &str, port: u16, method: &str, path: &str, auth: Option<(&str, &str)>) -> Option<(u16, String)> {
+    let addr = format!("{}:{}", host, port);
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().ok()?,
+        Duration::from_secs(TIMEOUT_SECS)
+    ).ok()?;
+    
+    stream.set_read_timeout(Some(Duration::from_secs(TIMEOUT_SECS))).ok()?;
+    stream.set_write_timeout(Some(Duration::from_secs(TIMEOUT_SECS))).ok()?;
+    
+    let auth_header = if let Some((user, pass)) = auth {
+        let credentials = format!("{}:{}", user, pass);
+        format!("Authorization: Basic {}\r\n", base64_encode(&credentials))
+    } else {
+        String::new()
+    };
+    
+    let request = format!(
+        "{} {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\nUser-Agent: cert-x-gen/1.0\r\n{}Accept: application/json\r\n\r\n",
+        method, path, host, auth_header
+    );
+    
+    stream.write_all(request.as_bytes()).ok()?;
+    
+    let mut response = String::new();
+    stream.read_to_string(&mut response).ok()?;
+    
+    // Parse status code
+    let status_line = response.lines().next()?;
+    let status_code: u16 = status_line.split_whitespace().nth(1)?.parse().ok()?;
+    
+    // Extract body
+    if let Some(idx) = response.find("\r\n\r\n") {
+        return Some((status_code, response[idx + 4..].to_string()));
+    }
+    
+    None
+}
+
+struct Finding {
+    severity: &'static str,
+    confidence: u8,
+    title: String,
+    description: String,
+    evidence: String,
+}
+
+impl Finding {
+    fn to_json(&self) -> String {
+        format!(
+            r#"{{"template_id":"{}","severity":"{}","confidence":{},"title":"{}","description":"{}","evidence":{},"cwe":"CWE-798","remediation":"Disable Party Mode and change default credentials"}}"#,
+            TEMPLATE_ID,
+            self.severity,
+            self.confidence,
+            escape_json(&self.title),
+            escape_json(&self.description),
+            self.evidence
+        )
+    }
+}
+
+// Default/weak credentials to test
+const CREDENTIALS: &[(&str, &str)] = &[
+    ("admin", "admin"),
+    ("admin", "password"),
+    ("admin", "couchdb"),
+    ("couchdb", "couchdb"),
+    ("administrator", "password"),
+    ("root", "root"),
+];
+
+fn check_party_mode(host: &str, port: u16) -> Option<Finding> {
+    // Try to access /_all_dbs without auth
+    if let Some((status, body)) = make_http_request(host, port, "GET", "/_all_dbs", None) {
+        if status == 200 && body.starts_with('[') {
+            let db_count = body.matches(',').count() + 1;
             
-            // Test 1: Check if Party Mode is enabled (no auth required)
-            if let Some(finding) = self.test_party_mode(&base_url).await {
-                findings.push(finding);
-                // In Party Mode, no need to test credentials
-                continue;
-            }
-            
-            // Test 2: Try default/weak credentials
-            for (username, password) in &self.credentials {
-                if let Some(mut cred_findings) = self.test_credentials(&base_url, username, password).await {
-                    findings.append(&mut cred_findings);
-                    break; // Stop after first successful auth
-                }
-            }
-        }
-        
-        findings
-    }
-    
-    async fn test_party_mode(&self, base_url: &str) -> Option<Finding> {
-        // In Party Mode, anyone can access /_all_dbs without authentication
-        let url = format!("{}/_all_dbs", base_url);
-        
-        match self.client.get(&url).send().await {
-            Ok(response) if response.status().is_success() => {
-                if let Ok(text) = response.text().await {
-                    if text.starts_with('[') {
-                        // Successfully listed databases without auth
-                        let db_count = text.matches(',').count() + 1;
-                        
-                        return Some(Finding {
-                            severity: "critical".to_string(),
-                            title: "CouchDB Party Mode Enabled (No Authentication)".to_string(),
-                            description: format!(
-                                "CouchDB is running in Party Mode - no authentication required. {} databases accessible.",
-                                db_count
-                            ),
-                            evidence: serde_json::json!({
-                                "party_mode": true,
-                                "endpoint": url,
-                                "database_count": db_count,
-                                "authentication_required": false
-                            }),
-                            remediation: get_remediation(),
-                            cwe: "CWE-306".to_string(),
-                            cvss_score: 10.0,
-                        });
-                    }
-                }
-            }
-            _ => {}
-        }
-        
-        None
-    }
-    
-    async fn test_credentials(&self, base_url: &str, username: &str, password: &str) -> Option<Vec<Finding>> {
-        let url = format!("{}/_session", base_url);
-        
-        // Try to authenticate
-        let response = self.client
-            .post(&url)
-            .header("Content-Type", "application/json")
-            .json(&serde_json::json!({
-                "name": username,
-                "password": password
-            }))
-            .send()
-            .await;
-        
-        if let Ok(resp) = response {
-            if resp.status().is_success() {
-                if let Ok(text) = resp.text().await {
-                    if text.contains("\"ok\":true") {
-                        return Some(self.enumerate_with_credentials(base_url, username, password).await);
-                    }
-                }
-            }
-        }
-        
-        // Also try Basic Auth
-        let info_url = format!("{}/", base_url);
-        let response = self.client
-            .get(&info_url)
-            .basic_auth(username, Some(password))
-            .send()
-            .await;
-        
-        if let Ok(resp) = response {
-            if resp.status().is_success() {
-                if let Ok(info) = resp.json::<CouchDBInfo>().await {
-                    return Some(self.enumerate_with_credentials(base_url, username, password).await);
-                }
-            }
-        }
-        
-        None
-    }
-    
-    async fn enumerate_with_credentials(&self, base_url: &str, username: &str, password: &str) -> Vec<Finding> {
-        let mut findings = Vec::new();
-        
-        // Main finding: credentials work
-        findings.push(Finding {
-            severity: "critical".to_string(),
-            title: format!("CouchDB Default/Weak Credentials: {}:{}", username, password),
-            description: format!("Successfully authenticated to CouchDB with credentials {}:{}", username, password),
-            evidence: serde_json::json!({
-                "username": username,
-                "password": password,
-                "endpoint": base_url,
-            }),
-            remediation: get_remediation(),
-            cwe: "CWE-798".to_string(),
-            cvss_score: 9.8,
-        });
-        
-        // Enumerate databases
-        if let Ok(databases) = self.list_databases(base_url, username, password).await {
-            findings.push(Finding {
-                severity: "high".to_string(),
-                title: "CouchDB Database Enumeration".to_string(),
-                description: format!("Successfully enumerated {} databases", databases.len()),
-                evidence: serde_json::json!({
-                    "database_count": databases.len(),
-                    "databases": databases
-                }),
-                remediation: get_remediation(),
-                cwe: "CWE-798".to_string(),
-                cvss_score: 7.5,
+            return Some(Finding {
+                severity: "critical",
+                confidence: 95,
+                title: "CouchDB Party Mode Enabled (No Authentication)".to_string(),
+                description: format!(
+                    "CouchDB on {}:{} is running in Party Mode - no authentication required. {} databases accessible.",
+                    host, port, db_count
+                ),
+                evidence: format!(
+                    r#"{{"party_mode":true,"host":"{}","port":{},"database_count":{}}}"#,
+                    host, port, db_count
+                ),
             });
         }
-        
-        // Check for sensitive databases
-        self.check_sensitive_databases(base_url, username, password, &mut findings).await;
-        
-        // Try to get admin info
-        if let Ok(users) = self.list_users(base_url, username, password).await {
-            findings.push(Finding {
-                severity: "high".to_string(),
-                title: "CouchDB User Enumeration".to_string(),
-                description: format!("Successfully enumerated {} users", users.len()),
-                evidence: serde_json::json!({
-                    "user_count": users.len(),
-                    "users": users
-                }),
-                remediation: get_remediation(),
-                cwe: "CWE-798".to_string(),
-                cvss_score: 7.5,
+    }
+    None
+}
+
+fn check_credentials(host: &str, port: u16, user: &str, pass: &str) -> Option<Finding> {
+    // Try to access root endpoint with credentials
+    if let Some((status, body)) = make_http_request(host, port, "GET", "/", Some((user, pass))) {
+        if status == 200 && body.contains("couchdb") {
+            // Extract version
+            let version = body
+                .split("\"version\"")
+                .nth(1)
+                .and_then(|s| s.split('"').nth(2))
+                .unwrap_or("unknown");
+            
+            return Some(Finding {
+                severity: "critical",
+                confidence: 95,
+                title: format!("CouchDB Default Credentials: {}:{}", user, pass),
+                description: format!(
+                    "Successfully authenticated to CouchDB v{} on {}:{} with credentials {}:{}",
+                    version, host, port, user, pass
+                ),
+                evidence: format!(
+                    r#"{{"host":"{}","port":{},"username":"{}","password":"{}","version":"{}"}}"#,
+                    host, port, user, pass, escape_json(version)
+                ),
             });
         }
-        
-        findings
     }
-    
-    async fn list_databases(&self, base_url: &str, username: &str, password: &str) -> Result<Vec<String>, ()> {
-        let url = format!("{}/_all_dbs", base_url);
-        
-        match self.client
-            .get(&url)
-            .basic_auth(username, Some(password))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                if let Ok(dbs) = resp.json::<Vec<String>>().await {
-                    return Ok(dbs);
-                }
-            }
-            _ => {}
-        }
-        
-        Err(())
-    }
-    
-    async fn check_sensitive_databases(&self, base_url: &str, username: &str, password: &str, findings: &mut Vec<Finding>) {
-        let sensitive_dbs = vec!["_users", "_replicator", "admin", "passwords", "secrets", "credentials"];
-        
-        for db_name in sensitive_dbs {
-            let url = format!("{}/{}", base_url, db_name);
+    None
+}
+
+fn enumerate_databases(host: &str, port: u16, user: &str, pass: &str) -> Option<Finding> {
+    if let Some((status, body)) = make_http_request(host, port, "GET", "/_all_dbs", Some((user, pass))) {
+        if status == 200 && body.starts_with('[') {
+            let db_count = body.matches('"').count() / 2;
             
-            if let Ok(resp) = self.client
-                .get(&url)
-                .basic_auth(username, Some(password))
-                .send()
-                .await
-            {
-                if resp.status().is_success() {
-                    findings.push(Finding {
-                        severity: "critical".to_string(),
-                        title: format!("Sensitive Database Accessible: {}", db_name),
-                        description: format!("Sensitive database '{}' is accessible", db_name),
-                        evidence: serde_json::json!({
-                            "database": db_name,
-                            "accessible": true
-                        }),
-                        remediation: get_remediation(),
-                        cwe: "CWE-798".to_string(),
-                        cvss_score: 9.1,
-                    });
-                }
+            // Check for sensitive databases
+            let sensitive = ["_users", "_replicator", "admin", "passwords", "secrets"];
+            let found_sensitive: Vec<&str> = sensitive.iter()
+                .filter(|db| body.contains(*db))
+                .copied()
+                .collect();
+            
+            if !found_sensitive.is_empty() {
+                return Some(Finding {
+                    severity: "high",
+                    confidence: 90,
+                    title: "CouchDB Sensitive Databases Accessible".to_string(),
+                    description: format!(
+                        "Found {} databases including sensitive: {:?}",
+                        db_count, found_sensitive
+                    ),
+                    evidence: format!(
+                        r#"{{"database_count":{},"sensitive_databases":{:?}}}"#,
+                        db_count, found_sensitive
+                    ),
+                });
             }
+        }
+    }
+    None
+}
+
+fn check_couchdb(host: &str, port: u16) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    
+    // Test 1: Check for Party Mode (no auth)
+    if let Some(finding) = check_party_mode(host, port) {
+        findings.push(finding);
+        
+        // In party mode, enumerate databases without auth
+        if let Some(db_finding) = enumerate_databases(host, port, "", "") {
+            findings.push(db_finding);
+        }
+        
+        return findings;
+    }
+    
+    // Test 2: Try default credentials
+    for (user, pass) in CREDENTIALS {
+        if let Some(finding) = check_credentials(host, port, user, pass) {
+            findings.push(finding);
+            
+            // Enumerate databases with these credentials
+            if let Some(db_finding) = enumerate_databases(host, port, user, pass) {
+                findings.push(db_finding);
+            }
+            
+            break; // Stop after first successful auth
         }
     }
     
-    async fn list_users(&self, base_url: &str, username: &str, password: &str) -> Result<Vec<String>, ()> {
-        let url = format!("{}/_users/_all_docs", base_url);
-        
-        match self.client
-            .get(&url)
-            .basic_auth(username, Some(password))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                if let Ok(json) = resp.json::<Value>().await {
-                    if let Some(rows) = json["rows"].as_array() {
-                        let users: Vec<String> = rows.iter()
-                            .filter_map(|row| row["id"].as_str().map(String::from))
-                            .collect();
-                        return Ok(users);
-                    }
-                }
-            }
-            _ => {}
+    findings
+}
+
+fn main() {
+    // Get target from environment or args
+    let host = env::var("CERT_X_GEN_TARGET_HOST")
+        .ok()
+        .or_else(|| env::args().nth(1))
+        .unwrap_or_default();
+    
+    let port: u16 = env::var("CERT_X_GEN_TARGET_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(5984);
+    
+    if host.is_empty() {
+        eprintln!("Error: No target specified");
+        eprintln!("Set CERT_X_GEN_TARGET_HOST or pass as argument");
+        println!("[]");
+        return;
+    }
+    
+    let mut all_findings = Vec::new();
+    
+    // Check primary port
+    all_findings.extend(check_couchdb(&host, port));
+    
+    // Also check HTTPS port if not already checked
+    let https_port = 6984;
+    if port != https_port {
+        all_findings.extend(check_couchdb(&host, https_port));
+    }
+    
+    // Output JSON
+    print!("[");
+    for (i, finding) in all_findings.iter().enumerate() {
+        if i > 0 {
+            print!(",");
         }
-        
-        Err(())
+        print!("{}", finding.to_json());
     }
-}
-
-fn get_remediation() -> String {
-    r#"
-1. Disable Party Mode - require authentication:
-   [chttpd]
-   require_valid_user = true
-
-2. Change admin password immediately:
-   curl -X PUT http://admin:oldpass@localhost:5984/_node/_local/_config/admins/admin -d '"newpassword"'
-
-3. Create admin user with strong password:
-   curl -X PUT http://localhost:5984/_node/_local/_config/admins/newadmin -d '"strongpassword"'
-
-4. Enable HTTPS/TLS:
-   [ssl]
-   enable = true
-   cert_file = /path/to/cert.pem
-   key_file = /path/to/key.pem
-
-5. Bind to localhost only (if local use):
-   [chttpd]
-   bind_address = 127.0.0.1
-
-6. Use proper authentication:
-   - JWT tokens
-   - OAuth
-   - Proxy authentication
-
-7. Implement database-level permissions
-8. Enable audit logging
-9. Regular security audits
-10. Keep CouchDB updated
-"#.to_string()
-}
-
-#[derive(Serialize)]
-pub struct TemplateMetadata {
-    pub id: String,
-    pub name: String,
-    pub author: String,
-    pub severity: String,
-    pub language: String,
-    pub tags: Vec<String>,
-    pub confidence: u8,
-}
-
-pub fn get_metadata() -> TemplateMetadata {
-    TemplateMetadata {
-        id: TEMPLATE_ID.to_string(),
-        name: TEMPLATE_NAME.to_string(),
-        author: "CERT-X-GEN Security Team".to_string(),
-        severity: SEVERITY.to_string(),
-        language: "rust".to_string(),
-        tags: vec!["couchdb".to_string(), "default-credentials".to_string(), "database".to_string()],
-        confidence: CONFIDENCE,
-    }
+    println!("]");
 }

@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
+# @id: postgresql-exporter-exposed
+# @name: PostgreSQL Exporter Metrics Exposed
+# @author: CERT-X-GEN Security Team
+# @severity: medium
+# @description: Detects exposed Prometheus PostgreSQL Exporter instances revealing database metrics and configuration
+# @tags: postgresql, prometheus, exporter, metrics, database, information-disclosure, cwe-200
+# @cwe: CWE-200
+# @cvss: 5.3
+# @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/prometheus-community/postgres_exporter
+# @confidence: 95
+# @version: 1.0.0
 """
-CERT-X-GEN PostgreSQL Exporter Metrics Exposed Template
-
-Template Metadata:
-  ID: postgresql-exporter-exposed
-  Name: PostgreSQL Exporter Metrics Exposed
-  Author: CERT-X-GEN Security Team
-  Severity: medium
-  Description: Detects exposed Prometheus PostgreSQL Exporter instances that reveal
-               database metrics, query statistics, and configuration information without
-               authentication. Exposes operational data about PostgreSQL databases.
-  Tags: postgresql, prometheus, exporter, metrics, database, information-disclosure
-  Language: python
-  CWE: CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor)
-  References:
-    - https://cwe.mitre.org/data/definitions/200.html
-    - https://github.com/prometheus-community/postgres_exporter
-    - https://www.postgresql.org/docs/current/monitoring-stats.html
+Detects exposed Prometheus PostgreSQL Exporter instances that reveal
+database metrics, query statistics, and configuration information.
 """
 
 import json

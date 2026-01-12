@@ -1,8 +1,15 @@
 #!/bin/bash
-# Etcd Unauthenticated Member List Detection - Shell Template
-#
-# Uses etcdctl to query the member list of an etcd cluster without authentication.
-# If the member list can be retrieved, the etcd endpoint is considered exposed.
+# @id: etcd-unauthenticated
+# @name: Etcd Unauthenticated Member List Detection
+# @author: CERT-X-GEN Security Team
+# @severity: high
+# @description: Detects etcd clusters accessible without authentication using etcdctl member list
+# @tags: etcd, kubernetes, unauthenticated, key-value-store, cwe-306
+# @cwe: CWE-306
+# @cvss: 8.6
+# @references: https://cwe.mitre.org/data/definitions/306.html, https://etcd.io/docs/
+# @confidence: 90
+# @version: 1.0.0
 
 set -e
 

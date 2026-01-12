@@ -47,7 +47,7 @@ metadata:
   false-positive-rate: low
 
 template:
-    timeout: 10s
+  timeout: 10s
   max-redirects: 3
 
 # HTTP request specifications

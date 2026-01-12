@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
+# @id: node-exporter-exposed
+# @name: Node Exporter Metrics Exposed
+# @author: CERT-X-GEN Security Team
+# @severity: medium
+# @description: Detects exposed Prometheus Node Exporter instances revealing system metrics and hardware information
+# @tags: prometheus, node-exporter, metrics, system-info, information-disclosure, cwe-200
+# @cwe: CWE-200
+# @cvss: 5.3
+# @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/prometheus/node_exporter
+# @confidence: 95
+# @version: 1.0.0
 """
-CERT-X-GEN Node Exporter Metrics Exposed Template
-
-Template Metadata:
-  ID: node-exporter-exposed
-  Name: Node Exporter Metrics Exposed
-  Author: CERT-X-GEN Security Team
-  Severity: medium
-  Description: Detects exposed Prometheus Node Exporter instances that reveal system
-               metrics, hardware information, and server configuration without authentication.
-               Provides detailed reconnaissance data about target systems.
-  Tags: prometheus, node-exporter, metrics, system-info, information-disclosure
-  Language: python
-  CWE: CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor)
-  References:
-    - https://cwe.mitre.org/data/definitions/200.html
-    - https://github.com/prometheus/node_exporter
-    - https://prometheus.io/docs/guides/node-exporter/
+Detects exposed Prometheus Node Exporter instances that reveal system
+metrics, hardware information, and server configuration.
 """
 
 import json

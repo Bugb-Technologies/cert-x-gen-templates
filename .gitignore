@@ -1,0 +1,232 @@
+# CERT-X-GEN Templates Repository .gitignore
+
+# =============================================================================
+# Operating System Files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================================================
+# Editor and IDE Files
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+*.bak
+*.tmp
+*.temp
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+.atom/
+.brackets.json
+*.code-workspace
+
+# =============================================================================
+# Python
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+venv/
+ENV/
+env/
+.venv/
+
+# =============================================================================
+# JavaScript / Node.js
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/
+package-lock.json
+yarn.lock
+*.tsbuildinfo
+
+# =============================================================================
+# Go
+# =============================================================================
+*.exe
+*.exe~
+*.dll
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+
+# =============================================================================
+# Rust
+# =============================================================================
+target/
+**/*.rs.bk
+Cargo.lock
+*.rlib
+
+# =============================================================================
+# Java
+# =============================================================================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+target/
+.gradle/
+build/
+out/
+
+# =============================================================================
+# C / C++
+# =============================================================================
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.exe
+*.out
+*.app
+*.dSYM/
+*.su
+*.idb
+*.pdb
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# =============================================================================
+# Ruby
+# =============================================================================
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+.bundle/
+vendor/bundle
+.rvmrc
+.ruby-version
+.ruby-gemset
+Gemfile.lock
+
+# =============================================================================
+# PHP
+# =============================================================================
+/vendor/
+composer.lock
+*.cache
+*.log
+
+# =============================================================================
+# Perl
+# =============================================================================
+/blib/
+/.build/
+_build/
+cover_db/
+inc/
+Build
+Build.bat
+.last_cover_stats
+Makefile
+Makefile.old
+MANIFEST.bak
+META.yml
+META.json
+MYMETA.*
+nytprof.out
+pm_to_blib
+
+# =============================================================================
+# Shell
+# =============================================================================
+*.log
+*.pid
+
+# =============================================================================
+# Template Testing & Output
+# =============================================================================
+*.json.bak
+scan-results*.json
+scan-results*.csv
+scan-results*.sarif
+test-output/
+output/
+results/
+*.output
+*.result
+
+# =============================================================================
+# Disabled Templates (keep in repo but can be excluded if needed)
+# =============================================================================
+# Uncomment to exclude disabled templates from commits:
+# **/_disabled/
+
+# =============================================================================
+# Miscellaneous
+# =============================================================================
+*.log
+*.logs
+logs/
+*.pid
+*.seed
+*.pid.lock
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+!*.example.key
+secrets/
+credentials/
+.cache/

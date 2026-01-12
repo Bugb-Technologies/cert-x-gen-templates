@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
+# @id: mysql-exporter-exposed
+# @name: MySQL Exporter Metrics Exposed
+# @author: CERT-X-GEN Security Team
+# @severity: medium
+# @description: Detects exposed Prometheus MySQL Exporter instances revealing database metrics and configuration without authentication
+# @tags: mysql, prometheus, exporter, metrics, information-disclosure, database, cwe-200
+# @cwe: CWE-200
+# @cvss: 5.3
+# @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/prometheus/mysqld_exporter
+# @confidence: 95
+# @version: 1.0.0
 """
 CERT-X-GEN MySQL Exporter Metrics Exposed Template
 
-Template Metadata:
-  ID: mysql-exporter-exposed
-  Name: MySQL Exporter Metrics Exposed
-  Author: CERT-X-GEN Security Team
-  Severity: medium
-  Description: Detects exposed Prometheus MySQL Exporter instances that reveal database
-               metrics, performance data, and configuration details without authentication.
-               Exposes sensitive operational information about MySQL databases.
-  Tags: mysql, prometheus, exporter, metrics, information-disclosure, database
-  Language: python
-  CWE: CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor)
-  References:
-    - https://cwe.mitre.org/data/definitions/200.html
-    - https://github.com/prometheus/mysqld_exporter
-    - https://prometheus.io/docs/instrumenting/exporters/
+Detects exposed Prometheus MySQL Exporter instances that reveal database
+metrics, performance data, and configuration details without authentication.
 """
 
 import json

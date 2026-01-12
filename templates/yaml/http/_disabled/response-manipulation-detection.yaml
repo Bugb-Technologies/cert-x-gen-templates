@@ -1,4 +1,4 @@
-id: response-manipulation
+id: response-manipulation-detection
 name: "Response Manipulation & Cache Poisoning"
 author:
   name: "CERT-X-GEN Security Team"
@@ -41,7 +41,8 @@ http:
     
     matchers:
       - type: status
-        status: [200]
+        status:
+          - 200
 
   # Test cache poisoning with host header
   - method: GET
@@ -79,39 +80,43 @@ http:
           - "evil.com"
         condition: or
 
-  # Test response size differences (potential DoS)
+  # Test response amplification
   - method: POST
     path:
       - "/search"
       - "/api/query"
     
-    body: "query=AAAAA" # Repeat 'A' many times
+    body: "query=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     
     headers:
       Content-Type: "application/x-www-form-urlencoded"
     
     matchers-condition: or
     matchers:
-      # Large response (amplification)
-      - type: size
-        condition: greater
-        size: 100000
+      # Large response (amplification) - use DSL for size comparison
+      - type: dsl
+        dsl:
+          - "content_length > 100000"
       
-      # Response time issues
-      - type: time
-        condition: greater
-        time: 3s
+      # Slow response (potential DoS) - use DSL for duration
+      - type: dsl
+        dsl:
+          - "duration > 3"
 
-  # Test header injection
+  # Test header injection (CRLF)
   - method: GET
     path:
       - "/?redirect=/%0d%0aSet-Cookie:admin=true"
-      - "/?url=/%0d%0aLocation:evil.com"
+      - "/?url=/%0d%0aLocation:http://evil.com"
     
+    matchers-condition: or
     matchers:
       - type: word
         words:
           - "Set-Cookie"
-          - "Location: evil"
-        condition: or
+        part: header
+      
+      - type: regex
+        regex:
+          - "Location:\\s*http://evil"
         part: header

@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
+# @id: prometheus-server-exposed-https
+# @name: Prometheus Server Exposed (HTTPS)
+# @author: CERT-X-GEN Security Team
+# @severity: high
+# @description: Detects exposed Prometheus server instances over HTTPS without proper authentication
+# @tags: prometheus, monitoring, metrics, https, information-disclosure, tls, cwe-306
+# @cwe: CWE-306
+# @cvss: 7.5
+# @references: https://cwe.mitre.org/data/definitions/306.html, https://prometheus.io/docs/prometheus/latest/security/
+# @confidence: 95
+# @version: 1.0.0
 """
-CERT-X-GEN Prometheus Server Exposed (HTTPS) Template
-
-Template Metadata:
-  ID: prometheus-server-exposed-https
-  Name: Prometheus Server Exposed (HTTPS)
-  Author: CERT-X-GEN Security Team
-  Severity: high
-  Description: Detects exposed Prometheus server instances over HTTPS without proper
-               authentication, revealing metrics and monitoring data despite encrypted transport.
-               Tests HTTPS endpoints for authentication bypass.
-  Tags: prometheus, monitoring, metrics, https, information-disclosure, tls
-  Language: python
-  CWE: CWE-306 (Missing Authentication for Critical Function)
-  References:
-    - https://cwe.mitre.org/data/definitions/306.html
-    - https://prometheus.io/docs/prometheus/latest/security/
-    - https://prometheus.io/docs/prometheus/latest/configuration/https/
+Detects exposed Prometheus server instances over HTTPS without proper
+authentication, revealing metrics and monitoring data.
 """
 
 import json

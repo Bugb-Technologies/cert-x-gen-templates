@@ -1,27 +1,25 @@
 #!/usr/bin/env node
-/**
- * CERT-X-GEN JavaScript/Node.js Template Skeleton
- * 
- * Template Metadata:
- *   ID: javascript-template-skeleton
- *   Name: JavaScript Template Skeleton
- *   Author: CERT-X-GEN Security Team
- *   Severity: info
- *   Description: Skeleton template for writing security scanning templates in JavaScript/Node.js.
- *                Copy this file and customize it for your specific security check.
- *                Includes HTTP request handling, JSON output, and finding reporting.
- *   Tags: skeleton, example, template, documentation, javascript, nodejs
- *   Language: javascript
- *   CWE: CWE-1008 (Architectural Concepts)
- *   References:
- *     - https://cwe.mitre.org/data/definitions/1008.html
- *     - https://github.com/cert-x-gen/templates
- *     - https://nodejs.org/api/http.html
- * 
- * Usage:
- *   node template.js <target> [--port 80] [--json]
- *   node template.js example.com --port 443 --json
- */
+// CERT-X-GEN JavaScript/Node.js Template Skeleton
+//
+// @id: javascript-template-skeleton
+// @name: JavaScript Template Skeleton
+// @author: CERT-X-GEN Security Team
+// @severity: info
+// @description: Skeleton template for writing security scanning templates in JavaScript/Node.js. Copy this file and customize it for your specific security check.
+// @tags: skeleton, example, template, javascript, nodejs
+// @cwe: CWE-1008
+// @confidence: 90
+// @references: https://cwe.mitre.org/data/definitions/1008.html, https://github.com/cert-x-gen/templates
+//
+// Usage:
+//   node template.js <target> [--port 80] [--json]
+//   node template.js example.com --port 443 --json
+//
+// When run by CERT-X-GEN engine, environment variables are set:
+//   CERT_X_GEN_TARGET_HOST - Target host/IP
+//   CERT_X_GEN_TARGET_PORT - Target port
+//   CERT_X_GEN_MODE=engine - Indicates engine mode (JSON output required)
+//
 
 const http = require('http');
 const https = require('https');

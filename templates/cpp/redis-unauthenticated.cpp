@@ -1,6 +1,14 @@
-// Redis Unauthenticated Access Detection - C++ Template
-//
-// Tests for Redis instances exposed without authentication.
+// @id: redis-unauthenticated-cpp
+// @name: Redis Unauthenticated Access Detection (C++)
+// @author: CERT-X-GEN Security Team
+// @severity: critical
+// @description: Detects Redis instances exposed without authentication using C++
+// @tags: redis, unauthenticated, database, nosql, cwe-306
+// @cwe: CWE-306
+// @cvss: 9.8
+// @references: https://redis.io/docs/management/security/, https://cwe.mitre.org/data/definitions/306.html
+// @confidence: 95
+// @version: 1.0.0
 
 #include <iostream>
 #include <string>

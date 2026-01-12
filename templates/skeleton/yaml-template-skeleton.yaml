@@ -1,207 +1,167 @@
-# CERT-X-GEN YAML Template Skeleton
-#
-# Copy this file and customize it for your specific security check.
-# This skeleton shows the common structure used by CERT-X-GEN YAML templates.
-#
-# Basic metadata -----------------------------------------------------------
+# @id: yaml-template-skeleton
+# @name: YAML Template Skeleton
+# @author: CERT-X-GEN Security Team
+# @severity: info
+# @description: Skeleton template showing the structure for CERT-X-GEN YAML templates
+# @tags: skeleton, example, yaml
+# @references: https://cwe.mitre.org/data/definitions/1008.html
 
-id: change-me-template-id
-name: "Change Me Template Name"
-author:
-  name: "Your Name"
-  email: "you@example.com"
-  github: "your-github-handle"
-severity: medium  # critical | high | medium | low | info
+id: yaml-template-skeleton
+name: "YAML Template Skeleton"
+author: CERT-X-GEN Security Team
+severity: info
 description: |
-  Short description of what this template detects.
-  Explain the vulnerability or misconfiguration being tested
-  and any important context for defenders.
-
+  Skeleton template showing the structure for CERT-X-GEN YAML templates.
+  Copy and customize for your specific security check.
 tags:
   - skeleton
   - example
   - yaml
-  - security
+references:
+  - https://cwe.mitre.org/data/definitions/1008.html
 
 language: yaml
-confidence: 90  # 0-100
 
-cve_ids:
-  - "CVE-2024-XXXX"  # Optional: associated CVE IDs (if applicable)
-cwe_ids:
-  - "CWE-000"        # Replace with a real CWE ID, e.g. CWE-306
-cvss_score: 0.0       # Optional: CVSS base score
-version: "1.0.0"     # Template version (semantic, not engine version)
-
-references:
-  - https://cwe.mitre.org/
-  - https://owasp.org/
-
-# HTTP-based template example ---------------------------------------------
-#
-# Use this section when your check is primarily HTTP/HTTPS based.
-# Remove or comment out this block if you are only using `network:`.
-# The engine will only run HTTP checks on HTTP-like ports (80, 443, 8080, etc.).
-# Use --ports/--top-ports/--override-ports to control which HTTP ports are tested.
+# HTTP-based template example
+# Use when your check is primarily HTTP/HTTPS based.
+# ============================================================================
 
 http:
   - method: GET
     path:
-      - "/"
+      - "{{BaseURL}}/"
+      - "{{BaseURL}}/api/health"
 
     headers:
       User-Agent: "cert-x-gen/1.0"
 
-    # Matchers: pick the ones that make sense for your check.
-    # You do NOT need to keep all of these; they are examples of supported types.
-    matchers-condition: or  # and | or
+    # Matchers determine if the response indicates a finding
+    # Valid types: word, regex, binary, status, size, dsl, xpath
+    matchers-condition: and
     matchers:
-      # Status matcher: HTTP status codes to match
+      # Status matcher: HTTP status codes
       - type: status
         status:
           - 200
-          - 301
-          - 302
 
-      # Word matcher: substrings to look for in body/header/all
+      # Word matcher: substrings in body/header/all
       - type: word
         words:
           - "example-indicator"
           - "another-indicator"
-        condition: or      # and | or (defaults to or)
-        part: body         # body | header | all
+        condition: or
+        part: body
 
-      # Regex matcher: regular expressions with optional capture group
+      # Regex matcher: regular expressions
       - type: regex
         regex:
-          - "ExampleService\\/(\\d+\\.\\d+\\.\\d+)"
-        group: 1           # Optional: capture group index
+          - "Version:\\s*(\\d+\\.\\d+\\.\\d+)"
+        part: body
 
-      # Size matcher: compares response body length in bytes
-      - type: size
-        condition: greater # greater | less | equal
-        size: 100000       # Body size threshold in bytes
-
-      # Time matcher: compares response time
-      - type: time
-        condition: greater # greater | less
-        time: 3s           # Response took longer than 3 seconds
-
-      # Hash matcher: compares hash of response body
-      # Supported algorithms in engine today: sha256, blake3
-      - type: hash
-        algorithm: sha256
-        hash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-
-      # Binary matcher: looks for raw byte sequences (hex-encoded)
+      # Binary matcher: raw byte sequences (hex-encoded)
       - type: binary
         binary:
-          - "0x89504E47"   # Example: PNG header bytes
+          - "89504E47"
 
-      # TLS matcher: checks for TLS versions or known vulnerabilities
-      # NOTE: Current implementation is heuristic and header-based.
-      - type: tls
-        versions:
-          - "1.0"
-          - "1.1"
-        vulnerabilities:
-          - "heartbleed"
+      # Size matcher: response body length using DSL
+      - type: dsl
+        dsl:
+          - "content_length > 1000"
+          - "content_length < 100000"
+        condition: and
 
-      # DNS matcher: for DNS-related responses (limited support)
-      - type: dns
-        record_type: "TXT"
-        pattern: "v=spf1"
-        value: "include:example.com"
+      # DSL matcher: expression-based matching
+      - type: dsl
+        dsl:
+          - "status_code == 200"
+          - "contains(body, 'vulnerable')"
+        condition: and
 
-      # Diff matcher: compares response to a baseline string
-      - type: diff
-        baseline: "baseline response body here"
-        threshold: 30      # % difference before considering it a match
+      # XPath matcher: for XML/HTML responses
+      - type: xpath
+        xpath:
+          - "//title[contains(text(), 'Admin')]"
 
-    # Optional extractors for capturing data from responses
+    # Extractors capture data from responses
+    # Valid types: regex, kval, json, xpath, dsl
     extractors:
       - type: regex
-        name: example_value
+        name: version
         regex:
-          - "example=(\\w+)"
+          - "Version:\\s*(\\d+\\.\\d+\\.\\d+)"
+        group: 1
 
-# Network-based template example ------------------------------------------
-#
-# Use this section when your check talks directly to a TCP/UDP service.
-# Remove or comment out this block if you are only using `http:`.
-# Engine behavior: if the incoming target already has a port, that port overrides
-# this default. Otherwise, the engine uses this `port` value as the default.
+      - type: kval
+        name: server_header
+        kval:
+          - Server
+
+      - type: json
+        name: api_version
+        json:
+          - ".version"
+          - ".api.version"
+
+# Network-based template example
+# Use when your check talks directly to TCP/UDP services.
+# ============================================================================
 
 network:
   - protocol: tcp
-    port: 12345  # Default port for the service being tested
+    port: 6379
 
     # Payloads sent to the target service
     payloads:
-      - "EXAMPLE \r\n"
+      - "INFO\r\n"
 
-    matchers-condition: or
+    matchers-condition: and
     matchers:
       - type: word
         words:
-          - "example-banner"
+          - "redis_version"
         part: body
 
       - type: regex
         regex:
-          - "ExampleService/(\\d+\\.\\d+\\.\\d+)"
+          - "redis_version:(\\d+\\.\\d+\\.\\d+)"
 
     extractors:
       - type: regex
-        name: service_version
+        name: redis_version
         regex:
-          - "ExampleService/(\\d+\\.\\d+\\.\\d+)"
+          - "redis_version:(\\d+\\.\\d+\\.\\d+)"
+        group: 1
 
-# Flow-based multi-step example ------------------------------------------
-#
-# Flows let you chain multiple HTTP steps with variables and simple conditions.
-# They currently manipulate context (cookies/variables) rather than creating
-# findings directly. Use them when you need login or token exchange before
-# running normal `http`/`network` checks.
+# Flow-based multi-step example
+# Flows chain multiple steps with variables and conditions.
+# ============================================================================
 
 flows:
-  - name: login_and_token_flow
-    depends_on: []           # Other flow names that must run first
-    condition: null          # Optional condition, e.g. token != ""
-    optional: true           # If true, failures won't fail the whole template
+  - name: auth_flow
     steps:
-      # Step 1: Perform a login request and store the response
       - action: http_request
         method: POST
-        path: /login
+        path: /api/login
         headers:
-          Content-Type: "application/x-www-form-urlencoded"
-        body: "username=admin&password={{Password}}"
-        store: login_response   # Saves raw body into flow variable
+          Content-Type: "application/json"
+        body: '{"username":"admin","password":"{{Password}}"}'
+        store: login_response
 
-      # Step 2: Extract an auth token from the stored response
       - action: extract
         from: login_response
-        pattern: "token=([A-Za-z0-9_-]+)"
+        pattern: '"token":\\s*"([^"]+)"'
         store: auth_token
 
-      # Step 3: Set a variable that can be used in later requests
       - action: set_variable
         name: Authorization
         value: "Bearer {{auth_token}}"
 
-      # Step 4: Optional wait before subsequent steps
-      - action: wait
-        duration_ms: 500
-
-      # Step 5: Sanity check that the token was extracted
       - action: check
         condition: auth_token != ""
-        message: "Login succeeded and auth_token was extracted"
+        message: "Authentication successful"
 
-# Remediation guidance ----------------------------------------------------
-#
-# Provide actionable steps for fixing the detected issue.
+# Remediation guidance
+# ============================================================================
 
 remediation: |
   1. Describe how to remediate or mitigate the detected issue.

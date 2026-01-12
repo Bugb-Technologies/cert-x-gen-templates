@@ -22,6 +22,8 @@ tags:
   - monitoring
   - system-info
 
+language: yaml
+
 classification:
   cwe_id: "CWE-200"
   cvss_score: 7.5

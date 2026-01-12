@@ -1,13 +1,18 @@
 #!/usr/bin/env node
+// @id: cadvisor-exposed
+// @name: cAdvisor Exposed Without Authentication
+// @author: CERT-X-GEN Security Team
+// @severity: critical
+// @description: Detects exposed cAdvisor instances revealing container runtime metrics and infrastructure information
+// @tags: cadvisor, container, docker, kubernetes, cwe-200
+// @cwe: CWE-200
+// @cvss: 8.6
+// @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/google/cadvisor
+// @confidence: 95
+// @version: 1.0.0
 /**
- * cAdvisor Exposed Without Authentication
- * 
  * Detects exposed cAdvisor (Container Advisor) instances that reveal
  * container runtime metrics and infrastructure information.
- * 
- * Author: CERT-X-GEN Security Team
- * Severity: Critical
- * CWE: CWE-200 (Information Exposure)
  */
 
 const http = require('http');

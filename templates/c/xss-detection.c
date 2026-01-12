@@ -1,28 +1,15 @@
 /*
- * CERT-X-GEN Cross-Site Scripting (XSS) Detection Template
- * 
- * Template Metadata:
- *   ID: xss-detection-c
- *   Name: Cross-Site Scripting (XSS) Detection
- *   Author: CERT-X-GEN Security Team
- *   Severity: high
- *   Description: Detects reflected and stored XSS vulnerabilities by testing input reflection
- *                and JavaScript execution in web application responses. Tests multiple encoding
- *                methods and common XSS vectors.
- *   Tags: xss, cross-site-scripting, injection, javascript, owasp-a03, web, client-side
- *   Language: c
- *   CWE: CWE-79 (Improper Neutralization of Input During Web Page Generation)
- *   References:
- *     - https://cwe.mitre.org/data/definitions/79.html
- *     - https://owasp.org/www-community/attacks/xss/
- *     - https://portswigger.net/web-security/cross-site-scripting
- * 
- * Compilation:
- *   gcc xss-detection.c -o xss-detection -O2 -std=c11 -lcurl -ljson-c
- * 
- * Dependencies:
- *   - libcurl (for HTTP requests)
- *   - json-c (for JSON parsing)
+ * @id: xss-detection-c
+ * @name: Cross-Site Scripting (XSS) Detection
+ * @author: CERT-X-GEN Security Team
+ * @severity: high
+ * @description: Detects reflected and stored XSS vulnerabilities by testing input reflection
+ * @tags: xss, cross-site-scripting, injection, javascript, cwe-79, web
+ * @cwe: CWE-79
+ * @cvss: 6.1
+ * @references: https://cwe.mitre.org/data/definitions/79.html, https://owasp.org/www-community/attacks/xss/
+ * @confidence: 85
+ * @version: 1.0.0
  */
 
 #include <stdio.h>
@@ -436,13 +423,13 @@ char* get_env_var(const char* name) {
 // Parse arguments
 int parse_args(int argc, char* argv[]) {
     // Initialize default config
-    strcpy(config.id, "xss-detection");
-    strcpy(config.name, "Cross-Site Scripting (XSS) Detection");
-    strcpy(config.author, "CERT-X-GEN Team");
-    strcpy(config.severity, "high");
+    strncpy(config.id, "xss-detection", sizeof(config.id) - 1);
+    strncpy(config.name, "Cross-Site Scripting (XSS) Detection", sizeof(config.name) - 1);
+    strncpy(config.author, "CERT-X-GEN Team", sizeof(config.author) - 1);
+    strncpy(config.severity, "high", sizeof(config.severity) - 1);
     config.confidence = 80;
-    strcpy(config.tags, "xss,injection,web,client-side");
-    strcpy(config.cwe, "CWE-79");
+    strncpy(config.tags, "xss,injection,web,client-side", sizeof(config.tags) - 1);
+    strncpy(config.cwe, "CWE-79", sizeof(config.cwe) - 1);
     
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {

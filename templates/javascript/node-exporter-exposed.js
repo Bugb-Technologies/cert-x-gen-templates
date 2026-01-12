@@ -1,13 +1,18 @@
 #!/usr/bin/env node
+// @id: node-exporter-exposed
+// @name: Node Exporter Exposed Without Authentication
+// @author: CERT-X-GEN Security Team
+// @severity: high
+// @description: Detects exposed Prometheus Node Exporter instances revealing system metrics
+// @tags: prometheus, node-exporter, system-metrics, cwe-200
+// @cwe: CWE-200
+// @cvss: 7.5
+// @references: https://cwe.mitre.org/data/definitions/200.html, https://github.com/prometheus/node_exporter
+// @confidence: 95
+// @version: 1.0.0
 /**
- * Node Exporter Exposed Without Authentication
- * 
  * Detects exposed Prometheus Node Exporter instances that reveal
  * system metrics including CPU, memory, disk, and network statistics.
- * 
- * Author: CERT-X-GEN Security Team
- * Severity: High
- * CWE: CWE-200 (Information Exposure)
  */
 
 const http = require('http');

@@ -1,33 +1,24 @@
-//go:build ignore
-// +build ignore
-
-/*
- * CERT-X-GEN C Template Skeleton
- * 
- * Template Metadata:
- *   ID: c-template-skeleton
- *   Name: C Template Skeleton
- *   Author: CERT-X-GEN Security Team
- *   Severity: info
- *   Description: Skeleton template for writing security scanning templates in C.
- *                Copy this file and customize it for your specific security check.
- *                Includes HTTP request handling, JSON output, and finding reporting.
- *   Tags: skeleton, example, template, documentation, c
- *   Language: c
- *   CWE: CWE-1008 (Architectural Concepts)
- *   References:
- *     - https://cwe.mitre.org/data/definitions/1008.html
- *     - https://github.com/cert-x-gen/templates
- *     - https://curl.se/libcurl/c/
- * 
- * Compilation:
- *   gcc template.c -o template -O2 -std=c11 -lcurl -ljson-c
- *   ./template --target example.com --json
- * 
- * Dependencies:
- *   - libcurl (for HTTP requests)
- *   - json-c (for JSON parsing)
- */
+// CERT-X-GEN C Template Skeleton
+//
+// @id: c-template-skeleton
+// @name: C Template Skeleton
+// @author: CERT-X-GEN Security Team
+// @severity: info
+// @description: Skeleton template for writing security scanning templates in C. Copy this file and customize it for your specific security check.
+// @tags: skeleton, example, template, c
+// @cwe: CWE-1008
+// @confidence: 90
+// @references: https://cwe.mitre.org/data/definitions/1008.html, https://github.com/cert-x-gen/templates
+//
+// Compilation:
+//   gcc template.c -o template -O2 -std=c11
+//   ./template --target example.com --json
+//
+// When run by CERT-X-GEN engine, environment variables are set:
+//   CERT_X_GEN_TARGET_HOST - Target host/IP
+//   CERT_X_GEN_TARGET_PORT - Target port
+//   CERT_X_GEN_MODE=engine - Indicates engine mode (JSON output required)
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -293,13 +284,13 @@ void print_usage(const char* program_name) {
 
 int parse_args(int argc, char* argv[]) {
     // Initialize default config
-    strcpy(config.id, "template-skeleton");
-    strcpy(config.name, "C Template Skeleton");
-    strcpy(config.author, "Your Name");
-    strcpy(config.severity, "high");
+    strncpy(config.id, "template-skeleton", sizeof(config.id) - 1);
+    strncpy(config.name, "C Template Skeleton", sizeof(config.name) - 1);
+    strncpy(config.author, "Your Name", sizeof(config.author) - 1);
+    strncpy(config.severity, "high", sizeof(config.severity) - 1);
     config.confidence = 90;
-    strcpy(config.tags, "skeleton,example");
-    strcpy(config.cwe, "CWE-XXX");
+    strncpy(config.tags, "skeleton,example", sizeof(config.tags) - 1);
+    strncpy(config.cwe, "CWE-XXX", sizeof(config.cwe) - 1);
     
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {
