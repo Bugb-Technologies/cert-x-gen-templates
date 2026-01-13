@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Bugb-Technologies/cert-x-gen/main/assets/logo.png" alt="CERT-X-GEN" width="400">
-</p>
-
 <h4 align="center">Polyglot Security Templates for the CERT-X-GEN Execution Engine</h4>
 
 <p align="center">
