@@ -230,3 +230,6 @@ logs/
 secrets/
 credentials/
 .cache/
+
+# Test data
+fofa_targets/

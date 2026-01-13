@@ -6,7 +6,7 @@
 
 ### How to Report
 
-Send an email to **security@bugb.tech** with:
+Send an email to **security@bugb.io** with:
 
 - Type of vulnerability
 - Template file affected
@@ -73,5 +73,5 @@ After a vulnerability is patched:
 
 ## Contact
 
-- **Security Team:** security@bugb.tech
+- **Security Team:** security@bugb.io
 - **PGP Key:** [Available on request]

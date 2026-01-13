@@ -211,14 +211,28 @@ TEMPLATE_METADATA = {
 }
 
 if __name__ == "__main__":
-    # Test execution
     import sys
+    import os
     
-    if len(sys.argv) < 2:
+    # Get target from environment or args
+    host = os.getenv('CERT_X_GEN_TARGET_HOST')
+    port_str = os.getenv('CERT_X_GEN_TARGET_PORT', '27017')
+    
+    if not host and len(sys.argv) > 1:
+        target = sys.argv[1]
+        # Parse target (host:port or just host)
+        if ':' in target:
+            host, port_str = target.rsplit(':', 1)
+        else:
+            host = target
+    
+    if not host:
         print("Usage: python mongodb-unauthenticated.py <target>")
+        print("Or set CERT_X_GEN_TARGET_HOST environment variable")
         sys.exit(1)
     
     template = MongoDBTemplate()
-    findings = template.execute(sys.argv[1])
+    template.port = int(port_str)  # Override default port
+    findings = template.execute(host)  # Pass only host, not host:port
     
     print(json.dumps(findings, indent=2))
