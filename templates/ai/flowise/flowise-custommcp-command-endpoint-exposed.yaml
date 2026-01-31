@@ -1,0 +1,88 @@
+# CERT-X-GEN YAML Template
+
+id: flowise-custommcp-command-endpoint-exposed
+name: "Flowise CustomMCP Command Endpoint Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: critical
+description: |
+  Detects an exposed Flowise CustomMCP endpoint that accepts command/args
+  configurations. In vulnerable deployments, attacker-controlled command
+  definitions can lead to remote code execution (CVE-2025-8943).
+
+tags:
+  - flowise
+  - mcp
+  - custommcp
+  - rce
+  - command-exec
+  - unauth
+  - cve-2025-8943
+
+language: yaml
+confidence: 80
+
+cve_ids:
+  - "CVE-2025-8943"
+cwe_ids:
+  - "CWE-78"   # OS Command Injection
+  - "CWE-306"  # Missing Authentication for Critical Function
+cvss_score: 9.8
+version: "1.0.0"
+
+references:
+  - https://github.com/advisories/GHSA-2vv2-3x8x-4gv7
+  - https://research.jfrog.com/vulnerabilities/flowise-os-command-remote-code-execution-jfsa-2025-001380578
+
+http:
+  - method: POST
+    path:
+      - "/api/v1/node-load-method/customMCP"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+      Content-Type: "application/json"
+
+    body: |
+      {
+        "loadMethod": "listActions",
+        "inputs": {
+          "mcpServerConfig": {
+            "args": []
+          }
+        }
+      }
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 400
+          - 422
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "command"
+          - "mcpServerConfig"
+          - "inputs"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: error_detail
+        regex:
+          - "\"(detail|error|message)\"\\s*:\\s*\"([^\"]+)\""
+        group: 2
+
+remediation: |
+  1. Upgrade Flowise to a version with patched CustomMCP handling.
+  2. Require authentication/authorization for CustomMCP endpoints.
+  3. Remove the ability to supply arbitrary command/args via CustomMCP.
+  4. Restrict access to internal networks and rotate exposed credentials.

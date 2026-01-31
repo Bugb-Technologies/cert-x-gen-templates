@@ -207,6 +207,12 @@ results/
 *.result
 
 # =============================================================================
+# Skills and local progress (do not push)
+# =============================================================================
+templates/skills/
+templates/notes.md
+
+# =============================================================================
 # Disabled Templates (keep in repo but can be excluded if needed)
 # =============================================================================
 # Uncomment to exclude disabled templates from commits:

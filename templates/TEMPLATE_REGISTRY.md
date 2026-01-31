@@ -1,165 +1,95 @@
 # CERT-X-GEN Template Registry
 
-This document provides a comprehensive registry of all available templates across all supported languages.
+This document provides a registry of all available templates organized by purpose-based folders.
 
 ## Template Categories
 
-### 1. Network Service Templates (Unauthenticated Access)
+### 1. AI / LLM Services
+- **Ollama Unauthenticated /api/generate Access** (`ai/ollama/detect-unauthenticated-access-apigenerate.yaml`)
+- **Ollama Unauthorized /api/pull Access (CVE-2024-37032)** (`ai/ollama/apipull-access-sending-post.yaml`)
+- **Ollama Exposed Endpoint Detection** (`ai/ollama/detect-exposed-ollama-sending.yaml`)
+- **Ollama Detection** (`ai/ollama/detect_ollama.yaml`)
 
-#### Database Services
-- **Redis Unauthenticated** (`c/redis-unauthenticated.c`) - Port 6379
-- **MongoDB Unauthenticated** (`go/mongodb-unauthenticated.go`) - Port 27017
-- **MySQL Default Credentials** (`c/mysql-default-creds.c`) - Port 3306
-- **PostgreSQL Unauthenticated** (`go/postgresql-unauthenticated.go`) - Port 5432
-- **Elasticsearch Unauthenticated** (`python/elasticsearch-unauthenticated.py`) - Port 9200
+### 2. Databases
+- **Redis Unauthenticated (multi-language)**
+  - `databases/redis/redis-unauthenticated.c`
+  - `databases/redis/redis-unauthenticated.cpp`
+  - `databases/redis/redis-unauthenticated.go`
+  - `databases/redis/redis-unauthenticated.js`
+  - `databases/redis/redis-unauthenticated.php`
+  - `databases/redis/redis-unauthenticated.pl`
+  - `databases/redis/redis-unauthenticated.py`
+  - `databases/redis/redis-unauthenticated.rb`
+  - `databases/redis/redis-unauthenticated.rs`
+  - `databases/redis/redis-unauthenticated.sh`
+  - `databases/redis/redis-unauthenticated.yaml`
+  - `databases/redis/RedisUnauthenticated.java`
+- **MySQL Default Credentials** (`databases/mysql/mysql-default-credentials.py`)
+- **PostgreSQL Default Credentials** (`databases/postgresql/postgresql-default-credentials.go`)
+- **MongoDB Unauthenticated** (`databases/mongodb/mongodb-unauthenticated.py`)
+- **Elasticsearch Unauthenticated** (`databases/elasticsearch/elasticsearch_unauthenticated.rs`)
+- **Elasticsearch Data Exposure** (`databases/elasticsearch/elasticsearch-data-exposure.py`)
+- **CouchDB Default Credentials** (`databases/couchdb/couchdb_default_creds.rs`)
+- **CockroachDB Unauthenticated** (`databases/cockroachdb/cockroachdb-unauthenticated.yaml`)
+- **Memcached Unauthenticated** (`databases/memcached/memcached-unauthenticated.yaml`)
 
-#### Web Services & Dashboards
-- **Jenkins Unauthenticated** (`python/jenkins-unauthenticated.py`) - Port 8080
-- **Kibana Unauthenticated** (`python/kibana-unauthenticated.py`) - Port 5601
-- **Grafana Unauthenticated** (`python/grafana-unauthenticated.py`) - Port 3000
-- **Prometheus Unauthenticated** (`go/prometheus-unauthenticated.go`) - Port 9090
+### 3. DevOps / Platform
+- **Docker API Unauthenticated** (`devops/docker/docker-api-unauth.go`)
+- **Docker Registry Unauthenticated** (`devops/docker/docker-registry-unauthenticated.sh`)
+- **Etcd Unauthenticated (shell)** (`devops/etcd/etcd-unauthenticated.sh`)
+- **Etcd Unauthenticated (HTTP checks)**
+  - `devops/etcd/think-wrong-able-validate.yaml`
+  - `devops/etcd/etcd-instead-http-request.yaml`
+  - `devops/etcd/etcd-think-path-wrong.yaml`
+  - `devops/etcd/new-etcd-vulnerable-unauthenticated.yaml`
+  - `devops/etcd/which-runs-etcdctl-command.yaml`
+- **Etcd Unauthenticated Port Check** (`devops/etcd/etcd-running-unauthenticated-port.sh`)
+- **K8s Etcd Exposed** (`devops/etcd/k8s-etcd-exposed.go`)
+- **Jenkins Unauthenticated RCE** (`devops/jenkins/jenkins-unauth-rce.go`)
+- **Kubernetes API Unauthenticated** (`devops/kubernetes/kubernetes-api-unauthenticated-default.yaml`)
+- **Jupyter Unauthenticated RCE** (`devops/jupyter/jupyter-unauth-rce.py`)
 
-#### Container & Orchestration
-- **Docker API Unauthenticated** (`python/docker-api-unauthenticated.py`) - Ports 2375, 2376
-- **Kubernetes API Unauthenticated** (`go/kubernetes-api-unauthenticated.go`) - Ports 6443, 8080
-- **Docker Registry Unauthenticated** (`python/docker-registry-unauthenticated.py`) - Ports 5000, 5001
-- **Docker Swarm Unauthenticated** (`python/docker-swarm-unauthenticated.py`) - Ports 2377, 7946, 4789
+### 4. Monitoring & Observability
+- **Prometheus Server Exposed**
+  - `monitoring/prometheus/prometheus-server-exposed.py`
+  - `monitoring/prometheus/prometheus-server-exposed.js`
+  - `monitoring/prometheus/prometheus-server-exposed-https.py`
+- **cAdvisor Exposed**
+  - `monitoring/cadvisor/cadvisor-exposed.py`
+  - `monitoring/cadvisor/cadvisor-exposed.js`
+- **Metrics Endpoint Exposure** (`monitoring/metrics/which-checks-metrics-available.yaml`)
+- **Exporters**
+  - Redis Exporter Exposed: `monitoring/exporters/redis/redis-exporter-exposed.py`, `monitoring/exporters/redis/redis-exporter-exposed.yaml`
+  - MySQL Exporter Exposed: `monitoring/exporters/mysql/mysql-exporter-exposed.py`
+  - PostgreSQL Exporter Exposed: `monitoring/exporters/postgresql/postgresql-exporter-exposed.py`
+  - Node Exporter Exposed: `monitoring/exporters/node/node-exporter-exposed.py`, `monitoring/exporters/node/node-exporter-exposed.js`, `monitoring/exporters/node/prometheus-node-exporter-exposed.yaml`
 
-#### Cloud Provider Metadata
-- **AWS EC2 Metadata** (`python/aws-metadata-unauthenticated.py`) - Ports 80, 443
-- **Google Cloud Metadata** (`python/gcp-metadata-unauthenticated.py`) - Ports 80, 443
-- **Azure Instance Metadata** (`python/azure-metadata-unauthenticated.py`) - Ports 80, 443
+### 5. Messaging
+- **RabbitMQ Default Credentials** (`messaging/rabbitmq/rabbitmq-default-credentials.py`)
+- **Kafka Unauthenticated** (`messaging/kafka/kafka-unauthenticated.sh`)
+- **Zookeeper Unauthenticated** (`messaging/zookeeper/zookeeper-unauthenticated.yaml`)
 
-#### Message Queues & Caching
-- **RabbitMQ Management** (`python/rabbitmq-unauthenticated.py`) - Port 15672
-- **Memcached Unauthenticated** (`c/memcached-unauthenticated.c`) - Port 11211
-- **Apache Kafka Unauthenticated** (`java/kafka-unauthenticated.java`) - Port 9092
+### 6. Network Services
+- **FTP Anonymous Access** (`network/ftp/ftp-anonymous-access.py`)
+- **SMTP Open Relay** (`network/smtp/smtp-open-relay.py`)
+- **SNMP Default Community** (`network/snmp/snmp-default-community.sh`)
+- **VNC No Auth** (`network/vnc/vnc-no-auth.c`)
+- **Port Scanner (Async)** (`network/scanning/port-scanner-async.rs`)
+- **DNS Zone Transfer** (`network/dns/dns-zone-transfer.py`)
 
-### 2. Web Application Vulnerabilities
+### 7. Web Application Security
+- **SQL Injection Detection** (`web/injection/sql-injection-detection.c`, `web/injection/sql-injection-detection.yaml`)
+- **Blind SQL Injection (Time-Based)** (`web/injection/timing-attack-detection.yaml`)
+- **Response Manipulation / Cache Poisoning** (`web/cache/response-manipulation-detection.yaml`)
+- **XSS Detection** (`web/xss/xss-detection.c`)
+- **Directory Traversal** (`web/traversal/directory-traversal.c`)
+- **Auth Bypass Flow** (`web/auth-bypass/auth-bypass-flow.yaml`)
+- **Sensitive Data Exposure** (`web/sensitive-data/sensitive-data-exposure.yaml`)
+- **HTTP Detection Examples** (`web/http/http-detection.yaml`, `web/http/example-http-check.yaml`)
+- **Log4Shell Check** (`web/log4shell/are-vulnerable-log4shell.sh`)
 
-#### Injection Attacks
-- **SQL Injection Detection** (`c/sql-injection-detection.c`) - Comprehensive SQL injection testing
-- **XSS Detection** (`c/xss-detection.c`) - Cross-site scripting detection
-- **Command Injection** (`cpp/command-injection.cpp`) - OS command injection
-- **LDAP Injection** (`cpp/ldap-injection.cpp`) - LDAP injection vulnerabilities
-- **NoSQL Injection** (`python/nosql-injection.py`) - NoSQL injection testing
-
-#### File System Attacks
-- **Directory Traversal** (`c/directory-traversal.c`) - Path traversal vulnerabilities
-- **File Inclusion** (`php/file-inclusion.php`) - Local/Remote file inclusion
-- **Path Traversal** (`go/path-traversal.go`) - Path traversal in Go applications
-
-#### Deserialization Vulnerabilities
-- **Java Deserialization** (`java/java-deserialization.java`) - Java deserialization attacks
-- **PHP Unsafe Deserialization** (`php/php-unsafe-deserialization.php`) - PHP deserialization
-- **Ruby Unsafe Deserialization** (`ruby/ruby-unsafe-deserialization.rb`) - Ruby deserialization
-
-#### Server-Side Attacks
-- **SSRF Detection** (`go/ssrf-detection.go`) - Server-Side Request Forgery
-- **XXE Detection** (`cpp/xxe-detection.cpp`) - XML External Entity attacks
-- **CSRF Detection** (`cpp/csrf-detection.cpp`) - Cross-Site Request Forgery
-
-### 3. Framework-Specific Vulnerabilities
-
-#### Spring Framework
-- **Spring Boot Actuator** (`java/spring-boot-actuator.java`) - Exposed actuator endpoints
-- **Spring Security Bypass** (`java/spring-security-bypass.java`) - Security bypasses
-
-#### Apache Struts
-- **Struts2 RCE** (`java/struts2-rce.java`) - Remote code execution
-
-#### Log4j
-- **Log4j RCE** (`java/log4j-rce.java`) - Log4j remote code execution
-
-#### Ruby on Rails
-- **Rails Mass Assignment** (`ruby/rails-mass-assignment.rb`) - Mass assignment vulnerabilities
-- **Rails Code Injection** (`ruby/rails-code-injection.rb`) - Code injection
-
-### 4. Infrastructure & DevOps
-
-#### CI/CD Platforms
-- **GitLab Unauthenticated** (`python/gitlab-unauthenticated.py`) - GitLab access
-- **Jenkins Unauthenticated** (`python/jenkins-unauthenticated.py`) - Jenkins access
-- **SonarQube Unauthenticated** (`python/sonarqube-unauthenticated.py`) - SonarQube access
-- **Nexus Repository** (`python/nexus-unauthenticated.py`) - Nexus access
-
-#### Monitoring & Observability
-- **Zabbix Unauthenticated** (`python/zabbix-unauthenticated.py`) - Zabbix monitoring
-- **Splunk Unauthenticated** (`python/splunk-unauthenticated.py`) - Splunk logging
-- **Nagios Unauthenticated** (`python/nagios-unauthenticated.py`) - Nagios monitoring
-
-#### Service Mesh
-- **Istio Pilot** (`go/istio-pilot-unauthenticated.go`) - Istio service mesh
-- **Envoy Proxy** (`go/envoy-proxy-unauthenticated.go`) - Envoy proxy
-
-## Language Distribution
-
-### C Templates (Low-level protocols)
-- `redis-unauthenticated.c`
-- `mysql-default-creds.c`
-- `memcached-unauthenticated.c`
-- `sql-injection-detection.c`
-- `xss-detection.c`
-- `directory-traversal.c`
-
-### C++ Templates (System-level operations)
-- `command-injection.cpp`
-- `ldap-injection.cpp`
-- `xxe-detection.cpp`
-- `csrf-detection.cpp`
-
-### Java Templates (Enterprise applications)
-- `kafka-unauthenticated.java`
-- `java-deserialization.java`
-- `spring-boot-actuator.java`
-- `struts2-rce.java`
-- `log4j-rce.java`
-
-### Go Templates (Cloud-native services)
-- `mongodb-unauthenticated.go`
-- `postgresql-unauthenticated.go`
-- `prometheus-unauthenticated.go`
-- `kubernetes-api-unauthenticated.go`
-- `ssrf-detection.go`
-- `path-traversal.go`
-- `istio-pilot-unauthenticated.go`
-- `envoy-proxy-unauthenticated.go`
-
-### Python Templates (Web services & APIs)
-- `elasticsearch-unauthenticated.py`
-- `jenkins-unauthenticated.py`
-- `kibana-unauthenticated.py`
-- `grafana-unauthenticated.py`
-- `docker-api-unauthenticated.py`
-- `docker-registry-unauthenticated.py`
-- `docker-swarm-unauthenticated.py`
-- `aws-metadata-unauthenticated.py`
-- `gcp-metadata-unauthenticated.py`
-- `azure-metadata-unauthenticated.py`
-- `rabbitmq-unauthenticated.py`
-- `gitlab-unauthenticated.py`
-- `sonarqube-unauthenticated.py`
-- `nexus-unauthenticated.py`
-- `zabbix-unauthenticated.py`
-- `splunk-unauthenticated.py`
-- `nagios-unauthenticated.py`
-- `nosql-injection.py`
-
-### Ruby Templates (Ruby applications)
-- `rails-mass-assignment.rb`
-- `rails-code-injection.rb`
-- `ruby-unsafe-deserialization.rb`
-
-### Perl Templates (Legacy systems)
-- `perl-command-injection.pl`
-- `perl-path-traversal.pl`
-- `perl-sql-injection.pl`
-
-### PHP Templates (Web applications)
-- `file-inclusion.php`
-- `php-unsafe-deserialization.php`
-- `php-command-injection.php`
-- `php-sql-injection.php`
+### 8. Reconnaissance
+- **System Context Recon** (`recon/system/system-context-recon.sh`)
 
 ## Template Execution
 
@@ -223,6 +153,7 @@ Each language has a skeleton template in `templates/skeleton/`:
 - `ruby-template-skeleton.rb`
 - `perl-template-skeleton.pl`
 - `php-template-skeleton.php`
+- `yaml-template-skeleton.yaml`
 
 ### Template Structure
 All templates follow the same structure:
@@ -237,7 +168,7 @@ All templates follow the same structure:
 1. Choose appropriate language based on service type
 2. Copy skeleton template
 3. Implement service-specific logic
-4. Add to appropriate category directory
+4. Add to appropriate purpose-based category directory
 5. Update this registry
 6. Test with `test-all-templates.sh`
 
@@ -263,14 +194,6 @@ All templates follow the same structure:
 - Performance optimization
 - Documentation updates
 - Community contributions
-
-## Statistics
-
-- **Total Templates**: 42+
-- **Languages Supported**: 12
-- **Categories**: 4
-- **Vulnerability Types**: 20+
-- **Services Covered**: 30+
 
 ## Contributing
 
