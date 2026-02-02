@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: whois-service-exposed
+name: "WHOIS Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: low
+description: |
+  Detects exposed WHOIS services on TCP/43 by issuing a basic domain query.
+  WHOIS can reveal registration and contact details for reconnaissance.
+
+tags:
+  - whois
+  - reconnaissance
+  - information-disclosure
+  - network
+
+language: yaml
+confidence: 75
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 3.1
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc3912
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 43
+
+    payloads:
+      - "example.com\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "Domain Name:"
+          - "domain name:"
+          - "No match for"
+          - "NOT FOUND"
+        condition: or
+        part: body
+
+remediation: |
+  1. Restrict WHOIS service exposure if not required.
+  2. Limit access to trusted networks.
