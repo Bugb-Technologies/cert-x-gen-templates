@@ -1,0 +1,70 @@
+# CERT-X-GEN YAML Template
+
+id: splunkd-server-info-exposed
+name: "Splunkd Server Info Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects Splunkd management API access without authentication by querying
+  /services/server/info. Exposed Splunkd can enable data access and RCE
+  in vulnerable or misconfigured deployments.
+
+tags:
+  - splunk
+  - splunkd
+  - monitoring
+  - unauthenticated
+  - exposure
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-306"
+cvss_score: 8.0
+version: "1.0.0"
+
+references:
+  - https://docs.splunk.com/Documentation/Splunk/latest/RESTREF/RESTsystem
+  - https://cwe.mitre.org/data/definitions/306.html
+
+http:
+  - method: GET
+    path:
+      - "/services/server/info?output_mode=json"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "serverName"
+          - "build"
+          - "version"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: splunk_version
+        regex:
+          - '"version"\s*:\s*"([^"]+)"'
+        group: 1
+
+remediation: |
+  1. Enforce authentication on Splunkd (8089) and restrict network access.
+  2. Disable or firewall the management API from untrusted networks.
+  3. Rotate credentials and apply least-privilege roles.
