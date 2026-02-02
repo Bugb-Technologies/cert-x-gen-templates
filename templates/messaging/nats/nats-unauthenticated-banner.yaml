@@ -1,0 +1,62 @@
+# CERT-X-GEN YAML Template
+
+id: nats-unauthenticated-banner
+name: "NATS Banner Indicates No Authentication"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects NATS servers that advertise auth_required=false in the INFO banner.
+  This indicates the broker allows unauthenticated connections, which can
+  enable message snooping or injection.
+
+tags:
+  - nats
+  - jetstream
+  - messaging
+  - unauthenticated
+  - exposure
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-306"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://docs.nats.io/running-a-nats-service/configuration
+  - https://cwe.mitre.org/data/definitions/306.html
+
+network:
+  - protocol: tcp
+    port: 4222
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "INFO {"
+        part: body
+
+      - type: regex
+        regex:
+          - '"auth_required"\s*:\s*false'
+        part: body
+
+    extractors:
+      - type: regex
+        name: nats_version
+        regex:
+          - '"version"\s*:\s*"([^"]+)"'
+        group: 1
+
+remediation: |
+  1. Enable authentication for NATS clients (user/pass or nkeys).
+  2. Require TLS and restrict access to trusted networks.
+  3. Disable plaintext access on public interfaces.

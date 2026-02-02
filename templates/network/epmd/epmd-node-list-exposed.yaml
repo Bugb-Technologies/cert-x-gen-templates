@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: epmd-node-list-exposed
+name: "EPMD Node List Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects Erlang Port Mapper Daemon (EPMD) instances that disclose node names
+  and ports over the network. Exposed EPMD can aid lateral movement and
+  distributed Erlang attacks when paired with leaked cookies.
+
+tags:
+  - epmd
+  - erlang
+  - enumeration
+  - information-disclosure
+  - network
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://www.erlang.org/doc/apps/erts/erl_dist_protocol
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 4369
+
+    payloads:
+      # EPMD names request: 0x0001 0x6e ('n')
+      - "\x00\x01\x6e"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - 'name\\s+[^\\s]+\\s+at\\s+port\\s+\\d+'
+        part: body
+
+remediation: |
+  1. Restrict EPMD exposure to trusted hosts only.
+  2. Use host firewalls to block port 4369 from untrusted networks.
+  3. Harden Erlang cookie handling and rotate credentials.
