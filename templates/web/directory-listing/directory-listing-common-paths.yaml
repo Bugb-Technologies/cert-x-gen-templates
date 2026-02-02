@@ -1,0 +1,73 @@
+# CERT-X-GEN YAML Template
+
+id: directory-listing-common-paths
+name: "Directory Listing Exposure (Common Paths)"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects exposed directory listings on common public data paths.
+  Directory listings can leak sensitive files, backups, or internal data.
+
+tags:
+  - directory-listing
+  - information-disclosure
+  - web
+  - exposure
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://owasp.org/www-community/attacks/Forced_browsing
+  - https://cwe.mitre.org/data/definitions/200.html
+
+http:
+  - method: GET
+    path:
+      - "/apod/fap/image/"
+      - "/data/"
+      - "/files/"
+      - "/vis/Instruments/OVIRS_LP/"
+      - "/pub/"
+      - "/apod/fap/"
+      - "/ssw/gen/idl/help/"
+      - "/anonftp/toms/omi/"
+      - "/publications/"
+      - "/combinations/"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "Index of /"
+          - "Directory listing for"
+          - "Parent Directory"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: index_title
+        regex:
+          - '<title>\\s*Index of\\s+[^<]+</title>'
+        part: body
+
+remediation: |
+  1. Disable directory listing in the web server configuration.
+  2. Add index files (index.html) to intended directories.
+  3. Restrict access to sensitive directories with authentication/authorization.
+  4. Review exposed paths for sensitive data and remove as needed.
