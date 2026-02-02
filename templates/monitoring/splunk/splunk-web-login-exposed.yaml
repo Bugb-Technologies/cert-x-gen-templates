@@ -1,0 +1,56 @@
+# CERT-X-GEN YAML Template
+
+id: splunk-web-login-exposed
+name: "Splunk Web Login Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects exposed Splunk Web login pages (default 8000). Publicly accessible
+  login pages can be targeted for credential attacks and version enumeration.
+
+tags:
+  - splunk
+  - monitoring
+  - exposure
+  - web
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://docs.splunk.com/Documentation/Splunk/latest/Admin/Securityoverview
+  - https://cwe.mitre.org/data/definitions/200.html
+
+http:
+  - method: GET
+    path:
+      - "/en-US/account/login"
+      - "/en-US/account/login?return_to=%2Fen-US%2Fapp%2Flauncher"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "Splunk"
+          - "login"
+        condition: and
+        part: body
+
+remediation: |
+  1. Restrict Splunk Web to trusted networks or VPN.
+  2. Enforce strong authentication and MFA.
+  3. Monitor for brute-force attempts and lockouts.
