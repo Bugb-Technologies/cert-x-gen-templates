@@ -1,0 +1,50 @@
+# CERT-X-GEN YAML Template
+
+id: adb-exposed
+name: "ADB Over TCP Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects Android Debug Bridge (ADB) servers exposed over TCP/5555.
+  ADB exposure can allow shell access or device compromise on insecure builds.
+
+tags:
+  - adb
+  - android
+  - remote-access
+  - exposure
+  - network
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-306"
+cvss_score: 8.0
+version: "1.0.0"
+
+references:
+  - https://developer.android.com/studio/command-line/adb
+  - https://cwe.mitre.org/data/definitions/306.html
+
+network:
+  - protocol: tcp
+    port: 5555
+
+    payloads:
+      # ADB protocol: 4 hex length + "host:version"
+      - "000Chost:version"
+
+    matchers-condition: and
+    matchers:
+      - type: binary
+        binary:
+          - "4f4b4159"  # OKAY
+        part: body
+
+remediation: |
+  1. Disable ADB over TCP unless required for development.
+  2. Restrict access to TCP/5555 using firewalls.
+  3. Ensure ADB authentication is enabled on devices.

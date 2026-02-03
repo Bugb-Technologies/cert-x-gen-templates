@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: tacacs-service-exposed
+name: "TACACS+ Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects TACACS+ services on TCP/49. Exposed TACACS+ services increase
+  the risk of credential interception and brute-force attempts.
+
+tags:
+  - tacacs
+  - tacacs+
+  - aaa
+  - network
+  - exposure
+
+language: yaml
+confidence: 70
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc8907
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 49
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "TACACS"
+          - "tacacs"
+        condition: or
+        part: body
+
+remediation: |
+  1. Restrict TACACS+ access to trusted management networks.
+  2. Enforce strong shared secrets and rotate regularly.
+  3. Monitor for brute-force attempts.

@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: ndmp-service-exposed
+name: "NDMP Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects NDMP (Network Data Management Protocol) services on TCP/10000.
+  Exposed NDMP can reveal backup infrastructure and may allow data access
+  in weakly protected deployments.
+
+tags:
+  - ndmp
+  - backup
+  - network
+  - exposure
+
+language: yaml
+confidence: 75
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://en.wikipedia.org/wiki/Network_Data_Management_Protocol
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 10000
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "NDMP"
+          - "ndmp"
+        condition: or
+        part: body
+
+remediation: |
+  1. Restrict NDMP access to trusted backup networks only.
+  2. Enforce strong authentication for NDMP services.
+  3. Disable NDMP if not required.

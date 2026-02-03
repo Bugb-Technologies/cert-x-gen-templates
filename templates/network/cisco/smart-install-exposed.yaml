@@ -1,0 +1,55 @@
+# CERT-X-GEN YAML Template
+
+id: smart-install-exposed
+name: "Cisco Smart Install Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects Cisco Smart Install (TCP/4786) exposure. Smart Install has a history
+  of critical vulnerabilities (e.g., CVE-2018-0171) and should not be exposed
+  to untrusted networks.
+
+tags:
+  - cisco
+  - smart-install
+  - network
+  - exposure
+  - cve-2018-0171
+
+language: yaml
+confidence: 75
+
+cve_ids:
+  - "CVE-2018-0171"
+cwe_ids:
+  - "CWE-119"
+cvss_score: 9.8
+version: "1.0.0"
+
+references:
+  - https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20180328-smi
+  - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0171
+
+network:
+  - protocol: tcp
+    port: 4786
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "Smart Install"
+          - "SMI"
+          - "Cisco"
+        condition: or
+        part: body
+
+remediation: |
+  1. Disable Smart Install on Cisco devices if not required.
+  2. Restrict access to TCP/4786 to trusted management networks only.
+  3. Apply vendor patches for CVE-2018-0171.
