@@ -9,6 +9,7 @@ This document provides a registry of all available templates organized by purpos
 - **Ollama Unauthorized /api/pull Access (CVE-2024-37032)** (`ai/ollama/apipull-access-sending-post.yaml`)
 - **Ollama Exposed Endpoint Detection** (`ai/ollama/detect-exposed-ollama-sending.yaml`)
 - **Ollama Detection** (`ai/ollama/detect_ollama.yaml`)
+- **AI-Assisted Fuzzing SQLi Seed Corpus** (`ai/ai-assisted-fuzzing/ai-assisted-fuzzing-sqli-seed-corpus.py`)
 
 ### 2. Databases
 - **Redis Unauthenticated (multi-language)**
@@ -76,6 +77,17 @@ This document provides a registry of all available templates organized by purpos
 - **VNC No Auth** (`network/vnc/vnc-no-auth.c`)
 - **Port Scanner (Async)** (`network/scanning/port-scanner-async.rs`)
 - **DNS Zone Transfer** (`network/dns/dns-zone-transfer.py`)
+- **ICMP Echo Reachability** (`network/recon/icmp-echo-reachable.py`)
+- **TCP Port Reachability** (`network/scanning/tcp-port-reachability.py`)
+- **HTTP Service Responding** (`network/http/http-service-responding.yaml`)
+- **DNS UDP Service Probe** (`network/dns/dns-udp-service-probe.py`)
+- **NTP UDP Service Probe** (`network/ntp/ntp-udp-service-probe.py`)
+- **DHCPv6 Solicit Response Probe** (`network/dhcpv6/dhcpv6-solicit-response.py`)
+- **mDNS Service Discovery Probe** (`network/mdns/mdns-service-discovery-probe.py`)
+- **SSDP M-SEARCH Response Probe** (`network/ssdp/ssdp-msearch-response.py`)
+- **NBNS Name Query Probe** (`network/nbns/nbns-name-query-probe.py`)
+- **WSD Probe Response** (`network/wsd/wsd-probe-response.py`)
+- **TCP Banner Probe** (`network/scanning/tcp-banner-probe.py`)
 
 ### 7. Web Application Security
 - **SQL Injection Detection** (`web/injection/sql-injection-detection.c`, `web/injection/sql-injection-detection.yaml`)
