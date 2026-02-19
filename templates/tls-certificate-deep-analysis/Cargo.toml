@@ -1,0 +1,17 @@
+[package]
+name = "tls-certificate-deep-analysis"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "tls-certificate-deep-analysis"
+path = "src/main.rs"
+
+[dependencies]
+x509-parser = "0.16"
+rustls = { version = "0.23", features = ["ring"] }
+webpki-roots = "0.26"
+rustls-pki-types = "1.0"
+
+[profile.release]
+opt-level = 3
