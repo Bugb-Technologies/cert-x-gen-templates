@@ -1,0 +1,81 @@
+# CERT-X-GEN YAML Template
+
+id: torchserve-management-api-exposed
+name: "TorchServe Management API Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects an exposed TorchServe management API endpoint. Exposed management
+  interfaces can allow remote model registration or model download. In
+  vulnerable deployments, this can lead to RCE through unsafe model loading
+  or deserialization (e.g., CVE-2022-1471, CVE-2023-43654).
+
+tags:
+  - torchserve
+  - pytorch
+  - model-serving
+  - management-api
+  - unauth
+  - rce
+  - cve-2022-1471
+  - cve-2023-43654
+
+language: yaml
+confidence: 80
+
+cve_ids:
+  - "CVE-2022-1471"
+  - "CVE-2023-43654"
+cwe_ids:
+  - "CWE-306"  # Missing Authentication for Critical Function
+  - "CWE-502"  # Deserialization of Untrusted Data
+cvss_score: 9.0
+version: "1.0.0"
+
+references:
+  - https://github.com/pytorch/serve
+  - https://nvd.nist.gov/vuln/detail/CVE-2022-1471
+  - https://nvd.nist.gov/vuln/detail/CVE-2023-43654
+
+http:
+  - method: GET
+    path:
+      - "/models"
+      - "/api/models"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "models"
+          - "modelName"
+          - "modelVersion"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: model_names
+        regex:
+          - "\"modelName\"\\s*:\\s*\"([^\"]+)\""
+        group: 1
+
+remediation: |
+  1. Disable or firewall the TorchServe management API from untrusted networks.
+  2. Require authentication for management endpoints and limit to administrators.
+  3. Upgrade TorchServe and apply security patches for known CVEs.
+  4. Restrict model download sources and validate model integrity.

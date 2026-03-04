@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: finger-service-exposed
+name: "Finger Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: low
+description: |
+  Detects exposed Finger services on TCP/79. Finger responses may disclose
+  local usernames and system information useful for reconnaissance.
+
+tags:
+  - finger
+  - reconnaissance
+  - information-disclosure
+  - network
+
+language: yaml
+confidence: 75
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 3.1
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc1288
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 79
+
+    payloads:
+      - "\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "Login"
+          - "Name"
+          - "Directory"
+          - "Finger"
+        condition: or
+        part: body
+
+remediation: |
+  1. Disable the Finger service if not required.
+  2. Restrict access to TCP/79 to trusted networks only.

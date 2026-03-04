@@ -1,0 +1,57 @@
+# CERT-X-GEN YAML Template
+
+id: rabbitmq-management-exposed
+name: "RabbitMQ Management UI Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects exposed RabbitMQ Management UI endpoints (15672). Exposed management
+  interfaces increase attack surface and can be targeted for credential attacks.
+
+tags:
+  - rabbitmq
+  - management
+  - exposure
+  - web
+  - messaging
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://www.rabbitmq.com/management.html
+  - https://cwe.mitre.org/data/definitions/200.html
+
+http:
+  - method: GET
+    path:
+      - "/"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "RabbitMQ Management"
+          - "rabbitmq"
+          - "management"
+        condition: or
+        part: body
+
+remediation: |
+  1. Restrict access to the RabbitMQ Management UI to trusted networks.
+  2. Enforce strong authentication and MFA where possible.
+  3. Disable the management plugin if not required.

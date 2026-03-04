@@ -2,10 +2,10 @@
 <h4 align="center">Polyglot Security Templates for the CERT-X-GEN Execution Engine</h4>
 
 <p align="center">
-<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/releases"><img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square"></a>
+<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/releases"><img src="https://img.shields.io/badge/version-1.1.0-blue?style=flat-square"></a>
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square"></a>
-<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-58-orange?style=flat-square"></a>
-<a href="#supported-languages"><img src="https://img.shields.io/badge/languages-6-purple?style=flat-square"></a>
+<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-147-orange?style=flat-square"></a>
+<a href="#supported-languages"><img src="https://img.shields.io/badge/languages-12-purple?style=flat-square"></a>
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square"></a>
 </p>
 
@@ -50,40 +50,66 @@ An overview of the CERT-X-GEN template repository, including statistics by langu
 
 | Language | Templates | Description |
 |----------|-----------|-------------|
-| **Python** | 15 | Database auth, DevOps tools, stateful protocols |
-| **YAML** | 24 | HTTP checks, simple network probes |
-| **Go** | 5 | High-performance scanning, binary protocols |
+| **Python** | 48 | Database auth, DevOps tools, AI/ML security, network probes |
+| **YAML** | 50 | HTTP checks, service detection, network probes |
+| **Go** | 16 | High-performance scanning, binary protocols, K8s security |
+| **JavaScript** | 7 | Monitoring exporters, web injection, WebSocket fuzzing |
+| **Shell** | 8 | System checks, native tool integration |
+| **Rust** | 5 | Async operations, memory-safe scanning |
 | **C** | 5 | Low-level protocols, web vulnerability detection |
-| **Shell** | 5 | System checks, native tool integration |
-| **Rust** | 4 | Async operations, memory-safe scanning |
-| **Total** | **58** | |
+| **Java** | 4 | Deserialization, RMI enumeration, Spring4Shell |
+| **C++** | 1 | Redis protocol implementation |
+| **Ruby** | 1 | Redis unauthenticated access |
+| **Perl** | 1 | Redis unauthenticated access |
+| **PHP** | 1 | Redis unauthenticated access |
+| **Total** | **147** | |
 
 <details>
 <summary>📁 Directory Structure</summary>
 
 ```
 templates/
-├── c/                  # C templates
-│   ├── vnc-no-auth.c
-│   ├── sql-injection-detection.c
+├── ai/                 # AI/LLM security
+│   ├── ollama/         # Ollama endpoint exposure
+│   ├── flowise/        # Flowise MCP injection
+│   ├── claude/         # Claude Code bypass detection
+│   ├── ml/             # ML pipeline unsafe deserialization
 │   └── ...
-├── go/                 # Go templates  
-│   ├── postgresql-default-credentials.go
-│   ├── docker-api-unauth.go
+├── databases/          # Database vulnerabilities
+│   ├── redis/          # Redis unauth (12 languages)
+│   ├── mysql/          # MySQL default credentials
+│   ├── postgresql/     # PostgreSQL default creds & RCE
+│   ├── mongodb/        # MongoDB unauth & injection
 │   └── ...
-├── python/             # Python templates
-│   ├── smtp-open-relay.py
-│   ├── mysql-default-credentials.py
+├── devops/             # DevOps & platform security
+│   ├── docker/         # Docker API & registry
+│   ├── kubernetes/     # K8s API, RBAC, kubelet, Helm
+│   ├── github/         # GHES, Actions injection, runner tokens
+│   ├── gitlab/         # GitLab fingerprint, SAML bypass
+│   ├── jenkins/        # Jenkins unauth RCE
 │   └── ...
-├── rust/               # Rust templates
-│   ├── port-scanner-async.rs
+├── messaging/          # Message broker security
+│   ├── kafka/          # Kafka unauthenticated
+│   ├── rabbitmq/       # RabbitMQ default creds & mgmt
 │   └── ...
-├── shell/              # Shell templates
-│   ├── snmp-default-community.sh
+├── monitoring/         # Observability stack exposure
+│   ├── prometheus/     # Prometheus server exposed
+│   ├── exporters/      # Redis, MySQL, Node, PostgreSQL exporters
+│   ├── splunk/         # Splunk web & API exposure
 │   └── ...
-└── yaml/               # YAML templates
-    ├── http/
-    └── network/
+├── network/            # Network service probes
+│   ├── dns/            # DNS zone transfer, rebinding, probes
+│   ├── scanning/       # Port scanner, TCP probes
+│   ├── tls/            # TLS certificate deep analysis
+│   └── ...             # ADB, Cisco, SNMP, VNC, gRPC, RMI, ...
+├── web/                # Web application vulnerabilities
+│   ├── injection/      # SQLi, XSS, SSTI, Spring4Shell, prototype pollution
+│   ├── auth-bypass/    # Auth bypass, password reset takeover
+│   ├── deserialization/ # Java deserialization gadget scan
+│   └── ...
+├── recon/              # Reconnaissance
+│   └── system/         # System context recon
+└── skeleton/           # Template boilerplate (12 languages)
 ```
 
 </details>
@@ -97,33 +123,33 @@ CERT-X-GEN's unique strength is executing templates in **real programming langua
 
 | Template | Language | Capability |
 |----------|----------|------------|
-| [`smtp-open-relay.py`](templates/python/smtp-open-relay.py) | Python | Multi-step SMTP conversation: `EHLO` → `MAIL FROM` → `RCPT TO` → `DATA` with branching logic |
-| [`postgresql-default-credentials.go`](templates/go/postgresql-default-credentials.go) | Go | PostgreSQL wire protocol + MD5 challenge-response authentication |
-| [`mysql-default-credentials.py`](templates/python/mysql-default-credentials.py) | Python | MySQL handshake protocol + native password authentication |
-| [`mongodb-unauthenticated.py`](templates/python/mongodb-unauthenticated.py) | Python | MongoDB BSON wire protocol parsing + database enumeration |
+| [`smtp-open-relay.py`](templates/network/smtp/smtp-open-relay.py) | Python | Multi-step SMTP conversation: `EHLO` → `MAIL FROM` → `RCPT TO` → `DATA` with branching logic |
+| [`postgresql-default-credentials.go`](templates/databases/postgresql/postgresql-default-credentials.go) | Go | PostgreSQL wire protocol + MD5 challenge-response authentication |
+| [`mysql-default-credentials.py`](templates/databases/mysql/mysql-default-credentials.py) | Python | MySQL handshake protocol + native password authentication |
+| [`mongodb-unauthenticated.py`](templates/databases/mongodb/mongodb-unauthenticated.py) | Python | MongoDB BSON wire protocol parsing + database enumeration |
 
 ### 🛠️ Native Tool Integration
 
 | Template | Language | Capability |
 |----------|----------|------------|
-| [`snmp-default-community.sh`](templates/shell/snmp-default-community.sh) | Shell | Native `snmpwalk` integration for community string testing |
-| [`system-context-recon.sh`](templates/shell/system-context-recon.sh) | Shell | OS detection, user enumeration, installed packages |
+| [`snmp-default-community.sh`](templates/network/snmp/snmp-default-community.sh) | Shell | Native `snmpwalk` integration for community string testing |
+| [`system-context-recon.sh`](templates/recon/system/system-context-recon.sh) | Shell | OS detection, user enumeration, installed packages |
 
 ### 🎯 Binary Protocol Analysis
 
 | Template | Language | Capability |
 |----------|----------|------------|
-| [`vnc-no-auth.c`](templates/c/vnc-no-auth.c) | C | RFB (Remote Framebuffer) binary protocol handshake |
-| [`port-scanner-async.rs`](templates/rust/port-scanner-async.rs) | Rust | High-speed async TCP port scanning with service detection |
+| [`vnc-no-auth.c`](templates/network/vnc/vnc-no-auth.c) | C | RFB (Remote Framebuffer) binary protocol handshake |
+| [`port-scanner-async.rs`](templates/network/scanning/port-scanner-async.rs) | Rust | High-speed async TCP port scanning with service detection |
 
 ### ☁️ Cloud & Container Security
 
 | Template | Language | Capability |
 |----------|----------|------------|
-| [`docker-api-unauth.go`](templates/go/docker-api-unauth.go) | Go | Docker Engine API access + container enumeration |
-| [`k8s-etcd-exposed.go`](templates/go/k8s-etcd-exposed.go) | Go | Kubernetes etcd key-value extraction |
-| [`jenkins-unauth-rce.go`](templates/go/jenkins-unauth-rce.go) | Go | Jenkins Script Console command execution |
-| [`jupyter-unauth-rce.py`](templates/python/jupyter-unauth-rce.py) | Python | Jupyter Notebook kernel code execution |
+| [`docker-api-unauth.go`](templates/devops/docker/docker-api-unauth.go) | Go | Docker Engine API access + container enumeration |
+| [`k8s-etcd-exposed.go`](templates/devops/etcd/k8s-etcd-exposed.go) | Go | Kubernetes etcd key-value extraction |
+| [`jenkins-unauth-rce.go`](templates/devops/jenkins/jenkins-unauth-rce.go) | Go | Jenkins Script Console command execution |
+| [`jupyter-unauth-rce.py`](templates/devops/jupyter/jupyter-unauth-rce.py) | Python | Jupyter Notebook kernel code execution |
 
 
 ## 📂 Template Categories
@@ -133,36 +159,46 @@ CERT-X-GEN's unique strength is executing templates in **real programming langua
 <td>
 
 ### Databases
-- Redis unauthenticated access
-- MongoDB unauthenticated access  
+- Redis unauthenticated (12 languages)
+- Redis cluster takeover
+- MongoDB unauthenticated & injection
 - MySQL default credentials
-- PostgreSQL default credentials
-- Elasticsearch data exposure
+- PostgreSQL default creds & RCE
+- Elasticsearch unauth, data exposure & injection
 - CouchDB default credentials
+- CockroachDB unauthenticated
+- ClickHouse auth bypass
 - Memcached unauthenticated
-- Zookeeper unauthenticated
+- InfluxDB health exposed
 
 </td>
 <td>
 
 ### DevOps & CI/CD
+- Docker API & registry unauthenticated
+- Kubernetes API, RBAC, kubelet, Helm secrets
+- Service account token abuse
 - Jenkins Script Console RCE
 - Jupyter Notebook RCE
-- Docker API unauthenticated
-- Kubernetes API exposed
 - etcd key exposure
-- Prometheus metrics exposed
-- Kafka unauthenticated
+- GitHub Actions injection, pwn request, runner tokens
+- GHES version fingerprint
+- GitLab version fingerprint, SAML bypass
+- Istio pilot misconfiguration
+- Git history secret scan
 
 </td>
 <td>
 
-### Network Services
-- SMTP open relay
-- FTP anonymous access
-- SNMP default community
-- VNC no authentication
-- RabbitMQ default creds
+### AI / LLM Security
+- Ollama endpoint exposure (4 checks)
+- Flowise MCP command injection
+- Claude Code sed bypass (CVE-2025-64755)
+- Copilot YOLO autoApprove
+- Cursor MCP poisoning
+- TorchServe & Triton model API exposure
+- ML unsafe deserialization & torch load
+- AI-assisted fuzzing seed corpus
 
 </td>
 </tr>
@@ -172,25 +208,48 @@ CERT-X-GEN's unique strength is executing templates in **real programming langua
 ### Web Vulnerabilities
 - SQL injection detection
 - XSS detection
-- Directory traversal
-- Authentication bypass
+- SSTI engine fingerprint
+- Spring4Shell detection
+- Prototype pollution
+- Server-side JS injection
+- HTTP header injection
+- Deserialization gadget scan
+- Directory traversal & listing
+- Auth bypass & password reset takeover
+- Race condition exploit
+- HTTP/2 Rapid Reset
+- Log4Shell detection
 
 </td>
 <td>
 
-### Cloud Exporters
-- Prometheus exporters
-- Node exporter exposed
-- Redis exporter exposed
-- MySQL exporter exposed
+### Monitoring & Messaging
+- Prometheus server & exporter exposed
+- Node, Redis, MySQL, PostgreSQL exporters
+- cAdvisor exposed
+- Kibana API status exposed
+- Splunk web & splunkd exposure
+- RabbitMQ default creds & management
+- Kafka unauthenticated
+- MQTT unauthenticated
+- NATS unauthenticated
+- ZooKeeper unauthenticated
 
 </td>
 <td>
 
-### Reconnaissance
-- Port scanning
-- Service detection
-- System context recon
+### Network Services
+- DNS zone transfer & rebinding
+- FTP anonymous access
+- SMTP open relay
+- SNMP default community
+- VNC no authentication
+- gRPC reflection abuse
+- RMI service enumeration
+- TLS certificate deep analysis
+- 25+ service probes (ADB, Cisco, SOCKS5, NTP, mDNS, SSDP, ...)
+- Async port scanner
+- TCP banner & reachability probes
 
 </td>
 </tr>
@@ -204,6 +263,7 @@ Please refer to the [CERT-X-GEN documentation](https://github.com/Bugb-Technolog
 - **Writing Templates** — Create custom security checks in any supported language
 - **Template Specification** — Required metadata, output format, environment variables
 - **Language Guides** — Best practices for Python, Go, C, Rust, Shell, and YAML templates
+- **Security Playbooks** — Detailed walkthroughs and learning content on the [BugB Blog](https://bugb.io/blogs)
 
 ### Template Skeletons
 
@@ -229,7 +289,7 @@ CERT-X-GEN templates are powered by contributions from the security community.
 ### Contribution Guidelines
 
 1. **Fork** this repository
-2. **Create** your template in the appropriate language directory
+2. **Create** your template in the appropriate category directory (e.g., `databases/redis/`, `web/injection/`)
 3. **Follow** the template skeleton structure
 4. **Validate** your template:
    ```bash

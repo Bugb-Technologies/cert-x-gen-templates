@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: ident-exposed
+name: "Ident Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: low
+description: |
+  Detects exposed IDENT (RFC 1413) services on TCP/113. IDENT responses can
+  disclose local usernames associated with TCP connections.
+
+tags:
+  - ident
+  - information-disclosure
+  - network
+  - exposure
+
+language: yaml
+confidence: 75
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 3.1
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc1413
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: tcp
+    port: 113
+
+    payloads:
+      - "111,222\r\n"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "USERID"
+        part: body
+      - type: word
+        words:
+          - "ERROR"
+        part: body
+
+remediation: |
+  1. Disable the IDENT service if not required.
+  2. Restrict access to TCP/113 to trusted networks only.

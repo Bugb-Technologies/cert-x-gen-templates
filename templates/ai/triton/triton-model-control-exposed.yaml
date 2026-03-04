@@ -1,0 +1,74 @@
+# CERT-X-GEN YAML Template
+
+id: triton-model-control-exposed
+name: "NVIDIA Triton Model Repository Control Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects an exposed NVIDIA Triton model repository control endpoint
+  (/v2/repository/index). When model-control is enabled without proper
+  access controls, attackers may load or modify models and potentially
+  abuse path traversal issues (CVE-2023-31036).
+
+tags:
+  - triton
+  - nvidia
+  - model-control
+  - repository
+  - path-traversal
+  - unauth
+  - cve-2023-31036
+
+language: yaml
+confidence: 80
+
+cve_ids:
+  - "CVE-2023-31036"
+cwe_ids:
+  - "CWE-22"   # Path Traversal
+  - "CWE-306"  # Missing Authentication for Critical Function
+cvss_score: 8.6
+version: "1.0.0"
+
+references:
+  - https://nvd.nist.gov/vuln/detail/CVE-2023-31036
+  - https://github.com/triton-inference-server/server
+
+http:
+  - method: GET
+    path:
+      - "/v2/repository/index"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: regex
+        regex:
+          - '"models"\\s*:'
+        part: body
+
+    extractors:
+      - type: regex
+        name: model_names
+        regex:
+          - '"name"\\s*:\\s*"([^"]+)"'
+        group: 1
+
+remediation: |
+  1. Disable model repository control in Triton unless explicitly needed.
+  2. Restrict access to repository APIs using authentication and network ACLs.
+  3. Upgrade Triton to versions with security fixes for CVE-2023-31036.
+  4. Store model repositories on least-privilege volumes and avoid writable mounts.

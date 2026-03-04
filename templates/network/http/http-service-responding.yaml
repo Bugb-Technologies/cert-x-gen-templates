@@ -1,0 +1,44 @@
+# @id: http-service-responding
+# @name: HTTP Service Responding
+# @author: CERT-X-GEN Security Team
+# @severity: info
+# @description: Detects whether an HTTP service responds on the target
+# @tags: network, http, recon
+# @references: https://book.hacktricks.xyz/generic-methodologies-and-resources/pentesting-network
+
+id: http-service-responding
+name: "HTTP Service Responding"
+author: CERT-X-GEN Security Team
+severity: info
+description: |
+  Detects whether an HTTP service responds on the target.
+  Useful to confirm HTTP exposure on a given port.
+tags:
+  - network
+  - http
+  - recon
+references:
+  - https://book.hacktricks.xyz/generic-methodologies-and-resources/pentesting-network
+language: yaml
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+          - 301
+          - 302
+          - 401
+          - 403
+
+remediation: |
+  Restrict HTTP access where possible and ensure authentication and authorization
+  are enforced for sensitive endpoints.

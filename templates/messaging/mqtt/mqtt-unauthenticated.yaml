@@ -1,0 +1,53 @@
+# CERT-X-GEN YAML Template
+
+id: mqtt-unauthenticated
+name: "MQTT Unauthenticated Access (CONNACK Accepted)"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects MQTT brokers that accept unauthenticated CONNECT requests.
+  A CONNACK return code of 0x00 indicates the broker accepted the connection
+  without credentials, which can allow topic enumeration and message injection.
+
+tags:
+  - mqtt
+  - mosquitto
+  - iot
+  - unauthenticated
+  - messaging
+  - exposure
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-306"
+cvss_score: 7.5
+version: "1.0.0"
+
+references:
+  - https://mqtt.org/documentation
+  - https://cwe.mitre.org/data/definitions/306.html
+
+network:
+  - protocol: tcp
+    port: 1883
+
+    payloads:
+      # MQTT CONNECT packet (MQTT 3.1.1) with empty client ID and clean session
+      - "\x10\x0c\x00\x04\x4d\x51\x54\x54\x04\x02\x00\x0a\x00\x00"
+
+    matchers-condition: and
+    matchers:
+      - type: binary
+        binary:
+          - "20020000"  # CONNACK accepted
+        part: body
+
+remediation: |
+  1. Require authentication for all MQTT clients.
+  2. Enforce TLS (MQTTS) to protect credentials in transit.
+  3. Apply topic-level ACLs to prevent cross-tenant access.
+  4. Restrict broker exposure to trusted networks only.

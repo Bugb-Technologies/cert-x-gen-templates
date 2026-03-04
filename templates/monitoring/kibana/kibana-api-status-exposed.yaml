@@ -1,0 +1,70 @@
+# CERT-X-GEN YAML Template
+
+id: kibana-api-status-exposed
+name: "Kibana /api/status Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects Kibana instances that expose the /api/status endpoint without
+  authentication. Exposed status endpoints can leak version and cluster
+  information useful for attackers.
+
+tags:
+  - kibana
+  - elastic
+  - monitoring
+  - information-disclosure
+  - exposure
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://www.elastic.co/guide/en/kibana/current/api.html
+  - https://cwe.mitre.org/data/definitions/200.html
+
+http:
+  - method: GET
+    path:
+      - "/api/status"
+
+    headers:
+      User-Agent: "cert-x-gen/1.0"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: word
+        words:
+          - "kibana"
+          - "status"
+          - "version"
+        condition: or
+        part: body
+
+    extractors:
+      - type: regex
+        name: kibana_version
+        regex:
+          - '"number"\s*:\s*"([^"]+)"'
+        group: 1
+
+remediation: |
+  1. Require authentication for Kibana access.
+  2. Restrict access to Kibana to trusted networks.
+  3. Disable or protect public access to /api/status.

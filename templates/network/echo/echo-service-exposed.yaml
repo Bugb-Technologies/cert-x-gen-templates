@@ -1,0 +1,60 @@
+# CERT-X-GEN YAML Template
+
+id: echo-service-exposed
+name: "Echo Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: low
+description: |
+  Detects TCP/UDP echo services on port 7 that reflect input back to the client.
+  Echo services are typically unnecessary and can be abused for DoS.
+
+tags:
+  - echo
+  - dos
+  - network
+  - exposure
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 3.1
+version: "1.0.0"
+
+references:
+  - http://en.wikipedia.org/wiki/ECHO_protocol
+  - https://www.cert.org/advisories/CA-1996-01.html
+
+network:
+  - protocol: tcp
+    port: 7
+
+    payloads:
+      - "certxgen-echo"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "certxgen-echo"
+        part: body
+
+  - protocol: udp
+    port: 7
+
+    payloads:
+      - "certxgen-echo"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "certxgen-echo"
+        part: body
+
+remediation: |
+  1. Disable echo services if not required.
+  2. Restrict access to TCP/UDP port 7 to trusted networks only.

@@ -1,0 +1,52 @@
+# CERT-X-GEN YAML Template
+
+id: tftp-service-exposed
+name: "TFTP Service Exposed"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: medium
+description: |
+  Detects TFTP services on UDP/69 by sending a read request (RRQ).
+  A response (data or error) indicates a reachable TFTP service, which
+  can expose files if not properly restricted.
+
+tags:
+  - tftp
+  - udp
+  - file-transfer
+  - exposure
+  - network
+
+language: yaml
+confidence: 80
+
+cwe_ids:
+  - "CWE-200"
+cvss_score: 5.3
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc1350
+  - https://cwe.mitre.org/data/definitions/200.html
+
+network:
+  - protocol: udp
+    port: 69
+
+    payloads:
+      # RRQ for filename "test" in octet mode
+      - "\x00\x01test\x00octet\x00"
+
+    matchers-condition: or
+    matchers:
+      - type: binary
+        binary:
+          - "0003"  # DATA
+          - "0005"  # ERROR
+        part: body
+
+remediation: |
+  1. Restrict TFTP exposure to trusted networks only.
+  2. Use authenticated transfer mechanisms where possible.
+  3. Limit accessible files and directories on the TFTP server.

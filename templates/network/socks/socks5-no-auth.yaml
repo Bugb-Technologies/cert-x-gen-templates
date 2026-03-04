@@ -1,0 +1,51 @@
+# CERT-X-GEN YAML Template
+
+id: socks5-no-auth
+name: "SOCKS5 No-Authentication Proxy"
+author:
+  name: "CERT-X-GEN Security Team"
+  email: "security@cert-x-gen.local"
+severity: high
+description: |
+  Detects SOCKS5 proxies that accept connections without authentication.
+  A response of 0x05 0x00 indicates "no authentication" is allowed, which
+  can enable open-proxy abuse and internal network pivoting.
+
+tags:
+  - socks5
+  - proxy
+  - unauthenticated
+  - network
+  - exposure
+
+language: yaml
+confidence: 85
+
+cwe_ids:
+  - "CWE-306"
+cvss_score: 7.5
+version: "1.0.0"
+
+references:
+  - https://www.rfc-editor.org/rfc/rfc1928
+  - https://cwe.mitre.org/data/definitions/306.html
+
+network:
+  - protocol: tcp
+    port: 1080
+
+    payloads:
+      # SOCKS5 greeting: version 5, 1 auth method, method 0x00 (no auth)
+      - "\x05\x01\x00"
+
+    matchers-condition: and
+    matchers:
+      - type: binary
+        binary:
+          - "0500"
+        part: body
+
+remediation: |
+  1. Require authentication on the SOCKS proxy.
+  2. Restrict access to trusted networks or VPN users only.
+  3. Disable the proxy if not required.
