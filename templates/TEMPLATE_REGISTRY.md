@@ -1,226 +1,341 @@
 # CERT-X-GEN Template Registry
 
-This document provides a registry of all available templates organized by purpose-based folders.
+This document provides a complete registry of all available templates organized by purpose-based categories.
 
-## Template Categories
+> **Total templates:** 147 | **Playbooks:** 23 | **Languages:** 12 | **Categories:** 9
 
-### 1. AI / LLM Services
-- **Ollama Unauthenticated /api/generate Access** (`ai/ollama/detect-unauthenticated-access-apigenerate.yaml`)
-- **Ollama Unauthorized /api/pull Access (CVE-2024-37032)** (`ai/ollama/apipull-access-sending-post.yaml`)
-- **Ollama Exposed Endpoint Detection** (`ai/ollama/detect-exposed-ollama-sending.yaml`)
-- **Ollama Detection** (`ai/ollama/detect_ollama.yaml`)
-- **AI-Assisted Fuzzing SQLi Seed Corpus** (`ai/ai-assisted-fuzzing/ai-assisted-fuzzing-sqli-seed-corpus.py`)
+---
 
-### 2. Databases
-- **Redis Unauthenticated (multi-language)**
-  - `databases/redis/redis-unauthenticated.c`
-  - `databases/redis/redis-unauthenticated.cpp`
-  - `databases/redis/redis-unauthenticated.go`
-  - `databases/redis/redis-unauthenticated.js`
-  - `databases/redis/redis-unauthenticated.php`
-  - `databases/redis/redis-unauthenticated.pl`
-  - `databases/redis/redis-unauthenticated.py`
-  - `databases/redis/redis-unauthenticated.rb`
-  - `databases/redis/redis-unauthenticated.rs`
-  - `databases/redis/redis-unauthenticated.sh`
-  - `databases/redis/redis-unauthenticated.yaml`
-  - `databases/redis/RedisUnauthenticated.java`
-- **MySQL Default Credentials** (`databases/mysql/mysql-default-credentials.py`)
-- **PostgreSQL Default Credentials** (`databases/postgresql/postgresql-default-credentials.go`)
-- **MongoDB Unauthenticated** (`databases/mongodb/mongodb-unauthenticated.py`)
-- **Elasticsearch Unauthenticated** (`databases/elasticsearch/elasticsearch_unauthenticated.rs`)
-- **Elasticsearch Data Exposure** (`databases/elasticsearch/elasticsearch-data-exposure.py`)
-- **CouchDB Default Credentials** (`databases/couchdb/couchdb_default_creds.rs`)
-- **CockroachDB Unauthenticated** (`databases/cockroachdb/cockroachdb-unauthenticated.yaml`)
-- **Memcached Unauthenticated** (`databases/memcached/memcached-unauthenticated.yaml`)
+## 1. AI / LLM Security (`ai/`)
 
-### 3. DevOps / Platform
-- **Docker API Unauthenticated** (`devops/docker/docker-api-unauth.go`)
-- **Docker Registry Unauthenticated** (`devops/docker/docker-registry-unauthenticated.sh`)
-- **Etcd Unauthenticated (shell)** (`devops/etcd/etcd-unauthenticated.sh`)
-- **Etcd Unauthenticated (HTTP checks)**
-  - `devops/etcd/think-wrong-able-validate.yaml`
-  - `devops/etcd/etcd-instead-http-request.yaml`
-  - `devops/etcd/etcd-think-path-wrong.yaml`
-  - `devops/etcd/new-etcd-vulnerable-unauthenticated.yaml`
-  - `devops/etcd/which-runs-etcdctl-command.yaml`
-- **Etcd Unauthenticated Port Check** (`devops/etcd/etcd-running-unauthenticated-port.sh`)
-- **K8s Etcd Exposed** (`devops/etcd/k8s-etcd-exposed.go`)
-- **Jenkins Unauthenticated RCE** (`devops/jenkins/jenkins-unauth-rce.go`)
-- **Kubernetes API Unauthenticated** (`devops/kubernetes/kubernetes-api-unauthenticated-default.yaml`)
-- **Jupyter Unauthenticated RCE** (`devops/jupyter/jupyter-unauth-rce.py`)
+### Ollama
+- **Ollama Unauthenticated /api/generate Access** — `ai/ollama/detect-unauthenticated-access-apigenerate.yaml`
+- **Ollama Unauthorized /api/pull Access (CVE-2024-37032)** — `ai/ollama/apipull-access-sending-post.yaml`
+- **Ollama Exposed Endpoint Detection** — `ai/ollama/detect-exposed-ollama-sending.yaml`
+- **Ollama Detection** — `ai/ollama/detect_ollama.yaml`
 
-### 4. Monitoring & Observability
-- **Prometheus Server Exposed**
-  - `monitoring/prometheus/prometheus-server-exposed.py`
-  - `monitoring/prometheus/prometheus-server-exposed.js`
-  - `monitoring/prometheus/prometheus-server-exposed-https.py`
-- **cAdvisor Exposed**
-  - `monitoring/cadvisor/cadvisor-exposed.py`
-  - `monitoring/cadvisor/cadvisor-exposed.js`
-- **Metrics Endpoint Exposure** (`monitoring/metrics/which-checks-metrics-available.yaml`)
-- **Exporters**
-  - Redis Exporter Exposed: `monitoring/exporters/redis/redis-exporter-exposed.py`, `monitoring/exporters/redis/redis-exporter-exposed.yaml`
-  - MySQL Exporter Exposed: `monitoring/exporters/mysql/mysql-exporter-exposed.py`
-  - PostgreSQL Exporter Exposed: `monitoring/exporters/postgresql/postgresql-exporter-exposed.py`
-  - Node Exporter Exposed: `monitoring/exporters/node/node-exporter-exposed.py`, `monitoring/exporters/node/node-exporter-exposed.js`, `monitoring/exporters/node/prometheus-node-exporter-exposed.yaml`
+### Flowise
+- **Flowise CustomMCP Command Endpoint Exposed** — `ai/flowise/flowise-custommcp-command-endpoint-exposed.yaml`
+- **Flowise CustomMCP JS Eval Exposed** — `ai/flowise/flowise-custommcp-js-eval-exposed.yaml`
 
-### 5. Messaging
-- **RabbitMQ Default Credentials** (`messaging/rabbitmq/rabbitmq-default-credentials.py`)
-- **Kafka Unauthenticated** (`messaging/kafka/kafka-unauthenticated.sh`)
-- **Zookeeper Unauthenticated** (`messaging/zookeeper/zookeeper-unauthenticated.yaml`)
+### ML / Model Security
+- **Torch Unsafe Load Usage** — `ai/ml/torch-unsafe-load-usage.py`
+- **Unsafe Deserialization Usage** — `ai/ml/unsafe-deserialization-usage.py`
+- **AI-Assisted Fuzzing SQLi Seed Corpus** — `ai/ai-assisted-fuzzing/ai-assisted-fuzzing-sqli-seed-corpus.py`
 
-### 6. Network Services
-- **FTP Anonymous Access** (`network/ftp/ftp-anonymous-access.py`)
-- **SMTP Open Relay** (`network/smtp/smtp-open-relay.py`)
-- **SNMP Default Community** (`network/snmp/snmp-default-community.sh`)
-- **VNC No Auth** (`network/vnc/vnc-no-auth.c`)
-- **Port Scanner (Async)** (`network/scanning/port-scanner-async.rs`)
-- **DNS Zone Transfer** (`network/dns/dns-zone-transfer.py`)
-- **ICMP Echo Reachability** (`network/recon/icmp-echo-reachable.py`)
-- **TCP Port Reachability** (`network/scanning/tcp-port-reachability.py`)
-- **HTTP Service Responding** (`network/http/http-service-responding.yaml`)
-- **DNS UDP Service Probe** (`network/dns/dns-udp-service-probe.py`)
-- **NTP UDP Service Probe** (`network/ntp/ntp-udp-service-probe.py`)
-- **DHCPv6 Solicit Response Probe** (`network/dhcpv6/dhcpv6-solicit-response.py`)
-- **mDNS Service Discovery Probe** (`network/mdns/mdns-service-discovery-probe.py`)
-- **SSDP M-SEARCH Response Probe** (`network/ssdp/ssdp-msearch-response.py`)
-- **NBNS Name Query Probe** (`network/nbns/nbns-name-query-probe.py`)
-- **WSD Probe Response** (`network/wsd/wsd-probe-response.py`)
-- **TCP Banner Probe** (`network/scanning/tcp-banner-probe.py`)
+### Model Serving
+- **TorchServe Management API Exposed** — `ai/torchserve/torchserve-management-api-exposed.yaml`
+- **Triton Model Control Exposed** — `ai/triton/triton-model-control-exposed.yaml`
+- **InvokeAI Model Install Exposed** — `ai/invokeai/invokeai-model-install-exposed.yaml`
 
-### 7. Web Application Security
-- **SQL Injection Detection** (`web/injection/sql-injection-detection.c`, `web/injection/sql-injection-detection.yaml`)
-- **Blind SQL Injection (Time-Based)** (`web/injection/timing-attack-detection.yaml`)
-- **Response Manipulation / Cache Poisoning** (`web/cache/response-manipulation-detection.yaml`)
-- **XSS Detection** (`web/xss/xss-detection.c`)
-- **Directory Traversal** (`web/traversal/directory-traversal.c`)
-- **Auth Bypass Flow** (`web/auth-bypass/auth-bypass-flow.yaml`)
-- **Sensitive Data Exposure** (`web/sensitive-data/sensitive-data-exposure.yaml`)
-- **HTTP Detection Examples** (`web/http/http-detection.yaml`, `web/http/example-http-check.yaml`)
-- **Log4Shell Check** (`web/log4shell/are-vulnerable-log4shell.sh`)
+### AI IDE / Agent Security
+- **Claude Code sed Bypass Usage (CVE-2025-64755)** — `ai/claude/claude-code-sed-bypass-usage.py`
+- **Copilot YOLO AutoApprove Enabled** — `ai/copilot/copilot-yolo-autoapprove-enabled.py`
+- **Cursor MCP Poisoning Config Risk** — `ai/cursor/cursor-mcpoison-config-risk.py`
 
-### 8. Reconnaissance
-- **System Context Recon** (`recon/system/system-context-recon.sh`)
+---
 
-## Template Execution
+## 2. Databases (`databases/`)
 
-### Running All Templates
-```bash
-# Test all templates across all languages
-./test-all-templates.sh
+### Redis (Polyglot — 12 languages)
+- `databases/redis/redis-unauthenticated.py`
+- `databases/redis/redis-unauthenticated.go`
+- `databases/redis/redis-unauthenticated.rs`
+- `databases/redis/redis-unauthenticated.js`
+- `databases/redis/redis-unauthenticated.c`
+- `databases/redis/redis-unauthenticated.cpp`
+- `databases/redis/RedisUnauthenticated.java`
+- `databases/redis/redis-unauthenticated.rb`
+- `databases/redis/redis-unauthenticated.pl`
+- `databases/redis/redis-unauthenticated.php`
+- `databases/redis/redis-unauthenticated.sh`
+- `databases/redis/redis-unauthenticated.yaml`
+- **Redis Cluster Takeover** — `databases/redis/redis-cluster-takeover.go` ([playbook](../playbooks/redis-cluster-takeover-playbook.md))
 
-# Test with specific target
-./test-all-templates.sh -t 192.168.1.100 -p 8080
+### MySQL
+- **MySQL Default Credentials** — `databases/mysql/mysql-default-credentials.py`
 
-# Verbose output
-./test-all-templates.sh -v
+### PostgreSQL
+- **PostgreSQL Default Credentials** — `databases/postgresql/postgresql-default-credentials.go`
+- **PostgreSQL Extension RCE** — `databases/postgresql/postgresql-extension-rce.py`
 
-# JSON output
-./test-all-templates.sh -j
-```
+### MongoDB
+- **MongoDB Unauthenticated** — `databases/mongodb/mongodb-unauthenticated.py`
+- **MongoDB Injection Deep** — `databases/mongodb/mongodb-injection-deep.py` ([playbook](../playbooks/mongodb-injection-deep-playbook.md))
 
-### Running Templates by Language
-```bash
-# C templates only
-cert-x-gen scan --target example.com --template-language c
+### Elasticsearch
+- **Elasticsearch Unauthenticated** — `databases/elasticsearch/elasticsearch_unauthenticated.rs`
+- **Elasticsearch Data Exposure** — `databases/elasticsearch/elasticsearch-data-exposure.py`
+- **Elasticsearch Query Injection** — `databases/elasticsearch/elasticsearch-query-injection.py` ([playbook](../playbooks/elasticsearch-query-injection-playbook.md))
 
-# Go templates only
-cert-x-gen scan --target example.com --template-language go
+### ClickHouse
+- **ClickHouse Auth Bypass** — `databases/clickhouse/clickhouse-auth-bypass.py` ([playbook](../playbooks/clickhouse-auth-bypass-playbook.md))
 
-# Python templates only
-cert-x-gen scan --target example.com --template-language python
+### CouchDB
+- **CouchDB Default Credentials** — `databases/couchdb/couchdb_default_creds.rs`
 
-# Multiple languages
-cert-x-gen scan --target example.com --template-language c,go,python
-```
+### CockroachDB
+- **CockroachDB Unauthenticated** — `databases/cockroachdb/cockroachdb-unauthenticated.yaml`
 
-### Running Templates by Category
-```bash
-# Database services
-cert-x-gen scan --target example.com --tags database
+### Memcached
+- **Memcached Unauthenticated** — `databases/memcached/memcached-unauthenticated.yaml`
 
-# Web vulnerabilities
-cert-x-gen scan --target example.com --tags injection
+### InfluxDB
+- **InfluxDB Health Exposed** — `databases/influxdb/influxdb-health-exposed.yaml`
 
-# Cloud services
-cert-x-gen scan --target example.com --tags cloud
+---
 
-# Container services
-cert-x-gen scan --target example.com --tags container
-```
+## 3. DevOps / Platform (`devops/`)
 
-## Template Development
+### Docker
+- **Docker API Unauthenticated** — `devops/docker/docker-api-unauth.go`
+- **Docker Registry Unauthenticated** — `devops/docker/docker-registry-unauthenticated.sh`
 
-### Skeleton Templates
-Each language has a skeleton template in `templates/skeleton/`:
-- `c-template-skeleton.c`
-- `cpp-template-skeleton.cpp`
-- `java-template-skeleton.java`
-- `go-template-skeleton.go`
-- `python-template-skeleton.py`
-- `javascript-template-skeleton.js`
-- `rust-template-skeleton.rs`
-- `shell-template-skeleton.sh`
-- `ruby-template-skeleton.rb`
-- `perl-template-skeleton.pl`
-- `php-template-skeleton.php`
-- `yaml-template-skeleton.yaml`
+### Etcd
+- **Etcd Unauthenticated (Shell)** — `devops/etcd/etcd-unauthenticated.sh`
+- **Etcd Unauthenticated Port Check** — `devops/etcd/etcd-running-unauthenticated-port.sh`
+- **K8s Etcd Exposed** — `devops/etcd/k8s-etcd-exposed.go`
+- **Etcd HTTP Checks** — `devops/etcd/etcd-instead-http-request.yaml`, `devops/etcd/etcd-think-path-wrong.yaml`, `devops/etcd/new-etcd-vulnerable-unauthenticated.yaml`, `devops/etcd/think-wrong-able-validate.yaml`, `devops/etcd/which-runs-etcdctl-command.yaml`
 
-### Template Structure
-All templates follow the same structure:
-1. **Metadata**: Template ID, name, author, severity, tags, CWE
-2. **Environment Variables**: CERT_X_GEN_* variables for configuration
-3. **Port Configuration**: Support for ADD_PORTS and OVERRIDE_PORTS
-4. **HTTP Requests**: Service-specific testing logic
-5. **JSON Output**: Standardized finding format
-6. **Error Handling**: Graceful failure handling
+### Jenkins
+- **Jenkins Unauthenticated RCE** — `devops/jenkins/jenkins-unauth-rce.go`
 
-### Adding New Templates
-1. Choose appropriate language based on service type
-2. Copy skeleton template
-3. Implement service-specific logic
-4. Add to appropriate purpose-based category directory
-5. Update this registry
-6. Test with `test-all-templates.sh`
+### Jupyter
+- **Jupyter Unauthenticated RCE** — `devops/jupyter/jupyter-unauth-rce.py`
 
-## Quality Assurance
+### Kubernetes
+- **Kubernetes API Unauthenticated** — `devops/kubernetes/kubernetes-api-unauthenticated-default.yaml`
+- **K8s RBAC Misconfiguration** — `devops/kubernetes/k8s-rbac-misconfiguration.go` ([playbook](../playbooks/k8s-rbac-misconfiguration-playbook.md))
+- **Kubelet API Exposure** — `devops/kubernetes/kubelet-api-exposure.go` ([playbook](../playbooks/kubelet-api-exposure-playbook.md))
+- **Service Account Token Abuse** — `devops/kubernetes/service-account-token-abuse.go` ([playbook](../playbooks/service-account-token-abuse-playbook.md))
+- **Helm Chart Secrets Leak** — `devops/kubernetes/helm-chart-secrets-leak.py`
 
-### Testing
-- All templates are tested with `test-all-templates.sh`
-- Compilation testing for compiled languages
-- Runtime testing for all languages
-- JSON output validation
-- Error handling verification
+### GitHub / GitHub Enterprise
+- **GHES Version Fingerprint** — `devops/github/ghes-version-fingerprint.py`
+- **Actions Injection Scanner** — `devops/github/actions-injection-scanner.py`
+- **Pwn Request Scanner** — `devops/github/pwn-request-scanner.py`
+- **Runner Token Detection** — `devops/github/runner-token-detection.go`
 
-### Validation
-- Template metadata validation
-- Port configuration testing
-- Environment variable handling
-- Output format compliance
-- Performance testing
+### GitLab
+- **GitLab Version Fingerprint** — `devops/gitlab/gitlab-version-fingerprint.py`
+- **SAML SSO Bypass GitLab** — `devops/gitlab/saml-sso-bypass-gitlab.py`
 
-### Maintenance
-- Regular template updates
-- Security patch testing
-- Performance optimization
-- Documentation updates
-- Community contributions
+### Git
+- **Git History Secret Scan** — `devops/git/git-history-secret-scan.go` ([playbook](../playbooks/git-history-secret-scan-playbook.md))
 
-## Contributing
+### Istio
+- **Istio Pilot Misconfiguration** — `devops/istio/istio-pilot-misconfiguration.go` ([playbook](../playbooks/istio-pilot-misconfiguration-playbook.md))
 
-1. Fork the repository
-2. Create feature branch
-3. Add new templates following the structure
-4. Test with `test-all-templates.sh`
-5. Update documentation
-6. Submit pull request
+### CI/CD
+- **CI Variable Exposure** — `devops/ci/ci-variable-exposure.py`
 
-## Support
+---
 
-For questions or issues:
-- Check existing templates for examples
-- Review skeleton templates
-- Test with `test-all-templates.sh`
-- Submit issues on GitHub
-- Join the community discussions
+## 4. Messaging (`messaging/`)
+
+### RabbitMQ
+- **RabbitMQ Default Credentials** — `messaging/rabbitmq/rabbitmq-default-credentials.py`
+- **RabbitMQ Management Exposed** — `messaging/rabbitmq/rabbitmq-management-exposed.yaml`
+
+### Kafka
+- **Kafka Unauthenticated** — `messaging/kafka/kafka-unauthenticated.sh`
+- **Kafka Unauthenticated Access** — `messaging/kafka/kafka-unauthenticated-access.py`
+
+### ZooKeeper
+- **ZooKeeper Unauthenticated** — `messaging/zookeeper/zookeeper-unauthenticated.yaml`
+
+### MQTT
+- **MQTT Unauthenticated** — `messaging/mqtt/mqtt-unauthenticated.yaml`
+
+### NATS
+- **NATS Unauthenticated Banner** — `messaging/nats/nats-unauthenticated-banner.yaml`
+
+---
+
+## 5. Monitoring & Observability (`monitoring/`)
+
+### Prometheus
+- **Prometheus Server Exposed** — `monitoring/prometheus/prometheus-server-exposed.py`
+- **Prometheus Server Exposed (JS)** — `monitoring/prometheus/prometheus-server-exposed.js`
+- **Prometheus Server Exposed HTTPS** — `monitoring/prometheus/prometheus-server-exposed-https.py`
+
+### cAdvisor
+- **cAdvisor Exposed (Python)** — `monitoring/cadvisor/cadvisor-exposed.py`
+- **cAdvisor Exposed (JS)** — `monitoring/cadvisor/cadvisor-exposed.js`
+
+### Exporters
+- **Redis Exporter Exposed** — `monitoring/exporters/redis/redis-exporter-exposed.py`, `monitoring/exporters/redis/redis-exporter-exposed.yaml`
+- **MySQL Exporter Exposed** — `monitoring/exporters/mysql/mysql-exporter-exposed.py`
+- **PostgreSQL Exporter Exposed** — `monitoring/exporters/postgresql/postgresql-exporter-exposed.py`
+- **Node Exporter Exposed** — `monitoring/exporters/node/node-exporter-exposed.py`, `monitoring/exporters/node/node-exporter-exposed.js`, `monitoring/exporters/node/prometheus-node-exporter-exposed.yaml`
+
+### Metrics
+- **Metrics Endpoint Exposure** — `monitoring/metrics/which-checks-metrics-available.yaml`
+
+### Kibana
+- **Kibana API Status Exposed** — `monitoring/kibana/kibana-api-status-exposed.yaml`
+
+### Splunk
+- **Splunk Web Login Exposed** — `monitoring/splunk/splunk-web-login-exposed.yaml`
+- **Splunkd Server Info Exposed** — `monitoring/splunk/splunkd-server-info-exposed.yaml`
+
+---
+
+## 6. Network Services (`network/`)
+
+### DNS
+- **DNS Zone Transfer** — `network/dns/dns-zone-transfer.py`
+- **DNS UDP Service Probe** — `network/dns/dns-udp-service-probe.py`
+- **DNS Rebinding Attack** — `network/dns/dns-rebinding-attack.go` ([playbook](../playbooks/dns-rebinding-attack-playbook.md))
+
+### FTP
+- **FTP Anonymous Access** — `network/ftp/ftp-anonymous-access.py`
+
+### SMTP
+- **SMTP Open Relay** — `network/smtp/smtp-open-relay.py`
+
+### SNMP
+- **SNMP Default Community** — `network/snmp/snmp-default-community.sh`
+
+### VNC
+- **VNC No Auth** — `network/vnc/vnc-no-auth.c`
+
+### gRPC
+- **gRPC Reflection Abuse** — `network/grpc/grpc-reflection-abuse.go` ([playbook](../playbooks/grpc-reflection-abuse-playbook.md))
+
+### RMI
+- **RMI Service Enumeration** — `network/rmi/RmiServiceEnumeration.java` ([playbook](../playbooks/rmi-service-enumeration-playbook.md))
+
+### TLS
+- **TLS Certificate Deep Analysis** — `network/tls/src/main.rs` ([playbook](../playbooks/tls-certificate-deep-analysis-playbook.md))
+
+### WebSocket
+- **WebSocket Message Fuzzer** — `network/websocket/websocket-message-fuzzer.js`
+
+### Scanning & Recon
+- **Port Scanner (Async)** — `network/scanning/port-scanner-async.rs`
+- **TCP Banner Probe** — `network/scanning/tcp-banner-probe.py`
+- **TCP Port Reachability** — `network/scanning/tcp-port-reachability.py`
+- **ICMP Echo Reachable** — `network/recon/icmp-echo-reachable.py`
+
+### Service Probes (YAML)
+- **ADB Exposed** — `network/adb/adb-exposed.yaml`
+- **Cisco Smart Install Exposed** — `network/cisco/smart-install-exposed.yaml`
+- **Echo Service Exposed** — `network/echo/echo-service-exposed.yaml`
+- **EPMD Node List Exposed** — `network/epmd/epmd-node-list-exposed.yaml`
+- **Finger Service Exposed** — `network/finger/finger-service-exposed.yaml`
+- **HTTP Service Responding** — `network/http/http-service-responding.yaml`
+- **Ident Exposed** — `network/ident/ident-exposed.yaml`
+- **NDMP Service Exposed** — `network/ndmp/ndmp-service-exposed.yaml`
+- **rsync Banner Exposed** — `network/rsync/rsync-banner-exposed.yaml`
+- **SOCKS5 No Auth** — `network/socks/socks5-no-auth.yaml`
+- **TACACS Service Exposed** — `network/tacacs/tacacs-service-exposed.yaml`
+- **TFTP Service Exposed** — `network/tftp/tftp-service-exposed.yaml`
+- **Whois Service Exposed** — `network/whois/whois-service-exposed.yaml`
+
+### UDP Service Probes (Python)
+- **DHCPv6 Solicit Response** — `network/dhcpv6/dhcpv6-solicit-response.py`
+- **mDNS Service Discovery Probe** — `network/mdns/mdns-service-discovery-probe.py`
+- **NBNS Name Query Probe** — `network/nbns/nbns-name-query-probe.py`
+- **NTP UDP Service Probe** — `network/ntp/ntp-udp-service-probe.py`
+- **SSDP M-SEARCH Response** — `network/ssdp/ssdp-msearch-response.py`
+- **WSD Probe Response** — `network/wsd/wsd-probe-response.py`
+
+---
+
+## 7. Web Application (`web/`)
+
+### Authentication
+- **Auth Bypass Flow** — `web/auth-bypass/auth-bypass-flow.yaml`
+- **Password Reset Takeover** — `web/auth-bypass/password-reset-takeover.py`
+
+### Injection
+- **SQL Injection Detection (C)** — `web/injection/sql-injection-detection.c`
+- **SQL Injection Detection (YAML)** — `web/injection/sql-injection-detection.yaml`
+- **Timing Attack Detection** — `web/injection/timing-attack-detection.yaml`
+- **HTTP Header Injection** — `web/injection/http-header-injection.py`
+- **Prototype Pollution** — `web/injection/prototype-pollution.js`
+- **Server-Side JS Injection** — `web/injection/server-side-js-injection.js`
+- **SSTI Engine Fingerprint** — `web/injection/ssti-engine-fingerprint.py` ([playbook](../playbooks/ssti-engine-fingerprint-playbook.md))
+- **Spring4Shell Detection** — `web/injection/Spring4ShellDetection.java` ([playbook](../playbooks/spring4shell-detection-playbook.md))
+
+### Deserialization
+- **Deserialization Gadget Scan** — `web/deserialization/DeserializationGadgetScan.java` ([playbook](../playbooks/deserialization-gadget-scan-playbook.md))
+
+### GraphQL
+- **GraphQL User Enumeration** — `web/graphql/graphql-user-enumeration.py`
+
+### HTTP
+- **HTTP Detection** — `web/http/http-detection.yaml`
+- **Example HTTP Check** — `web/http/example-http-check.yaml`
+- **HTTP/2 Rapid Reset** — `web/http/http2-rapid-reset.go` ([playbook](../playbooks/http2-rapid-reset-playbook.md))
+
+### Other Web
+- **XSS Detection** — `web/xss/xss-detection.c`
+- **Directory Traversal** — `web/traversal/directory-traversal.c`
+- **Directory Listing Common Paths** — `web/directory-listing/directory-listing-common-paths.yaml`
+- **Sensitive Data Exposure** — `web/sensitive-data/sensitive-data-exposure.yaml`
+- **Response Manipulation Detection** — `web/cache/response-manipulation-detection.yaml`
+- **Log4Shell Detection** — `web/log4shell/are-vulnerable-log4shell.sh`
+- **Race Condition Exploit** — `web/race-condition/race-condition-exploit.go` ([playbook](../playbooks/race-condition-exploit-playbook.md))
+
+---
+
+## 8. Recon (`recon/`)
+
+- **System Context Recon** — `recon/system/system-context-recon.sh`
+
+---
+
+## 9. Skeleton Templates (`skeleton/`)
+
+Boilerplate templates and AI-assisted authoring notes for all 12 supported languages:
+
+| Language | Skeleton | AI Notes |
+|---|---|---|
+| C | `skeleton/c-template-skeleton.c` | `skeleton/c-template-ai-notes.md` |
+| C++ | `skeleton/cpp-template-skeleton.cpp` | `skeleton/cpp-template-ai-notes.md` |
+| Go | `skeleton/go-template-skeleton.go` | `skeleton/go-template-ai-notes.md` |
+| Java | `skeleton/java-template-skeleton.java` | `skeleton/java-template-ai-notes.md` |
+| JavaScript | `skeleton/javascript-template-skeleton.js` | `skeleton/javascript-template-ai-notes.md` |
+| Perl | `skeleton/perl-template-skeleton.pl` | `skeleton/perl-template-ai-notes.md` |
+| PHP | `skeleton/php-template-skeleton.php` | `skeleton/php-template-ai-notes.md` |
+| Python | `skeleton/python-template-skeleton.py` | `skeleton/python-template-ai-notes.md` |
+| Ruby | `skeleton/ruby-template-skeleton.rb` | `skeleton/ruby-template-ai-notes.md` |
+| Rust | `skeleton/rust-template-skeleton.rs` | `skeleton/rust-template-ai-notes.md` |
+| Shell | `skeleton/shell-template-skeleton.sh` | `skeleton/shell-template-ai-notes.md` |
+| YAML | `skeleton/yaml-template-skeleton.yaml` | `skeleton/yaml-template-ai-notes.md` |
+
+---
+
+## Playbooks
+
+All playbooks are located in the `playbooks/` directory at the repository root.
+
+| Playbook | Related Template |
+|---|---|
+| `clickhouse-auth-bypass-playbook.md` | `databases/clickhouse/clickhouse-auth-bypass.py` |
+| `deserialization-gadget-scan-playbook.md` | `web/deserialization/DeserializationGadgetScan.java` |
+| `dns-rebinding-attack-playbook.md` | `network/dns/dns-rebinding-attack.go` |
+| `elasticsearch-query-injection-playbook.md` | `databases/elasticsearch/elasticsearch-query-injection.py` |
+| `ghes-saml-encrypted-assertions-exposure-playbook.md` | — |
+| `git-history-secret-scan-playbook.md` | `devops/git/git-history-secret-scan.go` |
+| `graphql-batching-dos-playbook.md` | — |
+| `grpc-reflection-abuse-playbook.md` | `network/grpc/grpc-reflection-abuse.go` |
+| `http2-rapid-reset-playbook.md` | `web/http/http2-rapid-reset.go` |
+| `istio-pilot-misconfiguration-playbook.md` | `devops/istio/istio-pilot-misconfiguration.go` |
+| `jwt-algorithm-confusion-playbook.md` | — |
+| `k8s-rbac-misconfiguration-playbook.md` | `devops/kubernetes/k8s-rbac-misconfiguration.go` |
+| `kubelet-api-exposure-playbook.md` | `devops/kubernetes/kubelet-api-exposure.go` |
+| `mongodb-injection-deep-playbook.md` | `databases/mongodb/mongodb-injection-deep.py` |
+| `oauth-state-confusion-playbook.md` | — |
+| `oauth-state-parameter-audit-playbook.md` | — |
+| `race-condition-exploit-playbook.md` | `web/race-condition/race-condition-exploit.go` |
+| `redis-cluster-takeover-playbook.md` | `databases/redis/redis-cluster-takeover.go` |
+| `rmi-service-enumeration-playbook.md` | `network/rmi/RmiServiceEnumeration.java` |
+| `service-account-token-abuse-playbook.md` | `devops/kubernetes/service-account-token-abuse.go` |
+| `spring4shell-detection-playbook.md` | `web/injection/Spring4ShellDetection.java` |
+| `ssti-engine-fingerprint-playbook.md` | `web/injection/ssti-engine-fingerprint.py` |
+| `tls-certificate-deep-analysis-playbook.md` | `network/tls/src/main.rs` |
+
+> **Note:** Playbooks marked with "—" have documentation but their corresponding templates are tracked separately or are pending creation.
