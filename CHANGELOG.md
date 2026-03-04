@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `network/` — Network service probes and attacks (34 templates)
 - `web/` — Web application vulnerabilities (22 templates)
 - `recon/` — Reconnaissance and enumeration (1 template)
-- `playbooks/` — 23 detailed security assessment playbooks
+- 23 security assessment playbooks (published on [BugB Blog](https://bugb.io/blogs))
 
 #### AI / LLM Security (15 new templates)
 - Claude Code sed DSL bypass detection (CVE-2025-64755)
@@ -65,8 +65,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - RabbitMQ management exposed, InfluxDB health exposed
 - Kibana API status exposed, Splunk web login and splunkd server info exposed
 
-#### Playbooks (23 total)
-- Comprehensive security assessment playbooks for: ClickHouse auth bypass, deserialization gadget scan, DNS rebinding, Elasticsearch query injection, GHES SAML encrypted assertions, Git history secret scan, GraphQL batching DoS, gRPC reflection abuse, HTTP/2 rapid reset, Istio pilot misconfiguration, JWT algorithm confusion, K8s RBAC misconfiguration, kubelet API exposure, MongoDB injection deep, OAuth state confusion, OAuth state parameter audit, race condition exploit, Redis cluster takeover, RMI service enumeration, service account token abuse, Spring4Shell detection, SSTI engine fingerprint, TLS certificate deep analysis
+#### Playbooks (23 — published on [BugB Blog](https://bugb.io/blogs))
+- Detailed security assessment playbooks moved from repository to blog for better discoverability and richer presentation
+- Topics include: ClickHouse auth bypass, deserialization gadget scan, DNS rebinding, Elasticsearch query injection, GHES SAML encrypted assertions, Git history secret scan, GraphQL batching DoS, gRPC reflection abuse, HTTP/2 rapid reset, Istio pilot misconfiguration, JWT algorithm confusion, K8s RBAC misconfiguration, kubelet API exposure, MongoDB injection deep, OAuth state confusion, OAuth state parameter audit, race condition exploit, Redis cluster takeover, RMI service enumeration, service account token abuse, Spring4Shell detection, SSTI engine fingerprint, TLS certificate deep analysis
 
 ### Documentation
 - Added CONTRIBUTORS.md

@@ -2,7 +2,9 @@
 
 This document provides a complete registry of all available templates organized by purpose-based categories.
 
-> **Total templates:** 147 | **Playbooks:** 23 | **Languages:** 12 | **Categories:** 9
+> **Total templates:** 147 | **Languages:** 12 | **Categories:** 9
+>
+> **Playbooks & learning content:** Published on the [BugB Blog](https://bugb.io/blogs)
 
 ---
 
@@ -50,7 +52,7 @@ This document provides a complete registry of all available templates organized 
 - `databases/redis/redis-unauthenticated.php`
 - `databases/redis/redis-unauthenticated.sh`
 - `databases/redis/redis-unauthenticated.yaml`
-- **Redis Cluster Takeover** — `databases/redis/redis-cluster-takeover.go` ([playbook](../playbooks/redis-cluster-takeover-playbook.md))
+- **Redis Cluster Takeover** — `databases/redis/redis-cluster-takeover.go`
 
 ### MySQL
 - **MySQL Default Credentials** — `databases/mysql/mysql-default-credentials.py`
@@ -61,15 +63,15 @@ This document provides a complete registry of all available templates organized 
 
 ### MongoDB
 - **MongoDB Unauthenticated** — `databases/mongodb/mongodb-unauthenticated.py`
-- **MongoDB Injection Deep** — `databases/mongodb/mongodb-injection-deep.py` ([playbook](../playbooks/mongodb-injection-deep-playbook.md))
+- **MongoDB Injection Deep** — `databases/mongodb/mongodb-injection-deep.py`
 
 ### Elasticsearch
 - **Elasticsearch Unauthenticated** — `databases/elasticsearch/elasticsearch_unauthenticated.rs`
 - **Elasticsearch Data Exposure** — `databases/elasticsearch/elasticsearch-data-exposure.py`
-- **Elasticsearch Query Injection** — `databases/elasticsearch/elasticsearch-query-injection.py` ([playbook](../playbooks/elasticsearch-query-injection-playbook.md))
+- **Elasticsearch Query Injection** — `databases/elasticsearch/elasticsearch-query-injection.py`
 
 ### ClickHouse
-- **ClickHouse Auth Bypass** — `databases/clickhouse/clickhouse-auth-bypass.py` ([playbook](../playbooks/clickhouse-auth-bypass-playbook.md))
+- **ClickHouse Auth Bypass** — `databases/clickhouse/clickhouse-auth-bypass.py`
 
 ### CouchDB
 - **CouchDB Default Credentials** — `databases/couchdb/couchdb_default_creds.rs`
@@ -105,9 +107,9 @@ This document provides a complete registry of all available templates organized 
 
 ### Kubernetes
 - **Kubernetes API Unauthenticated** — `devops/kubernetes/kubernetes-api-unauthenticated-default.yaml`
-- **K8s RBAC Misconfiguration** — `devops/kubernetes/k8s-rbac-misconfiguration.go` ([playbook](../playbooks/k8s-rbac-misconfiguration-playbook.md))
-- **Kubelet API Exposure** — `devops/kubernetes/kubelet-api-exposure.go` ([playbook](../playbooks/kubelet-api-exposure-playbook.md))
-- **Service Account Token Abuse** — `devops/kubernetes/service-account-token-abuse.go` ([playbook](../playbooks/service-account-token-abuse-playbook.md))
+- **K8s RBAC Misconfiguration** — `devops/kubernetes/k8s-rbac-misconfiguration.go`
+- **Kubelet API Exposure** — `devops/kubernetes/kubelet-api-exposure.go`
+- **Service Account Token Abuse** — `devops/kubernetes/service-account-token-abuse.go`
 - **Helm Chart Secrets Leak** — `devops/kubernetes/helm-chart-secrets-leak.py`
 
 ### GitHub / GitHub Enterprise
@@ -121,10 +123,10 @@ This document provides a complete registry of all available templates organized 
 - **SAML SSO Bypass GitLab** — `devops/gitlab/saml-sso-bypass-gitlab.py`
 
 ### Git
-- **Git History Secret Scan** — `devops/git/git-history-secret-scan.go` ([playbook](../playbooks/git-history-secret-scan-playbook.md))
+- **Git History Secret Scan** — `devops/git/git-history-secret-scan.go`
 
 ### Istio
-- **Istio Pilot Misconfiguration** — `devops/istio/istio-pilot-misconfiguration.go` ([playbook](../playbooks/istio-pilot-misconfiguration-playbook.md))
+- **Istio Pilot Misconfiguration** — `devops/istio/istio-pilot-misconfiguration.go`
 
 ### CI/CD
 - **CI Variable Exposure** — `devops/ci/ci-variable-exposure.py`
@@ -186,7 +188,7 @@ This document provides a complete registry of all available templates organized 
 ### DNS
 - **DNS Zone Transfer** — `network/dns/dns-zone-transfer.py`
 - **DNS UDP Service Probe** — `network/dns/dns-udp-service-probe.py`
-- **DNS Rebinding Attack** — `network/dns/dns-rebinding-attack.go` ([playbook](../playbooks/dns-rebinding-attack-playbook.md))
+- **DNS Rebinding Attack** — `network/dns/dns-rebinding-attack.go`
 
 ### FTP
 - **FTP Anonymous Access** — `network/ftp/ftp-anonymous-access.py`
@@ -201,13 +203,13 @@ This document provides a complete registry of all available templates organized 
 - **VNC No Auth** — `network/vnc/vnc-no-auth.c`
 
 ### gRPC
-- **gRPC Reflection Abuse** — `network/grpc/grpc-reflection-abuse.go` ([playbook](../playbooks/grpc-reflection-abuse-playbook.md))
+- **gRPC Reflection Abuse** — `network/grpc/grpc-reflection-abuse.go`
 
 ### RMI
-- **RMI Service Enumeration** — `network/rmi/RmiServiceEnumeration.java` ([playbook](../playbooks/rmi-service-enumeration-playbook.md))
+- **RMI Service Enumeration** — `network/rmi/RmiServiceEnumeration.java`
 
 ### TLS
-- **TLS Certificate Deep Analysis** — `network/tls/src/main.rs` ([playbook](../playbooks/tls-certificate-deep-analysis-playbook.md))
+- **TLS Certificate Deep Analysis** — `network/tls/src/main.rs`
 
 ### WebSocket
 - **WebSocket Message Fuzzer** — `network/websocket/websocket-message-fuzzer.js`
@@ -256,11 +258,11 @@ This document provides a complete registry of all available templates organized 
 - **HTTP Header Injection** — `web/injection/http-header-injection.py`
 - **Prototype Pollution** — `web/injection/prototype-pollution.js`
 - **Server-Side JS Injection** — `web/injection/server-side-js-injection.js`
-- **SSTI Engine Fingerprint** — `web/injection/ssti-engine-fingerprint.py` ([playbook](../playbooks/ssti-engine-fingerprint-playbook.md))
-- **Spring4Shell Detection** — `web/injection/Spring4ShellDetection.java` ([playbook](../playbooks/spring4shell-detection-playbook.md))
+- **SSTI Engine Fingerprint** — `web/injection/ssti-engine-fingerprint.py`
+- **Spring4Shell Detection** — `web/injection/Spring4ShellDetection.java`
 
 ### Deserialization
-- **Deserialization Gadget Scan** — `web/deserialization/DeserializationGadgetScan.java` ([playbook](../playbooks/deserialization-gadget-scan-playbook.md))
+- **Deserialization Gadget Scan** — `web/deserialization/DeserializationGadgetScan.java`
 
 ### GraphQL
 - **GraphQL User Enumeration** — `web/graphql/graphql-user-enumeration.py`
@@ -268,7 +270,7 @@ This document provides a complete registry of all available templates organized 
 ### HTTP
 - **HTTP Detection** — `web/http/http-detection.yaml`
 - **Example HTTP Check** — `web/http/example-http-check.yaml`
-- **HTTP/2 Rapid Reset** — `web/http/http2-rapid-reset.go` ([playbook](../playbooks/http2-rapid-reset-playbook.md))
+- **HTTP/2 Rapid Reset** — `web/http/http2-rapid-reset.go`
 
 ### Other Web
 - **XSS Detection** — `web/xss/xss-detection.c`
@@ -277,7 +279,7 @@ This document provides a complete registry of all available templates organized 
 - **Sensitive Data Exposure** — `web/sensitive-data/sensitive-data-exposure.yaml`
 - **Response Manipulation Detection** — `web/cache/response-manipulation-detection.yaml`
 - **Log4Shell Detection** — `web/log4shell/are-vulnerable-log4shell.sh`
-- **Race Condition Exploit** — `web/race-condition/race-condition-exploit.go` ([playbook](../playbooks/race-condition-exploit-playbook.md))
+- **Race Condition Exploit** — `web/race-condition/race-condition-exploit.go`
 
 ---
 
@@ -308,34 +310,6 @@ Boilerplate templates and AI-assisted authoring notes for all 12 supported langu
 
 ---
 
-## Playbooks
+## Playbooks & Learning Content
 
-All playbooks are located in the `playbooks/` directory at the repository root.
-
-| Playbook | Related Template |
-|---|---|
-| `clickhouse-auth-bypass-playbook.md` | `databases/clickhouse/clickhouse-auth-bypass.py` |
-| `deserialization-gadget-scan-playbook.md` | `web/deserialization/DeserializationGadgetScan.java` |
-| `dns-rebinding-attack-playbook.md` | `network/dns/dns-rebinding-attack.go` |
-| `elasticsearch-query-injection-playbook.md` | `databases/elasticsearch/elasticsearch-query-injection.py` |
-| `ghes-saml-encrypted-assertions-exposure-playbook.md` | — |
-| `git-history-secret-scan-playbook.md` | `devops/git/git-history-secret-scan.go` |
-| `graphql-batching-dos-playbook.md` | — |
-| `grpc-reflection-abuse-playbook.md` | `network/grpc/grpc-reflection-abuse.go` |
-| `http2-rapid-reset-playbook.md` | `web/http/http2-rapid-reset.go` |
-| `istio-pilot-misconfiguration-playbook.md` | `devops/istio/istio-pilot-misconfiguration.go` |
-| `jwt-algorithm-confusion-playbook.md` | — |
-| `k8s-rbac-misconfiguration-playbook.md` | `devops/kubernetes/k8s-rbac-misconfiguration.go` |
-| `kubelet-api-exposure-playbook.md` | `devops/kubernetes/kubelet-api-exposure.go` |
-| `mongodb-injection-deep-playbook.md` | `databases/mongodb/mongodb-injection-deep.py` |
-| `oauth-state-confusion-playbook.md` | — |
-| `oauth-state-parameter-audit-playbook.md` | — |
-| `race-condition-exploit-playbook.md` | `web/race-condition/race-condition-exploit.go` |
-| `redis-cluster-takeover-playbook.md` | `databases/redis/redis-cluster-takeover.go` |
-| `rmi-service-enumeration-playbook.md` | `network/rmi/RmiServiceEnumeration.java` |
-| `service-account-token-abuse-playbook.md` | `devops/kubernetes/service-account-token-abuse.go` |
-| `spring4shell-detection-playbook.md` | `web/injection/Spring4ShellDetection.java` |
-| `ssti-engine-fingerprint-playbook.md` | `web/injection/ssti-engine-fingerprint.py` |
-| `tls-certificate-deep-analysis-playbook.md` | `network/tls/src/main.rs` |
-
-> **Note:** Playbooks marked with "—" have documentation but their corresponding templates are tracked separately or are pending creation.
+Detailed security assessment playbooks, walkthroughs, and learning content for templates are published on the **[BugB Blog](https://bugb.io/blogs)**.
