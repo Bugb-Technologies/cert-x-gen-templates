@@ -247,3 +247,6 @@ templates/TEMPLATE_REGISTRY.md
 templates/codex-skill-automation.sh
 templates/TEMPLATE_REGISTRY.md
 templates/TEMPLATE_REGISTRY.md
+scan.json
+scan-results.json
+*.docx
