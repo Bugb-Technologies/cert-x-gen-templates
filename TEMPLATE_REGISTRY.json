@@ -1,171 +1,1707 @@
 {
-  "version": "1.0.0",
-  "last_updated": "2025-10-30T20:35:45.305294Z",
-  "total_templates": 32,
+  "version": "2.0.0",
+  "generated_by": "scripts/generate-index.py",
+  "last_updated": "2026-08-12T14:45:10.900421Z",
+  "counts": {
+    "files_on_disk": 158,
+    "loadable": 154,
+    "runnable": 144,
+    "engine_registered": 149
+  },
+  "total_templates": 158,
+  "load_failures": [
+    {
+      "path": "templates/devops/etcd/which-runs-etcdctl-command.yaml",
+      "error": "network[0]: missing field 'port'"
+    },
+    {
+      "path": "templates/network/http/http-service-responding.yaml",
+      "error": "invalid type: str, expected struct AuthorInfo"
+    },
+    {
+      "path": "templates/web/cache/response-manipulation-detection.yaml",
+      "error": "http[3].matchers[0].type: unknown variant 'dsl'; http[3].matchers[1].type: unknown variant 'dsl'"
+    },
+    {
+      "path": "templates/web/injection/timing-attack-detection.yaml",
+      "error": "http[0].matchers[0].type: unknown variant 'dsl'; http[1].matchers[0].type: unknown variant 'dsl'; http[2].matchers[0].type: unknown variant 'dsl'; http[3].matchers[0].type: unknown variant 'dsl'"
+    }
+  ],
+  "id_collisions": [
+    {
+      "id": "cadvisor-exposed",
+      "paths": [
+        "templates/monitoring/cadvisor/cadvisor-exposed.js",
+        "templates/monitoring/cadvisor/cadvisor-exposed.py"
+      ]
+    },
+    {
+      "id": "exposed-ollama-api-version",
+      "paths": [
+        "templates/ai/ollama/detect-exposed-ollama-sending.yaml",
+        "templates/ai/ollama/detect_ollama.yaml"
+      ]
+    },
+    {
+      "id": "node-exporter-exposed",
+      "paths": [
+        "templates/monitoring/exporters/node/node-exporter-exposed.js",
+        "templates/monitoring/exporters/node/node-exporter-exposed.py"
+      ]
+    },
+    {
+      "id": "prometheus-server-exposed",
+      "paths": [
+        "templates/monitoring/prometheus/prometheus-server-exposed.js",
+        "templates/monitoring/prometheus/prometheus-server-exposed.py"
+      ]
+    },
+    {
+      "id": "redis-exporter-exposed",
+      "paths": [
+        "templates/monitoring/exporters/redis/redis-exporter-exposed.py",
+        "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml"
+      ]
+    }
+  ],
   "languages": {
-    "yaml": 12,
-    "python": 9,
-    "javascript": 3,
-    "c": 4,
-    "rust": 2,
-    "shell": 2
+    "c": 5,
+    "cpp": 1,
+    "go": 16,
+    "java": 4,
+    "javascript": 7,
+    "perl": 1,
+    "php": 1,
+    "python": 59,
+    "ruby": 1,
+    "rust": 5,
+    "shell": 8,
+    "yaml": 50
   },
   "categories": {
-    "network": 3,
-    "web": 10,
-    "other": 8
+    "ai": 16,
+    "databases": 26,
+    "devops": 26,
+    "messaging": 7,
+    "monitoring": 16,
+    "network": 34,
+    "recon": 1,
+    "web": 32
   },
   "templates": [
     {
-      "id": "memcached-unauthenticated-access",
-      "name": "",
+      "id": "ai-assisted-fuzzing-sqli-seed-corpus",
+      "name": "AI-Assisted Fuzzing SQLi Seed Corpus",
       "severity": "info",
-      "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/memcached-unauthenticated.yaml",
-      "category": "network"
+      "language": "python",
+      "path": "templates/ai/ai-assisted-fuzzing/ai-assisted-fuzzing-sqli-seed-corpus.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "zookeeper-unauthenticated-access",
-      "name": "",
-      "severity": "info",
-      "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/zookeeper-unauthenticated.yaml",
-      "category": "network"
+      "id": "claude-code-sed-bypass-usage",
+      "name": "Claude Code sed DSL Bypass Indicators (Static Scan)",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/ai/claude/claude-code-sed-bypass-usage.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "redis-unauthenticated-access",
-      "name": "",
-      "severity": "info",
-      "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/network/redis-unauthenticated.yaml",
-      "category": "network"
+      "id": "copilot-yolo-autoapprove-enabled",
+      "name": "GitHub Copilot YOLO Mode Enabled (Static Scan)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/copilot/copilot-yolo-autoapprove-enabled.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "prometheus-node-exporter-exposed",
-      "name": "",
-      "severity": "info",
+      "id": "cursor-mcpoison-config-risk",
+      "name": "Cursor MCP Config Command Risk (MCPoison)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/cursor/cursor-mcpoison-config-risk.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-unauthenticated-access",
+      "name": "Unauthenticated MCP Server Exposure",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-unauthenticated.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ml-unsafe-deserialization-usage",
+      "name": "ML Unsafe Deserialization Usage (Static Scan)",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/ai/ml/unsafe-deserialization-usage.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "pytorch-unsafe-load-usage",
+      "name": "PyTorch Unsafe torch.load Usage (Static Scan)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/ml/torch-unsafe-load-usage.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "api-pull-access-check",
+      "name": "Unauthorized API Pull Access Check",
+      "severity": "critical",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/prometheus-node-exporter-exposed.yaml",
-      "category": "web"
+      "path": "templates/ai/ollama/apipull-access-sending-post.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "exposed-ollama-api-version",
+      "name": "Exposed Ollama API Version Endpoint",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/ai/ollama/detect-exposed-ollama-sending.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/ai/ollama/detect_ollama.yaml"
+      ]
+    },
+    {
+      "id": "exposed-ollama-api-version",
+      "name": "Exposed Ollama API Version Endpoint",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/ai/ollama/detect_ollama.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/ai/ollama/detect-exposed-ollama-sending.yaml"
+      ]
+    },
+    {
+      "id": "flowise-custommcp-command-endpoint-exposed",
+      "name": "Flowise CustomMCP Command Endpoint Exposed",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/ai/flowise/flowise-custommcp-command-endpoint-exposed.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "flowise-custommcp-js-eval-exposed",
+      "name": "Flowise CustomMCP JS Eval Endpoint Exposed",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/ai/flowise/flowise-custommcp-js-eval-exposed.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "invokeai-model-install-exposed",
+      "name": "InvokeAI Unauthenticated Model Install Endpoint",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/ai/invokeai/invokeai-model-install-exposed.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ollama-unauth-api-generate",
+      "name": "Ollama Unauthenticated /api/generate Access",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/ai/ollama/detect-unauthenticated-access-apigenerate.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "torchserve-management-api-exposed",
+      "name": "TorchServe Management API Exposed",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/ai/torchserve/torchserve-management-api-exposed.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "triton-model-control-exposed",
+      "name": "NVIDIA Triton Model Repository Control Exposed",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/ai/triton/triton-model-control-exposed.yaml",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-c",
+      "name": "Redis Unauthenticated Access Detection (C)",
+      "severity": "critical",
+      "language": "c",
+      "path": "templates/databases/redis/redis-unauthenticated.c",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-cpp",
+      "name": "Redis Unauthenticated Access Detection (C++)",
+      "severity": "critical",
+      "language": "cpp",
+      "path": "templates/databases/redis/redis-unauthenticated.cpp",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "postgresql-default-credentials",
+      "name": "PostgreSQL Default Credentials Detection",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/databases/postgresql/postgresql-default-credentials.go",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-cluster-takeover",
+      "name": "Redis Cluster Takeover Detection",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/databases/redis/redis-cluster-takeover.go",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-go",
+      "name": "Redis Unauthenticated Access Detection (Go)",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/databases/redis/redis-unauthenticated.go",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-java",
+      "name": "Redis Unauthenticated Access Detection (Java)",
+      "severity": "critical",
+      "language": "java",
+      "path": "templates/databases/redis/RedisUnauthenticated.java",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-javascript",
+      "name": "Redis Unauthenticated Access Detection (JavaScript)",
+      "severity": "critical",
+      "language": "javascript",
+      "path": "templates/databases/redis/redis-unauthenticated.js",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-perl",
+      "name": "Redis Unauthenticated Access Detection (Perl)",
+      "severity": "critical",
+      "language": "perl",
+      "path": "templates/databases/redis/redis-unauthenticated.pl",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-php",
+      "name": "Redis Unauthenticated Access Detection (PHP)",
+      "severity": "critical",
+      "language": "php",
+      "path": "templates/databases/redis/redis-unauthenticated.php",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "clickhouse-auth-bypass",
+      "name": "ClickHouse Authentication Bypass",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/databases/clickhouse/clickhouse-auth-bypass.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "elasticsearch-data-exposure",
+      "name": "Elasticsearch Cluster Data Exposure",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/databases/elasticsearch/elasticsearch-data-exposure.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "elasticsearch-query-injection",
+      "name": "Elasticsearch Query DSL Injection Detector",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/databases/elasticsearch/elasticsearch-query-injection.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mongodb-injection-deep",
+      "name": "MongoDB NoSQL Injection Deep Analysis",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/databases/mongodb/mongodb-injection-deep.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mongodb-unauthenticated",
+      "name": "MongoDB Unauthenticated Access Detection",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/databases/mongodb/mongodb-unauthenticated.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mysql-default-credentials",
+      "name": "MySQL Default/Weak Credentials Detection",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/databases/mysql/mysql-default-credentials.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "postgresql-extension-rce",
+      "name": "postgresql extension rce",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/databases/postgresql/postgresql-extension-rce.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-python",
+      "name": "Redis Unauthenticated Access Detection (Python)",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/databases/redis/redis-unauthenticated.py",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-ruby",
+      "name": "Redis Unauthenticated Access Detection (Ruby)",
+      "severity": "critical",
+      "language": "ruby",
+      "path": "templates/databases/redis/redis-unauthenticated.rb",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "couchdb-default-credentials",
+      "name": "CouchDB Default Credentials Detection",
+      "severity": "critical",
+      "language": "rust",
+      "path": "templates/databases/couchdb/couchdb_default_creds.rs",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "elasticsearch-unauthenticated",
+      "name": "Elasticsearch Unauthenticated Access Detection",
+      "severity": "critical",
+      "language": "rust",
+      "path": "templates/databases/elasticsearch/elasticsearch_unauthenticated.rs",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-rust",
+      "name": "Redis Unauthenticated Access Detection (Rust)",
+      "severity": "critical",
+      "language": "rust",
+      "path": "templates/databases/redis/redis-unauthenticated.rs",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-unauthenticated-shell",
+      "name": "Redis Unauthenticated Access Detection (Shell)",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/databases/redis/redis-unauthenticated.sh",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "cockroachdb-unauthenticated-access",
-      "name": "",
-      "severity": "info",
+      "name": "CockroachDB Unauthenticated Access Detection",
+      "severity": "critical",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/cockroachdb-unauthenticated.yaml",
-      "category": "web"
+      "path": "templates/databases/cockroachdb/cockroachdb-unauthenticated.yaml",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "sql-injection-basic",
-      "name": "",
-      "severity": "info",
+      "id": "influxdb-health-exposed",
+      "name": "InfluxDB Health Endpoint Exposed",
+      "severity": "medium",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/sql-injection-detection.yaml",
-      "category": "web"
+      "path": "templates/databases/influxdb/influxdb-health-exposed.yaml",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "http-service-detection",
-      "name": "",
-      "severity": "info",
+      "id": "memcached-unauthenticated-access",
+      "name": "Memcached Unauthenticated Access Detection",
+      "severity": "critical",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/http-detection.yaml",
-      "category": "web"
+      "path": "templates/databases/memcached/memcached-unauthenticated.yaml",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "timing-attack-sqli",
-      "name": "",
+      "id": "redis-unauthenticated-access",
+      "name": "Redis Unauthenticated Access Detection",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/databases/redis/redis-unauthenticated.yaml",
+      "category": "databases",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "docker-api-unauth",
+      "name": "Docker API Unauthenticated Access",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/docker/docker-api-unauth.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "git-history-secret-scan",
+      "name": "Git History Secret Scan",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/git/git-history-secret-scan.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "istio-pilot-misconfiguration",
+      "name": "Istio Pilot Misconfiguration Detection",
+      "severity": "high",
+      "language": "go",
+      "path": "templates/devops/istio/istio-pilot-misconfiguration.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "jenkins-unauth-rce",
+      "name": "Jenkins Unauthenticated Script Console RCE",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/jenkins/jenkins-unauth-rce.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "k8s-etcd-exposed",
+      "name": "Kubernetes etcd Secrets Exposure",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/etcd/k8s-etcd-exposed.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "k8s-rbac-misconfiguration",
+      "name": "Kubernetes RBAC Misconfiguration Detection",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/kubernetes/k8s-rbac-misconfiguration.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "kubelet-api-exposure",
+      "name": "Kubelet API Exposure Detection",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/kubernetes/kubelet-api-exposure.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "runner-token-detection",
+      "name": "runner token detection",
+      "severity": "medium",
+      "language": "go",
+      "path": "templates/devops/github/runner-token-detection.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "service-account-token-abuse",
+      "name": "Kubernetes Service Account Token Abuse",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/devops/kubernetes/service-account-token-abuse.go",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "actions-injection-scanner",
+      "name": "GitHub Actions Injection Scanner",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/devops/github/actions-injection-scanner.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ci-variable-exposure",
+      "name": "CI/CD Variable Exposure Detection",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/devops/ci/ci-variable-exposure.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ghes-version-fingerprint",
+      "name": "GitHub Enterprise Server Version Fingerprint",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/devops/github/ghes-version-fingerprint.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "gitlab-version-fingerprint",
+      "name": "GitLab Version Fingerprint",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/devops/gitlab/gitlab-version-fingerprint.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "helm-chart-secrets-leak",
+      "name": "Helm Chart Secrets Leak Detection",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/devops/kubernetes/helm-chart-secrets-leak.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "jupyter-unauth-rce",
+      "name": "Jupyter Notebook Unauthenticated RCE",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/devops/jupyter/jupyter-unauth-rce.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "pwn-request-scanner",
+      "name": "pwn request scanner",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/devops/github/pwn-request-scanner.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "saml-sso-bypass-gitlab",
+      "name": "saml sso bypass gitlab",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/devops/gitlab/saml-sso-bypass-gitlab.py",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "docker-registry-unauthenticated",
+      "name": "Docker Registry Unauthenticated Access Detection",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/devops/docker/docker-registry-unauthenticated.sh",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-running-unauthenticated-port",
+      "name": "Unauthenticated etcd Service Detection",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/devops/etcd/etcd-running-unauthenticated-port.sh",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-unauthenticated",
+      "name": "Etcd Unauthenticated Member List Detection",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/devops/etcd/etcd-unauthenticated.sh",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-auth-check",
+      "name": "Etcd Authentication Check",
       "severity": "info",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/timing-attack-detection.yaml",
-      "category": "web"
+      "path": "templates/devops/etcd/which-runs-etcdctl-command.yaml",
+      "category": "devops",
+      "loadable": false,
+      "load_error": "network[0]: missing field 'port'",
+      "runnable": false
+    },
+    {
+      "id": "etcd-instead-http-request",
+      "name": "Etcd Member List Security Check",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/devops/etcd/etcd-instead-http-request.yaml",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-think-path-wrong",
+      "name": "Etcd Unauthenticated Access",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/devops/etcd/etcd-think-path-wrong.yaml",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-unauth",
+      "name": "Etcd Unauthenticated Access - Members List",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/devops/etcd/new-etcd-vulnerable-unauthenticated.yaml",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "etcd-unauthenticated-access",
+      "name": "Etcd Unauthenticated Access - Version Endpoint",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/devops/etcd/think-wrong-able-validate.yaml",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "kubernetes-api-unauthenticated",
+      "name": "Kubernetes API Unauthenticated Access",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/devops/kubernetes/kubernetes-api-unauthenticated-default.yaml",
+      "category": "devops",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "kafka-unauthenticated-access",
+      "name": "Kafka Unauthenticated Access Detection",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/messaging/kafka/kafka-unauthenticated-access.py",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "rabbitmq-default-credentials",
+      "name": "RabbitMQ Default Credentials Detection",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/messaging/rabbitmq/rabbitmq-default-credentials.py",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "kafka-unauthenticated",
+      "name": "Apache Kafka Unauthenticated Access Detection",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/messaging/kafka/kafka-unauthenticated.sh",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mqtt-unauthenticated",
+      "name": "MQTT Unauthenticated Access (CONNACK Accepted)",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/messaging/mqtt/mqtt-unauthenticated.yaml",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "nats-unauthenticated-banner",
+      "name": "NATS Banner Indicates No Authentication",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/messaging/nats/nats-unauthenticated-banner.yaml",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "rabbitmq-management-exposed",
+      "name": "RabbitMQ Management UI Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/messaging/rabbitmq/rabbitmq-management-exposed.yaml",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "zookeeper-unauthenticated-access",
+      "name": "Apache Zookeeper Unauthenticated Access",
+      "severity": "critical",
+      "language": "yaml",
+      "path": "templates/messaging/zookeeper/zookeeper-unauthenticated.yaml",
+      "category": "messaging",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cadvisor-exposed",
+      "name": "cAdvisor Exposed Without Authentication",
+      "severity": "critical",
+      "language": "javascript",
+      "path": "templates/monitoring/cadvisor/cadvisor-exposed.js",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/cadvisor/cadvisor-exposed.py"
+      ]
+    },
+    {
+      "id": "node-exporter-exposed",
+      "name": "Node Exporter Exposed Without Authentication",
+      "severity": "high",
+      "language": "javascript",
+      "path": "templates/monitoring/exporters/node/node-exporter-exposed.js",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/exporters/node/node-exporter-exposed.py"
+      ]
+    },
+    {
+      "id": "prometheus-server-exposed",
+      "name": "Prometheus Server Exposed Without Authentication",
+      "severity": "high",
+      "language": "javascript",
+      "path": "templates/monitoring/prometheus/prometheus-server-exposed.js",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/prometheus/prometheus-server-exposed.py"
+      ]
+    },
+    {
+      "id": "cadvisor-exposed",
+      "name": "cAdvisor Metrics Exposed",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/monitoring/cadvisor/cadvisor-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/cadvisor/cadvisor-exposed.js"
+      ]
+    },
+    {
+      "id": "mysql-exporter-exposed",
+      "name": "MySQL Exporter Metrics Exposed",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/monitoring/exporters/mysql/mysql-exporter-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "node-exporter-exposed",
+      "name": "Node Exporter Metrics Exposed",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/monitoring/exporters/node/node-exporter-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/exporters/node/node-exporter-exposed.js"
+      ]
+    },
+    {
+      "id": "postgresql-exporter-exposed",
+      "name": "PostgreSQL Exporter Metrics Exposed",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/monitoring/exporters/postgresql/postgresql-exporter-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "prometheus-server-exposed",
+      "name": "Prometheus Server Exposed",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/monitoring/prometheus/prometheus-server-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/prometheus/prometheus-server-exposed.js"
+      ]
+    },
+    {
+      "id": "prometheus-server-exposed-https",
+      "name": "Prometheus Server Exposed (HTTPS)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/monitoring/prometheus/prometheus-server-exposed-https.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-exporter-exposed",
+      "name": "Redis Exporter Metrics Exposed",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/monitoring/exporters/redis/redis-exporter-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml"
+      ]
+    },
+    {
+      "id": "check-metrics-endpoint",
+      "name": "Check /metrics Endpoint Exposure",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/monitoring/metrics/which-checks-metrics-available.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "kibana-api-status-exposed",
+      "name": "Kibana /api/status Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/monitoring/kibana/kibana-api-status-exposed.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "prometheus-node-exporter-exposed",
+      "name": "Prometheus Node Exporter Exposed Without Authentication",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/monitoring/exporters/node/prometheus-node-exporter-exposed.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-exporter-exposed",
+      "name": "Redis Exporter Exposed Detection",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": false,
+      "collides_with": [
+        "templates/monitoring/exporters/redis/redis-exporter-exposed.py"
+      ]
+    },
+    {
+      "id": "splunk-web-login-exposed",
+      "name": "Splunk Web Login Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/monitoring/splunk/splunk-web-login-exposed.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "splunkd-server-info-exposed",
+      "name": "Splunkd Server Info Exposed",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/monitoring/splunk/splunkd-server-info-exposed.yaml",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "vnc-no-auth",
+      "name": "VNC No Authentication Detection",
+      "severity": "critical",
+      "language": "c",
+      "path": "templates/network/vnc/vnc-no-auth.c",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "dns-rebinding-attack",
+      "name": "DNS Rebinding Attack Detection",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/network/dns/dns-rebinding-attack.go",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "grpc-reflection-abuse",
+      "name": "gRPC Reflection API Exposure Detection",
+      "severity": "high",
+      "language": "go",
+      "path": "templates/network/grpc/grpc-reflection-abuse.go",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "rmi-service-enumeration",
+      "name": "RMI Service Enumeration",
+      "severity": "high",
+      "language": "java",
+      "path": "templates/network/rmi/RmiServiceEnumeration.java",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "websocket-message-fuzzer",
+      "name": "websocket message fuzzer",
+      "severity": "medium",
+      "language": "javascript",
+      "path": "templates/network/websocket/websocket-message-fuzzer.js",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "dhcpv6-solicit-response",
+      "name": "DHCPv6 Solicit Response Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/dhcpv6/dhcpv6-solicit-response.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "dns-udp-service-probe",
+      "name": "DNS UDP Service Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/dns/dns-udp-service-probe.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "dns-zone-transfer",
+      "name": "DNS Zone Transfer (AXFR) Detection",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/network/dns/dns-zone-transfer.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ftp-anonymous-access",
+      "name": "FTP Anonymous Access Detection",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/network/ftp/ftp-anonymous-access.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "icmp-echo-reachable",
+      "name": "ICMP Echo Reachability",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/recon/icmp-echo-reachable.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mdns-service-discovery-probe",
+      "name": "mDNS Service Discovery Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/mdns/mdns-service-discovery-probe.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "nbns-name-query-probe",
+      "name": "NBNS Name Query Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/nbns/nbns-name-query-probe.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ntp-udp-service-probe",
+      "name": "NTP UDP Service Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/ntp/ntp-udp-service-probe.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "smtp-open-relay",
+      "name": "SMTP Open Relay Detection",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/network/smtp/smtp-open-relay.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ssdp-msearch-response",
+      "name": "SSDP M-SEARCH Response Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/ssdp/ssdp-msearch-response.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "tcp-banner-probe",
+      "name": "TCP Banner Probe",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/scanning/tcp-banner-probe.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "tcp-port-reachability",
+      "name": "TCP Port Reachability",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/scanning/tcp-port-reachability.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "wsd-probe-response",
+      "name": "WSD Probe Response",
+      "severity": "info",
+      "language": "python",
+      "path": "templates/network/wsd/wsd-probe-response.py",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "port-scanner-async",
+      "name": "High-Speed Async TCP Port Scanner",
+      "severity": "info",
+      "language": "rust",
+      "path": "templates/network/scanning/port-scanner-async.rs",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "tls-certificate-deep-analysis",
+      "name": "TLS Certificate Deep Analysis",
+      "severity": "high",
+      "language": "rust",
+      "path": "templates/network/tls/src/main.rs",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "snmp-default-community",
+      "name": "SNMP Default Community String Detection",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/network/snmp/snmp-default-community.sh",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "adb-exposed",
+      "name": "ADB Over TCP Exposed",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/network/adb/adb-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "echo-service-exposed",
+      "name": "Echo Service Exposed",
+      "severity": "low",
+      "language": "yaml",
+      "path": "templates/network/echo/echo-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "epmd-node-list-exposed",
+      "name": "EPMD Node List Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/network/epmd/epmd-node-list-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "finger-service-exposed",
+      "name": "Finger Service Exposed",
+      "severity": "low",
+      "language": "yaml",
+      "path": "templates/network/finger/finger-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "http-service-responding",
+      "name": "HTTP Service Responding",
+      "severity": "info",
+      "language": "yaml",
+      "path": "templates/network/http/http-service-responding.yaml",
+      "category": "network",
+      "loadable": false,
+      "load_error": "invalid type: str, expected struct AuthorInfo",
+      "runnable": false
+    },
+    {
+      "id": "ident-exposed",
+      "name": "Ident Service Exposed",
+      "severity": "low",
+      "language": "yaml",
+      "path": "templates/network/ident/ident-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ndmp-service-exposed",
+      "name": "NDMP Service Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/network/ndmp/ndmp-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "rsync-banner-exposed",
+      "name": "Rsync Daemon Banner Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/network/rsync/rsync-banner-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "smart-install-exposed",
+      "name": "Cisco Smart Install Exposed",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/network/cisco/smart-install-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "socks5-no-auth",
+      "name": "SOCKS5 No-Authentication Proxy",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/network/socks/socks5-no-auth.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "tacacs-service-exposed",
+      "name": "TACACS+ Service Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/network/tacacs/tacacs-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "tftp-service-exposed",
+      "name": "TFTP Service Exposed",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/network/tftp/tftp-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "whois-service-exposed",
+      "name": "WHOIS Service Exposed",
+      "severity": "low",
+      "language": "yaml",
+      "path": "templates/network/whois/whois-service-exposed.yaml",
+      "category": "network",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "system-context-recon",
+      "name": "System Context Reconnaissance",
+      "severity": "info",
+      "language": "shell",
+      "path": "templates/recon/system/system-context-recon.sh",
+      "category": "recon",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "directory-traversal",
+      "name": "Directory Traversal Detection",
+      "severity": "high",
+      "language": "c",
+      "path": "templates/web/traversal/directory-traversal.c",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "sql-injection-detection-c",
+      "name": "SQL Injection Detection",
+      "severity": "critical",
+      "language": "c",
+      "path": "templates/web/injection/sql-injection-detection.c",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "xss-detection-c",
+      "name": "Cross-Site Scripting (XSS) Detection",
+      "severity": "high",
+      "language": "c",
+      "path": "templates/web/xss/xss-detection.c",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "http2-rapid-reset",
+      "name": "HTTP/2 Rapid Reset Detection (CVE-2023-44487)",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/web/http/http2-rapid-reset.go",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "race-condition-exploit",
+      "name": "Race Condition Detection (TOCTOU)",
+      "severity": "critical",
+      "language": "go",
+      "path": "templates/web/race-condition/race-condition-exploit.go",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "deserialization-gadget-scan",
+      "name": "Deserialization Gadget Scan",
+      "severity": "critical",
+      "language": "java",
+      "path": "templates/web/deserialization/DeserializationGadgetScan.java",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "spring4shell-detection",
+      "name": "Spring4Shell Detection (CVE-2022-22965)",
+      "severity": "critical",
+      "language": "java",
+      "path": "templates/web/injection/Spring4ShellDetection.java",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "prototype-pollution",
+      "name": "prototype pollution",
+      "severity": "medium",
+      "language": "javascript",
+      "path": "templates/web/injection/prototype-pollution.js",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "server-side-js-injection",
+      "name": "server side js injection",
+      "severity": "medium",
+      "language": "javascript",
+      "path": "templates/web/injection/server-side-js-injection.js",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "auth-token-logout-reuse",
+      "name": "Authentication Token Reuse After Logout",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/session/auth-token-logout-reuse.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "forced-browse-auth-bypass",
+      "name": "Forced Browse Auth Bypass \u2014 Protected Endpoints Without Auth",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/auth-bypass/forced-browse-auth-bypass.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "graphql-user-enumeration",
+      "name": "GraphQL User Enumeration (CVE-2021-4191)",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/web/graphql/graphql-user-enumeration.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "http-header-injection",
+      "name": "HTTP Header Injection Detection",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/web/injection/http-header-injection.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "idor-bola-horizontal",
+      "name": "IDOR / BOLA Horizontal Privilege Escalation",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/idor/idor-bola-horizontal.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "jwt-alg-confusion",
+      "name": "JWT Algorithm Confusion (RS256 \u2192 HS256 / none)",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/web/jwt/jwt-alg-confusion.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "jwt-role-tampering",
+      "name": "JWT Role / Privilege Claim Tampering",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/web/jwt/jwt-role-tampering.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mass-assignment-update",
+      "name": "Mass Assignment via Profile / Object Update Endpoint",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/auth-bypass/mass-assignment-update.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "password-reset-enum",
+      "name": "Password Reset User Enumeration via Response Differences",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/web/session/password-reset-enum.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "password-reset-takeover",
+      "name": "password reset takeover",
+      "severity": "medium",
+      "language": "python",
+      "path": "templates/web/auth-bypass/password-reset-takeover.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "rate-limit-auth-bypass",
+      "name": "Missing or Bypassable Rate Limit on Authentication Endpoint",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/session/rate-limit-auth-bypass.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "session-fixation-check",
+      "name": "Session Fixation \u2014 Token Unchanged After Login",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/session/session-fixation-check.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "ssti-engine-fingerprint",
+      "name": "Server-Side Template Injection Engine Fingerprint",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/web/injection/ssti-engine-fingerprint.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "vertical-privesc-admin",
+      "name": "Vertical Privilege Escalation to Admin Endpoints",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/web/auth-bypass/vertical-privesc-admin.py",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "log4shell-detection",
+      "name": "Log4Shell (CVE-2021-44228) Vulnerability Detection",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/web/log4shell/are-vulnerable-log4shell.sh",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "auth-bypass-flow",
-      "name": "",
-      "severity": "info",
+      "name": "Authentication Bypass with Session Flow",
+      "severity": "critical",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/auth-bypass-flow.yaml",
-      "category": "web"
+      "path": "templates/web/auth-bypass/auth-bypass-flow.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "directory-listing-common-paths",
+      "name": "Directory Listing Exposure (Common Paths)",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/web/directory-listing/directory-listing-common-paths.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "example-http-check",
-      "name": "",
+      "name": "Example HTTP Security Check",
       "severity": "info",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/example-http-check.yaml",
-      "category": "web"
+      "path": "templates/web/http/example-http-check.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "http-service-detection",
+      "name": "HTTP Service Detection",
+      "severity": "info",
+      "language": "yaml",
+      "path": "templates/web/http/http-detection.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "response-manipulation-detection",
+      "name": "Response Manipulation & Cache Poisoning",
+      "severity": "medium",
+      "language": "yaml",
+      "path": "templates/web/cache/response-manipulation-detection.yaml",
+      "category": "web",
+      "loadable": false,
+      "load_error": "http[3].matchers[0].type: unknown variant 'dsl'; http[3].matchers[1].type: unknown variant 'dsl'",
+      "runnable": false
     },
     {
       "id": "sensitive-data-exposure",
-      "name": "",
-      "severity": "info",
+      "name": "Sensitive Data Exposure Detection",
+      "severity": "medium",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/sensitive-data-exposure.yaml",
-      "category": "web"
+      "path": "templates/web/sensitive-data/sensitive-data-exposure.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "id": "response-manipulation",
-      "name": "",
-      "severity": "info",
+      "id": "sql-injection-basic",
+      "name": "SQL Injection Detection (Basic)",
+      "severity": "critical",
       "language": "yaml",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/yaml/http/response-manipulation-detection.yaml",
-      "category": "web"
+      "path": "templates/web/injection/sql-injection-detection.yaml",
+      "category": "web",
+      "loadable": true,
+      "runnable": true
     },
     {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/prometheus-server-exposed-https.py",
-      "severity": "High",
-      "category": "web"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/redis-exporter-exposed.py",
-      "severity": "High",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/prometheus-server-exposed.py",
-      "severity": "High",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/node-exporter-exposed.py",
-      "severity": "High",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/cadvisor-exposed.py",
-      "severity": "Critical",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/mongodb-unauthenticated.py",
-      "severity": "Critical",
-      "id": "",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/rabbitmq-default-credentials.py",
-      "severity": "Critical",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/mysql-exporter-exposed.py",
-      "severity": "Critical",
-      "category": "other"
-    },
-    {
-      "language": "python",
-      "path": "/Users/animeshsrivastava/Documents/cert-x-gen-templates/templates/python/postgresql-exporter-exposed.py",
-      "severity": "Critical",
-      "category": "other"
+      "id": "timing-attack-detection",
+      "name": "Blind SQL Injection (Time-Based)",
+      "severity": "high",
+      "language": "yaml",
+      "path": "templates/web/injection/timing-attack-detection.yaml",
+      "category": "web",
+      "loadable": false,
+      "load_error": "http[0].matchers[0].type: unknown variant 'dsl'; http[1].matchers[0].type: unknown variant 'dsl'; http[2].matchers[0].type: unknown variant 'dsl'; http[3].matchers[0].type: unknown variant 'dsl'",
+      "runnable": false
     }
   ]
 }
