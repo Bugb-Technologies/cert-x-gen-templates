@@ -1,17 +1,17 @@
-id: response-manipulation-detection
-name: "Response Manipulation & Cache Poisoning"
+id: response-integrity-audit
+name: "Response Integrity Audit (Cache Poisoning & HPP)"
 author:
   name: "CERT-X-GEN Security Team"
   email: "security@cert-x-gen.io"
 severity: medium
 description: |
-  Detects response manipulation, cache poisoning, and HTTP parameter pollution.
-  Analyzes response size differences and content variations.
+  Audits response integrity for cache poisoning, HTTP parameter pollution,
+  and header-injection exposure. Analyzes response size and content variations.
 
 tags:
   - cache-poisoning
   - hpp
-  - response-manipulation
+  - response-integrity
   - web-cache
   - parameter-pollution
   - web
@@ -93,15 +93,15 @@ http:
     
     matchers-condition: or
     matchers:
-      # Large response (amplification) - use DSL for size comparison
-      - type: dsl
-        dsl:
-          - "content_length > 100000"
-      
-      # Slow response (potential DoS) - use DSL for duration
-      - type: dsl
-        dsl:
-          - "duration > 3"
+      # Large response (amplification) - body larger than 100 KB
+      - type: size
+        condition: greater
+        size: 100000
+
+      # Slow response (potential DoS) - response took longer than 3s
+      - type: time
+        condition: greater
+        time: {secs: 3, nanos: 0}
 
   # Test header injection (CRLF)
   - method: GET

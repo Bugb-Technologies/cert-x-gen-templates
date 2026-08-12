@@ -14,7 +14,6 @@ This document provides a complete registry of all available templates organized 
 - **Ollama Unauthenticated /api/generate Access** — `ai/ollama/detect-unauthenticated-access-apigenerate.yaml`
 - **Ollama Unauthorized /api/pull Access (CVE-2024-37032)** — `ai/ollama/apipull-access-sending-post.yaml`
 - **Ollama Exposed Endpoint Detection** — `ai/ollama/detect-exposed-ollama-sending.yaml`
-- **Ollama Detection** — `ai/ollama/detect_ollama.yaml`
 
 ### Flowise
 - **Flowise CustomMCP Command Endpoint Exposed** — `ai/flowise/flowise-custommcp-command-endpoint-exposed.yaml`
@@ -277,7 +276,7 @@ This document provides a complete registry of all available templates organized 
 - **Directory Traversal** — `web/traversal/directory-traversal.c`
 - **Directory Listing Common Paths** — `web/directory-listing/directory-listing-common-paths.yaml`
 - **Sensitive Data Exposure** — `web/sensitive-data/sensitive-data-exposure.yaml`
-- **Response Manipulation Detection** — `web/cache/response-manipulation-detection.yaml`
+- **Response Integrity Audit (Cache Poisoning & HPP)** — `web/cache/response-integrity-audit.yaml`
 - **Log4Shell Detection** — `web/log4shell/are-vulnerable-log4shell.sh`
 - **Race Condition Exploit** — `web/race-condition/race-condition-exploit.go`
 

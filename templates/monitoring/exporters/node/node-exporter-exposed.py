@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# @id: node-exporter-exposed
+# @id: node-exporter-exposed-python
 # @name: Node Exporter Metrics Exposed
 # @author: CERT-X-GEN Security Team
 # @severity: medium

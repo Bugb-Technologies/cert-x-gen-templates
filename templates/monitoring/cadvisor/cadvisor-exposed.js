@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @id: cadvisor-exposed
+// @id: cadvisor-exposed-javascript
 // @name: cAdvisor Exposed Without Authentication
 // @author: CERT-X-GEN Security Team
 // @severity: critical
@@ -18,7 +18,7 @@
 const http = require('http');
 
 const TEMPLATE_METADATA = {
-    id: 'cadvisor-exposed',
+    id: 'cadvisor-exposed-javascript',
     name: 'cAdvisor Exposed',
     author: 'CERT-X-GEN Security Team',
     severity: 'critical',

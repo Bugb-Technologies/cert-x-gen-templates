@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @id: node-exporter-exposed
+// @id: node-exporter-exposed-javascript
 // @name: Node Exporter Exposed Without Authentication
 // @author: CERT-X-GEN Security Team
 // @severity: high
@@ -18,7 +18,7 @@
 const http = require('http');
 
 const TEMPLATE_METADATA = {
-    id: 'node-exporter-exposed',
+    id: 'node-exporter-exposed-javascript',
     name: 'Node Exporter Exposed',
     author: 'CERT-X-GEN Security Team',
     severity: 'high',

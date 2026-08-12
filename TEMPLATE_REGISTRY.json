@@ -1,69 +1,16 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-08-12T14:45:10.900421Z",
+  "last_updated": "2026-08-12T15:07:14.247224Z",
   "counts": {
-    "files_on_disk": 158,
-    "loadable": 154,
-    "runnable": 144,
-    "engine_registered": 149
+    "files_on_disk": 157,
+    "loadable": 157,
+    "runnable": 157,
+    "engine_registered": 157
   },
-  "total_templates": 158,
-  "load_failures": [
-    {
-      "path": "templates/devops/etcd/which-runs-etcdctl-command.yaml",
-      "error": "network[0]: missing field 'port'"
-    },
-    {
-      "path": "templates/network/http/http-service-responding.yaml",
-      "error": "invalid type: str, expected struct AuthorInfo"
-    },
-    {
-      "path": "templates/web/cache/response-manipulation-detection.yaml",
-      "error": "http[3].matchers[0].type: unknown variant 'dsl'; http[3].matchers[1].type: unknown variant 'dsl'"
-    },
-    {
-      "path": "templates/web/injection/timing-attack-detection.yaml",
-      "error": "http[0].matchers[0].type: unknown variant 'dsl'; http[1].matchers[0].type: unknown variant 'dsl'; http[2].matchers[0].type: unknown variant 'dsl'; http[3].matchers[0].type: unknown variant 'dsl'"
-    }
-  ],
-  "id_collisions": [
-    {
-      "id": "cadvisor-exposed",
-      "paths": [
-        "templates/monitoring/cadvisor/cadvisor-exposed.js",
-        "templates/monitoring/cadvisor/cadvisor-exposed.py"
-      ]
-    },
-    {
-      "id": "exposed-ollama-api-version",
-      "paths": [
-        "templates/ai/ollama/detect-exposed-ollama-sending.yaml",
-        "templates/ai/ollama/detect_ollama.yaml"
-      ]
-    },
-    {
-      "id": "node-exporter-exposed",
-      "paths": [
-        "templates/monitoring/exporters/node/node-exporter-exposed.js",
-        "templates/monitoring/exporters/node/node-exporter-exposed.py"
-      ]
-    },
-    {
-      "id": "prometheus-server-exposed",
-      "paths": [
-        "templates/monitoring/prometheus/prometheus-server-exposed.js",
-        "templates/monitoring/prometheus/prometheus-server-exposed.py"
-      ]
-    },
-    {
-      "id": "redis-exporter-exposed",
-      "paths": [
-        "templates/monitoring/exporters/redis/redis-exporter-exposed.py",
-        "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml"
-      ]
-    }
-  ],
+  "total_templates": 157,
+  "load_failures": [],
+  "id_collisions": [],
   "languages": {
     "c": 5,
     "cpp": 1,
@@ -76,10 +23,10 @@
     "ruby": 1,
     "rust": 5,
     "shell": 8,
-    "yaml": 50
+    "yaml": 49
   },
   "categories": {
-    "ai": 16,
+    "ai": 15,
     "databases": 26,
     "devops": 26,
     "messaging": 7,
@@ -177,23 +124,7 @@
       "path": "templates/ai/ollama/detect-exposed-ollama-sending.yaml",
       "category": "ai",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/ai/ollama/detect_ollama.yaml"
-      ]
-    },
-    {
-      "id": "exposed-ollama-api-version",
-      "name": "Exposed Ollama API Version Endpoint",
-      "severity": "medium",
-      "language": "yaml",
-      "path": "templates/ai/ollama/detect_ollama.yaml",
-      "category": "ai",
-      "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/ai/ollama/detect-exposed-ollama-sending.yaml"
-      ]
+      "runnable": true
     },
     {
       "id": "flowise-custommcp-command-endpoint-exposed",
@@ -722,9 +653,8 @@
       "language": "yaml",
       "path": "templates/devops/etcd/which-runs-etcdctl-command.yaml",
       "category": "devops",
-      "loadable": false,
-      "load_error": "network[0]: missing field 'port'",
-      "runnable": false
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "etcd-instead-http-request",
@@ -847,56 +777,44 @@
       "runnable": true
     },
     {
-      "id": "cadvisor-exposed",
+      "id": "cadvisor-exposed-javascript",
       "name": "cAdvisor Exposed Without Authentication",
       "severity": "critical",
       "language": "javascript",
       "path": "templates/monitoring/cadvisor/cadvisor-exposed.js",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/cadvisor/cadvisor-exposed.py"
-      ]
+      "runnable": true
     },
     {
-      "id": "node-exporter-exposed",
+      "id": "node-exporter-exposed-javascript",
       "name": "Node Exporter Exposed Without Authentication",
       "severity": "high",
       "language": "javascript",
       "path": "templates/monitoring/exporters/node/node-exporter-exposed.js",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/exporters/node/node-exporter-exposed.py"
-      ]
+      "runnable": true
     },
     {
-      "id": "prometheus-server-exposed",
+      "id": "prometheus-server-exposed-javascript",
       "name": "Prometheus Server Exposed Without Authentication",
       "severity": "high",
       "language": "javascript",
       "path": "templates/monitoring/prometheus/prometheus-server-exposed.js",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/prometheus/prometheus-server-exposed.py"
-      ]
+      "runnable": true
     },
     {
-      "id": "cadvisor-exposed",
+      "id": "cadvisor-exposed-python",
       "name": "cAdvisor Metrics Exposed",
       "severity": "medium",
       "language": "python",
       "path": "templates/monitoring/cadvisor/cadvisor-exposed.py",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/cadvisor/cadvisor-exposed.js"
-      ]
+      "runnable": true
     },
     {
       "id": "mysql-exporter-exposed",
@@ -909,17 +827,14 @@
       "runnable": true
     },
     {
-      "id": "node-exporter-exposed",
+      "id": "node-exporter-exposed-python",
       "name": "Node Exporter Metrics Exposed",
       "severity": "medium",
       "language": "python",
       "path": "templates/monitoring/exporters/node/node-exporter-exposed.py",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/exporters/node/node-exporter-exposed.js"
-      ]
+      "runnable": true
     },
     {
       "id": "postgresql-exporter-exposed",
@@ -932,19 +847,6 @@
       "runnable": true
     },
     {
-      "id": "prometheus-server-exposed",
-      "name": "Prometheus Server Exposed",
-      "severity": "high",
-      "language": "python",
-      "path": "templates/monitoring/prometheus/prometheus-server-exposed.py",
-      "category": "monitoring",
-      "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/prometheus/prometheus-server-exposed.js"
-      ]
-    },
-    {
       "id": "prometheus-server-exposed-https",
       "name": "Prometheus Server Exposed (HTTPS)",
       "severity": "high",
@@ -955,17 +857,24 @@
       "runnable": true
     },
     {
-      "id": "redis-exporter-exposed",
+      "id": "prometheus-server-exposed-python",
+      "name": "Prometheus Server Exposed",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/monitoring/prometheus/prometheus-server-exposed.py",
+      "category": "monitoring",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "redis-exporter-exposed-python",
       "name": "Redis Exporter Metrics Exposed",
       "severity": "high",
       "language": "python",
       "path": "templates/monitoring/exporters/redis/redis-exporter-exposed.py",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml"
-      ]
+      "runnable": true
     },
     {
       "id": "check-metrics-endpoint",
@@ -1005,10 +914,7 @@
       "path": "templates/monitoring/exporters/redis/redis-exporter-exposed.yaml",
       "category": "monitoring",
       "loadable": true,
-      "runnable": false,
-      "collides_with": [
-        "templates/monitoring/exporters/redis/redis-exporter-exposed.py"
-      ]
+      "runnable": true
     },
     {
       "id": "splunk-web-login-exposed",
@@ -1287,9 +1193,8 @@
       "language": "yaml",
       "path": "templates/network/http/http-service-responding.yaml",
       "category": "network",
-      "loadable": false,
-      "load_error": "invalid type: str, expected struct AuthorInfo",
-      "runnable": false
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "ident-exposed",
@@ -1662,15 +1567,14 @@
       "runnable": true
     },
     {
-      "id": "response-manipulation-detection",
-      "name": "Response Manipulation & Cache Poisoning",
+      "id": "response-integrity-audit",
+      "name": "Response Integrity Audit (Cache Poisoning & HPP)",
       "severity": "medium",
       "language": "yaml",
-      "path": "templates/web/cache/response-manipulation-detection.yaml",
+      "path": "templates/web/cache/response-integrity-audit.yaml",
       "category": "web",
-      "loadable": false,
-      "load_error": "http[3].matchers[0].type: unknown variant 'dsl'; http[3].matchers[1].type: unknown variant 'dsl'",
-      "runnable": false
+      "loadable": true,
+      "runnable": true
     },
     {
       "id": "sensitive-data-exposure",
@@ -1699,9 +1603,8 @@
       "language": "yaml",
       "path": "templates/web/injection/timing-attack-detection.yaml",
       "category": "web",
-      "loadable": false,
-      "load_error": "http[0].matchers[0].type: unknown variant 'dsl'; http[1].matchers[0].type: unknown variant 'dsl'; http[2].matchers[0].type: unknown variant 'dsl'; http[3].matchers[0].type: unknown variant 'dsl'",
-      "runnable": false
+      "loadable": true,
+      "runnable": true
     }
   ]
 }

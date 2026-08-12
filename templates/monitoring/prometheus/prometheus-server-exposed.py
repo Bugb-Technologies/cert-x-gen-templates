@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# @id: prometheus-server-exposed
+# @id: prometheus-server-exposed-python
 # @name: Prometheus Server Exposed
 # @author: CERT-X-GEN Security Team
 # @severity: high

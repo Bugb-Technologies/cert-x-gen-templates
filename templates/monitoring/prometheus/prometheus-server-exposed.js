@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @id: prometheus-server-exposed
+// @id: prometheus-server-exposed-javascript
 // @name: Prometheus Server Exposed Without Authentication
 // @author: CERT-X-GEN Security Team
 // @severity: high
@@ -23,7 +23,7 @@ const http = require('http');
 const https = require('https');
 
 const TEMPLATE_METADATA = {
-    id: 'prometheus-server-exposed',
+    id: 'prometheus-server-exposed-javascript',
     name: 'Prometheus Server Exposed',
     author: 'CERT-X-GEN Security Team',
     severity: 'high',

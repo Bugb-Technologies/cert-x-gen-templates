@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# @id: redis-exporter-exposed
+# @id: redis-exporter-exposed-python
 # @name: Redis Exporter Metrics Exposed
 # @author: CERT-X-GEN Security Team
 # @severity: high

@@ -8,7 +8,8 @@
 
 id: http-service-responding
 name: "HTTP Service Responding"
-author: CERT-X-GEN Security Team
+author:
+  name: "CERT-X-GEN Security Team"
 severity: info
 description: |
   Detects whether an HTTP service responds on the target.
