@@ -16,10 +16,9 @@ language: yaml
 
 network:
   - protocol: tcp
-    ports:
-      - "2379"
-    inputs:
-      - data: "etcdctl --endpoints=http://{{Host}}:{{Port}} member list\n"
+    port: 2379
+    payloads:
+      - "etcdctl --endpoints=http://{{Host}}:{{Port}} member list\n"
     matchers:
       - type: word
         words:

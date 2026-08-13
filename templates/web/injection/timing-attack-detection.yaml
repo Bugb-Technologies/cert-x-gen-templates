@@ -41,9 +41,9 @@ http:
     
     matchers-condition: and
     matchers:
-      - type: dsl
-        dsl:
-          - "duration >= 5"
+      - type: time
+        condition: greater
+        time: {secs: 5, nanos: 0}
       
       - type: status
         status:
@@ -61,9 +61,9 @@ http:
     
     matchers-condition: and
     matchers:
-      - type: dsl
-        dsl:
-          - "duration >= 5"
+      - type: time
+        condition: greater
+        time: {secs: 5, nanos: 0}
       
       - type: status
         status:
@@ -81,9 +81,9 @@ http:
     
     matchers-condition: and
     matchers:
-      - type: dsl
-        dsl:
-          - "duration >= 5"
+      - type: time
+        condition: greater
+        time: {secs: 5, nanos: 0}
       
       - type: status
         status:
@@ -104,6 +104,6 @@ http:
       User-Agent: "cert-x-gen/1.0"
     
     matchers:
-      - type: dsl
-        dsl:
-          - "duration >= 5"
+      - type: time
+        condition: greater
+        time: {secs: 5, nanos: 0}
