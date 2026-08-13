@@ -1,7 +1,7 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-08-13T09:49:14.475056Z",
+  "last_updated": "2026-08-13T10:18:24.226805Z",
   "counts": {
     "files_on_disk": 162,
     "loadable": 162,
@@ -648,8 +648,8 @@
     },
     {
       "id": "pwn-request-scanner",
-      "name": "pwn request scanner",
-      "severity": "medium",
+      "name": "GitHub Actions Pwn Request Scanner",
+      "severity": "critical",
       "language": "python",
       "path": "templates/devops/github/pwn-request-scanner.py",
       "category": "devops",
