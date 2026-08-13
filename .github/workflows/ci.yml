@@ -1,0 +1,141 @@
+name: CI
+
+# Every check here exists because the failure it catches has already happened
+# and was invisible until someone went looking: templates that never loaded,
+# duplicate @ids whose templates never ran, and a registry nine months stale.
+# All of it was mechanically detectable, and none of it made anything go red.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # ---------------------------------------------------------------------------
+  # PINNED cert-x-gen RELEASE - bump these two lines together, nothing else.
+  #
+  # Pinned rather than tracking latest so a cxg release cannot silently change
+  # what this repo considers a valid template. Bumping is a deliberate, visible
+  # commit: raise the tag, then take the matching cxg-linux-amd64 line from
+  #   https://github.com/Bugb-Technologies/cert-x-gen/releases/download/<tag>/SHA256SUMS
+  # ---------------------------------------------------------------------------
+  CXG_VERSION: v1.3.0
+  CXG_SHA256: 79987d541a160a90f73ec0f8844e7879ab8a1d5807f03af9d378fe7bcbd307e9
+
+jobs:
+  templates:
+    name: Template integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Install cert-x-gen ${{ env.CXG_VERSION }}
+        run: |
+          url="https://github.com/Bugb-Technologies/cert-x-gen/releases/download/${CXG_VERSION}/cxg-linux-amd64"
+          curl -sSfL --retry 3 -o /tmp/cxg "$url"
+          echo "${CXG_SHA256}  /tmp/cxg" | sha256sum --check --strict
+          chmod +x /tmp/cxg
+          sudo mv /tmp/cxg /usr/local/bin/cxg
+          cxg --version
+
+      # ---------------------------------------------------------------------
+      # 1. Every template must load through the engine.
+      #
+      # The engine loader, not `cxg template validate` - the two disagree about
+      # what is valid and the loader is the side that decides what actually
+      # runs. It WARNs once per unloadable template and continues, so nothing
+      # else in a scan reveals that a template is dead.
+      #
+      # --disable-update-check stops cxg downloading the published template set
+      # into $HOME and merging it with this repo's tree, which would make the
+      # counts meaningless. check_loader.py verifies that isolation held.
+      # ---------------------------------------------------------------------
+      - name: Every template loads through the engine
+        run: |
+          set +e
+          NO_COLOR=1 cxg --disable-update-check -vv template list --no-color \
+            > loader.log 2>&1
+          cxg_status=$?
+          set -e
+          echo "::group::Loader summary (cxg exited ${cxg_status})"
+          grep -aE "WARN|ERROR|Loaded [0-9]+ templates|Deduplicated|Total templates" \
+            loader.log | sed 's/\x1b\[[0-9;]*m//g' || true
+          echo "::endgroup::"
+          python3 .github/scripts/check_loader.py loader.log
+          if [ "$cxg_status" -ne 0 ]; then
+            echo "::error::cxg exited ${cxg_status} while loading templates"
+            exit "$cxg_status"
+          fi
+
+      - name: Upload loader log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loader-log
+          path: loader.log
+
+      # ---------------------------------------------------------------------
+      # 2. The registry must match the templates.
+      #
+      # Regenerate and diff. Any change means a template was added or edited
+      # without regenerating - which is exactly how the registry went nine
+      # months stale, and how merging five PRs made it stale again within the
+      # hour. The generator's exit contract carries the rest: 0 clean, 1 empty
+      # tree, 2 id collisions; a non-zero exit fails this step.
+      #
+      # The one field excluded from the diff is last_updated, which the
+      # generator stamps with wall-clock time on every run. Left in, this check
+      # would fail on every commit including clean ones, which is not a check.
+      # Every other field is derived from templates/, so a surviving difference
+      # is real drift.
+      # ---------------------------------------------------------------------
+      - name: Registry is current
+        run: |
+          cp TEMPLATE_REGISTRY.json /tmp/registry.committed.json
+          python3 scripts/generate-index.py
+          python3 - <<'PY'
+          import json
+          committed = json.load(open("/tmp/registry.committed.json"))
+          regenerated = json.load(open("TEMPLATE_REGISTRY.json"))
+          if "last_updated" in committed:
+              regenerated["last_updated"] = committed["last_updated"]
+          with open("TEMPLATE_REGISTRY.json", "w", encoding="utf-8") as fh:
+              json.dump(regenerated, fh, indent=2)
+              fh.write("\n")
+          PY
+          if ! git diff --exit-code -- TEMPLATE_REGISTRY.json; then
+            echo "::error::TEMPLATE_REGISTRY.json is stale - the diff above is what regenerating produces. Run 'python3 scripts/generate-index.py' and commit the result."
+            exit 1
+          fi
+          echo "TEMPLATE_REGISTRY.json is current."
+
+      # ---------------------------------------------------------------------
+      # 3. The generator's own guard tests.
+      #
+      # A clean template tree exercises none of the generator's collision or
+      # zero-template guards, so without these that code rots and the next
+      # duplicate @id sails through.
+      # ---------------------------------------------------------------------
+      - name: Generator guard tests
+        run: python3 scripts/test_generate_index.py
+
+      # ---------------------------------------------------------------------
+      # 4. Hygiene: no absolute paths or empty names in the registry, no
+      #    template outside the nine valid categories.
+      # ---------------------------------------------------------------------
+      - name: Registry and layout hygiene
+        run: python3 .github/scripts/check_hygiene.py
