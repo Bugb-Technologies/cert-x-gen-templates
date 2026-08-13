@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-08-12T15:07:14.247224Z",
+  "last_updated": "2026-08-13T09:49:14.475056Z",
   "counts": {
-    "files_on_disk": 157,
-    "loadable": 157,
-    "runnable": 157,
-    "engine_registered": 157
+    "files_on_disk": 162,
+    "loadable": 162,
+    "runnable": 162,
+    "engine_registered": 162
   },
-  "total_templates": 157,
+  "total_templates": 162,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -19,14 +19,14 @@
     "javascript": 7,
     "perl": 1,
     "php": 1,
-    "python": 59,
+    "python": 64,
     "ruby": 1,
     "rust": 5,
     "shell": 8,
     "yaml": 49
   },
   "categories": {
-    "ai": 15,
+    "ai": 20,
     "databases": 26,
     "devops": 26,
     "messaging": 7,
@@ -72,6 +72,56 @@
       "severity": "high",
       "language": "python",
       "path": "templates/ai/cursor/cursor-mcpoison-config-risk.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-broken-token-validation",
+      "name": "MCP Broken Token Validation (Accepts Forged Tokens)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-broken-token-validation.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-credential-exposure",
+      "name": "MCP Credential / Secret Exposure via Resources",
+      "severity": "critical",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-credential-exposure.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-excessive-tool-permissions",
+      "name": "MCP Excessive Tool Permissions (Dangerous Capability Exposure)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-excessive-tool-permissions.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-rug-pull-detection",
+      "name": "MCP Rug Pull (Silent Tool Definition Mutation)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-rug-pull-detection.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-tool-poisoning",
+      "name": "MCP Tool Poisoning (Hidden Instructions in Tool Metadata)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-tool-poisoning.py",
       "category": "ai",
       "loadable": true,
       "runnable": true
