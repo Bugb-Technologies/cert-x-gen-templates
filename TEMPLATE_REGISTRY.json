@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-04T10:32:01.980961Z",
+  "last_updated": "2026-09-04T13:50:32.638101Z",
   "counts": {
-    "files_on_disk": 180,
-    "loadable": 180,
-    "runnable": 180,
-    "engine_registered": 180
+    "files_on_disk": 184,
+    "loadable": 184,
+    "runnable": 184,
+    "engine_registered": 184
   },
-  "total_templates": 180,
+  "total_templates": 184,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -19,14 +19,14 @@
     "javascript": 7,
     "perl": 1,
     "php": 1,
-    "python": 66,
+    "python": 67,
     "ruby": 1,
     "rust": 5,
-    "shell": 24,
+    "shell": 27,
     "yaml": 49
   },
   "categories": {
-    "ai": 23,
+    "ai": 27,
     "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
@@ -99,6 +99,16 @@
       "runnable": true
     },
     {
+      "id": "mcp-excessive-scope-proof",
+      "name": "MCP Out-of-Scope Tool Action (Behavioural Scope Proof)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-excessive-scope-proof.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "mcp-excessive-tool-permissions",
       "name": "MCP Excessive Tool Permissions (Dangerous Capability Exposure)",
       "severity": "high",
@@ -140,7 +150,7 @@
     },
     {
       "id": "mcp-tool-poisoning",
-      "name": "MCP Tool Poisoning (Hidden Instructions in Tool Metadata)",
+      "name": "MCP Tool Poisoning (Model-Directed Instructions in Tool Metadata)",
       "severity": "high",
       "language": "python",
       "path": "templates/ai/mcp/mcp-tool-poisoning.py",
@@ -174,6 +184,36 @@
       "severity": "high",
       "language": "python",
       "path": "templates/ai/ml/torch-unsafe-load-usage.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-command-trace-composition",
+      "name": "Coding-agent command validator approves a command trace whose composition executes a dangerous action",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-command-trace-composition.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-config-allowlist-trust",
+      "name": "Coding-agent CLI takes its command allowlist from attacker-writable configuration, or matches it by command name",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-config-allowlist-trust.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-project-local-config-trust",
+      "name": "Coding-agent CLI executes project-local hooks from a world-writable workspace or a world-writable ancestor of one",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-project-local-config-trust.sh",
       "category": "ai",
       "loadable": true,
       "runnable": true
