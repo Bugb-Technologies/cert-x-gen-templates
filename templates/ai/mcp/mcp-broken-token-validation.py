@@ -9,7 +9,7 @@
 # @cvss: 8.1
 # @references: https://modelcontextprotocol.io/specification, https://cwe.mitre.org/data/definitions/287.html
 # @confidence: 80
-# @version: 1.0.0
+# @version: 1.1.0
 """
 ACTIVE / INTRUSIVE check.
 
@@ -50,8 +50,30 @@ TOKENISH = re.compile(r"token|session|credential|jwt|api[_-]?key|bearer", re.I)
 MUTATION = re.compile(r"write|delete|remove|drop|send|email|post|charge|pay|transfer|provision|"
                       r"create|deploy|execut|\bexec\b|\brun\b|install|modif|overwrit|rename|move|"
                       r"kill|terminat|shutdown|reset|revoke|grant", re.I)
-ACCEPT = re.compile(r"\b(valid|authenticated|authorized|success|succeeded|welcome|granted|verified|active|accepted)\b", re.I)
-REJECT = re.compile(r"\b(invalid|denied|rejected|fail|failed|incorrect|unauthorized|expired|unrecognized|not\s+recognized|error)\b", re.I)
+# A verdict word, and the negations that flip it.  `response_accepted` used to
+# read `{"valid": false}` and "token is not valid" as ACCEPTANCES: ACCEPT
+# matched `valid`, REJECT's `\binvalid\b` did not match `false` or `not valid`,
+# so a rejecting verifier was reported as broken - the exact opposite of the
+# truth.  The oracle below is structural and negation-aware instead: it reads a
+# boolean verdict FIELD when the response is JSON, and applies negation to a
+# verdict WORD when it is prose.
+ACCEPT_WORDS = ["valid", "authenticated", "authorized", "success", "succeeded",
+                "welcome", "granted", "verified", "active", "accepted", "allowed",
+                "ok", "authentic", "legitimate"]
+REJECT_WORDS = ["invalid", "denied", "rejected", "failure", "failed", "incorrect",
+                "unauthorized", "unauthenticated", "expired", "unrecognized",
+                "not recognized", "forbidden", "error", "revoked"]
+# Fields whose truthiness IS the verdict, when the response parses as JSON.
+VERDICT_TRUE_KEYS = {"valid", "authenticated", "authorized", "success", "ok",
+                     "active", "verified", "allowed", "accepted", "authentic"}
+VERDICT_FALSE_KEYS = {"invalid", "expired", "denied", "rejected", "revoked",
+                      "error", "failed"}
+# A word carrying a verdict is inverted when one of these immediately precedes
+# it (within a few tokens): "not valid", "no active session", "is not authorized".
+NEGATION = re.compile(r"\b(not|no|never|isn'?t|aren'?t|wasn'?t|cannot|can'?t|"
+                      r"couldn'?t|without|un)\W*$", re.I)
+ACCEPT_RE = re.compile(r"\b(%s)\b" % "|".join(ACCEPT_WORDS), re.I)
+REJECT_RE = re.compile(r"\b(%s)\b" % "|".join(w.replace(" ", r"\s+") for w in REJECT_WORDS), re.I)
 
 # blast-radius capability classifier (mutating / high-risk)
 CAP_RULES = [
@@ -84,12 +106,63 @@ def is_verify_tool(tool):
     return bool(VERIFY_VERB.search(text) and tokenish)
 
 
+def _json_verdict(text):
+    """If `text` (or a fenced/embedded object in it) parses as JSON, read a
+    boolean verdict field. Returns True (accepted), False (rejected) or None
+    (no structured verdict). A rejecting object like {"valid": false} or
+    {"error": "expired"} must never read as an acceptance."""
+    candidates = [text.strip()]
+    m = re.search(r"\{.*\}", text, re.S)
+    if m:
+        candidates.append(m.group(0))
+    for cand in candidates:
+        try:
+            obj = json.loads(cand)
+        except Exception:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        flat = {str(k).lower(): v for k, v in obj.items()}
+        # An explicit rejection field settles it, whatever else is present.
+        for k in VERDICT_FALSE_KEYS:
+            if k in flat and _truthy(flat[k]):
+                return False
+        for k in VERDICT_TRUE_KEYS:
+            if k in flat:
+                return _truthy(flat[k])
+        return None
+    return None
+
+
+def _truthy(v):
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, (int, float)):
+        return v != 0
+    if isinstance(v, str):
+        return v.strip().lower() in ("true", "1", "yes", "valid", "ok", "success",
+                                     "authenticated", "authorized", "active")
+    return bool(v)
+
+
 def response_accepted(text):
+    """Did the verifier report the forged token as VALID?
+
+    Structured verdict first; only then a negation-aware word scan, so
+    "token is not valid" and "no active session" read as rejections."""
     if not text:
         return False
-    if REJECT.search(text):
+    verdict = _json_verdict(text)
+    if verdict is not None:
+        return verdict
+    # Prose. An explicit rejection word anywhere is decisive.
+    if REJECT_RE.search(text):
         return False
-    return bool(ACCEPT.search(text))
+    # An acceptance word counts only if it is not locally negated.
+    for m in ACCEPT_RE.finditer(text):
+        if not NEGATION.search(text[:m.start()]):
+            return True
+    return False
 
 
 def _ctx():

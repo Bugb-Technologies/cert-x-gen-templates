@@ -6,25 +6,47 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 
 ## Adding templates / a new category
 
-CI (`.github/workflows/ci.yml`) gates every PR on four checks; run them locally before pushing:
+**A template PR must not contain `TEMPLATE_REGISTRY.json` or `templates/TEMPLATE_REGISTRY.md`.** The JSON registry is regenerated on `main` by the `registry` job in `.github/workflows/ci.yml` after every merge, and CI fails a PR that edits either file (escape hatch: the `curation` label, for the once-per-wave rewrite of the human index). This is why: both files carry repo-wide counts or numbered sections, so two concurrent template PRs always conflicted there and nowhere else.
+
+CI (`.github/workflows/ci.yml`) gates every PR on five checks; run checks 1-4 locally before pushing:
 1. **Engine loads all templates** — `cxg --disable-update-check -vv template list` then `.github/scripts/check_loader.py`. Locally this fails on WARN/dedup lines from `~/.cert-x-gen/templates` (the published set cxg merges in); run with a throwaway `HOME=$(mktemp -d)` to see this repo alone. CI has no such cache.
-2. **Registry is current** — regenerate with `python3 scripts/generate-index.py` and commit `TEMPLATE_REGISTRY.json`; it is generated, never hand-edited. Only files with a language extension (see `EXT_LANG`) count as templates — `.lib`, `.md`, etc. are ignored.
+2. **Registry generates cleanly** — `python3 scripts/generate-index.py` must exit 0 and report no `load_failures` and no `id_collisions`. Do **not** commit the result. Only files with a language extension (see `EXT_LANG`) count as templates — `.lib`, `.md`, etc. are ignored.
 3. **Generator guard tests** — `python3 scripts/test_generate_index.py`.
-4. **Hygiene** — `python3 .github/scripts/check_hygiene.py`. A **new category directory under `templates/` must be added to `VALID_CATEGORIES` in `.github/scripts/check_hygiene.py`**, or this fails.
+4. **Hygiene** — `python3 .github/scripts/check_hygiene.py` (CI runs it against the registry regenerated in check 2, so run check 2 first). A **new category directory under `templates/` must be added to `VALID_CATEGORIES` in `.github/scripts/check_hygiene.py`**, or this fails.
+5. **No hand-edited registry** — PR-only; see the paragraph above. Restore an accidental edit with `git checkout origin/main -- TEMPLATE_REGISTRY.json`.
 
 A template's non-template companions can be swallowed by `.gitignore` — its C/C++ section
-ignores `*.lib`, `*.a`, `*.out`, `*.exe`, and none of the four CI checks look at a file that
+ignores `*.lib`, `*.a`, `*.out`, `*.exe`, and none of the CI checks look at a file that
 is not a template, so a missing helper is invisible until a scan errors. `cli-baseline.lib`
 shipped absent for exactly this reason. **After adding any non-`.sh` file under `templates/`,
 run `git check-ignore -v <path>`** and add a negation if it hits.
 
-Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — update it too when adding a category.
+Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — a new category belongs in it, but that edit rides the `curation` pass, not your template PR.
+
+Each template (or pack of related templates) also gets a human-facing **playbook** at
+`docs/playbooks/<name>.md`: use case, a ```mermaid``` probe-flow diagram ending at
+CONFIRMED/REFUTED/SKIP, a competitor table, and why behavioural beats static here.
+`docs/playbooks/coding-agent-execution-authority.md` is the worked example.
 
 ## Fixtures
 
 A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. An extension the engine does not recognise (`cli-baseline.lib`) is the only way to keep a non-template file inside `templates/`. Give each fixture a flawed/fixed twin built from one source plus a `prove.sh` that asserts **both** directions: `fixtures/mcp-invisible-unicode/` is the shape, and `fixtures/mcp-token-audience-confusion/` adds the SKIP path a differential check must keep distinct from a refutation.
 
+A check is only proved when every verdict it can emit has a fixture that produces
+it — including `skipped`. Give the fixture source independent switches rather than
+one flawed/fixed axis: `tests/fixtures/coding-agent-exec-authority/` sets config-path
+trust and allowlist matching separately, so its four variants reach all four branches
+of the pack from one file. Behavioural proof harnesses are slow (that pack's is ~4
+min); they are not among the CI checks, so run them by hand before pushing.
+
+A fixture may serve more than one target kind. `fixtures/mcp-excessive-scope-proof/`
+is one MCP server that speaks streamable HTTP *and* stdio behind `--transport`, so a
+single flawed/fixed pair proves both halves of a `@target_kinds: http, cli` template;
+copy that shape rather than shipping two servers.
+
 The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
+
+The invisible-Unicode oracle is **duplicated**, not shared: `mcp-tool-poisoning.py` carries its own copy (`unicode_classes()`) of the five positional classes in `mcp-invisible-unicode-poisoning.py`, because a template must be one self-contained file. `fixtures/mcp-tool-poisoning/natural_corpus.py` runs both over one corpus and fails on any disagreement — **change one copy and you must change the other**, or that no-drift check trips. The precision idiom these MCP checks share (issues #31/#32): report only a structural conjunction or an *observed* secret/marker, and record every near-miss (a lone tag, a BOM, a credential-*named* resource, a placeholder value) as an `observations`/`soft` entry that the refutation names but never fires on.
 
 ## Writing a `cli` target-kind template
 
@@ -51,6 +73,21 @@ from **one** source. `tests/run-coding-agent-config-trust.sh` and
 `tests/prove-coding-agent-command-trace.sh` is the worked example for a **stateful**
 check whose finding lives in a *sequence* of observations, not one — it runs a
 control trace to establish the surface, then the probe, and asserts skip/refute/confirm.
+
+A **Python** template can take `cli` too, and the same env-var caveats apply: derive the
+kind by looking for the `cli://` prefix on `CERT_X_GEN_TARGET_HOST` (and fall back to
+"is this an existing file path"), because `CERT_X_GEN_TARGET_KIND` is usually unset.
+There is no `--arg` channel, so extra argv for a spawned binary needs its own env var.
+`templates/ai/mcp/mcp-excessive-scope-proof.py` is the worked example of one template
+serving both `http` and `cli`.
+
+## Playbooks
+
+A differentiated template ships a visual playbook at `docs/playbooks/<template-id>.md`:
+the human case for the check, a ```mermaid``` diagram of the probe flow ending at the
+CONFIRMED/REFUTED/SKIP decision, and a competitor table. Describe and link the template,
+never paste it. No CI check covers this directory, so validate mermaid before pushing -
+GitHub renders it natively and a parse error just shows the source.
 
 ## Maintaining this file
 

@@ -4,6 +4,13 @@ Behavioural probes for **coding-agent command-line tools** — the class of loca
 binary that reads layered configuration, executes hooks, and runs shell commands
 on a user's behalf.
 
+Three of them form the **execution-authority pack**: checks of one question —
+*what will this binary execute on someone else's say-so?* The human case for the
+pack, with diagrams and the competitive picture, is
+[`docs/playbooks/coding-agent-execution-authority.md`](../../../docs/playbooks/coding-agent-execution-authority.md).
+A fourth check, `coding-agent-command-trace-composition`, asks a different
+question — what a *sequence* of individually-approved commands composes into.
+
 These are `cli` target-kind templates: cxg runs the binary and reads an oracle,
 rather than matching a pattern against a file. Point one at a tool:
 
@@ -17,7 +24,19 @@ cxg scan --scope cli:///usr/local/bin/youragent \
 | Template | Class | CWE | Oracle |
 |---|---|---|---|
 | `coding-agent-shared-config-trust.sh` | Managed configuration honoured from a world-writable shared path | CWE-732, CWE-276, CWE-15 | `property` (differential) |
+| `coding-agent-project-local-config-trust.sh` | Project-local hooks run from a world-writable workspace, or from a world-writable directory **above** it | CWE-732, CWE-427, CWE-426 | `property` (differential) |
+| `coding-agent-config-allowlist-trust.sh` | Command allowlist taken from attacker-writable config, or matched on the command **name** | CWE-732, CWE-863, CWE-183 | `property` (differential) |
 | `coding-agent-command-trace-composition.sh` | Command validator approves a trace whose composition executes an unvalidated command | CWE-77, CWE-693, CWE-807 | `property` (stateful trace) |
+
+The first three form the **execution-authority pack** and are each a
+**differential**: a control arm in a private `0700` directory must be honoured
+before any probe arm can confirm, so none of them flags "this tool has a config
+layer" — they flag "this tool has a config layer *and* no trust gate". The
+fourth, the command-trace composition check, is a differential of a different
+shape — a read-only control *trace* must prove the tool is a stateful command
+validator before the probe feeds it a bypassing composition — but keeps the same
+discipline. Across all four, a refutation is a positive result, and a `skip`
+names the precondition that was missing.
 
 ## `coding-agent-shared-config-trust` — what it proves
 
@@ -82,6 +101,48 @@ defined by (`XDG_CONFIG_DIRS`, `PROGRAMDATA`, `ALLUSERSPROFILE`).
 | `CXG_AGENT_TIMEOUT` | `10` | seconds per target invocation |
 | `CXG_AGENT_PROBE_BUDGET` | `64` | cap on control-phase invocations, so a slow target cannot hold a scan for the whole variable × subcommand grid |
 
+## `coding-agent-project-local-config-trust` — what it proves
+
+The same trust question, one layer down: the per-workspace settings every tool in
+this family finds by walking up from the working directory
+(`.claude/settings.json`, `.cursor/hooks.json`, `.codex/config.toml`,
+`.gemini/settings.json`). Two things go wrong there, and the template probes both
+after the same `0700` control arm:
+
+| Arm | Where the settings sit | What a confirmation means |
+|---|---|---|
+| control | a `0700` checkout | the tool honours project settings **at all** |
+| `writable` | the checkout itself, at `0777` | a shared checkout — CI workspace, `/srv` tree, an image whose `COPY` lost its mode bits — lets anyone pick what the agent runs |
+| `ancestor` | a `0777` directory **one level above** a `0700` checkout that holds no settings at all | the config search walked *out of the workspace it was pointed at*. An uncontrolled search path (CWE-427) in the shape of a config file: the attacker never touched the repository |
+
+`CXG_AGENT_PROJECT_ARMS` (default `writable ancestor`) narrows which probe arms
+run; the proof harness uses it to exercise each arm alone, since the first arm to
+confirm ends the run.
+
+## `coding-agent-config-allowlist-trust` — what it proves
+
+A config-declared command allowlist — `permissions.allow` with `Bash(<cmd>)`
+entries, a `commandAllowlist`, `coreTools` with `run_shell_command(<cmd>)`, an
+`allowed_commands` TOML array — is the approval prompt moved to disk. This
+template asks who may answer it, and what an entry actually matches.
+
+1. **Baseline.** The marker command is submitted with **no** configuration and
+   must be refused. If it runs, nothing downstream is a bypass; the template
+   `skipped`s and says so, because an absent approval gate is a different
+   finding.
+2. **Control.** The same command, granted by an allowlist in a `0700` root, must
+   now run — otherwise the tool has no config-declared allowlist surface.
+3. **Probe `writable`.** The byte-identical allowlist in a `0777` root.
+   Confirmed if the command runs: any local account pre-approves execution.
+4. **Probe `namematch`.** A `0700` root granting only
+   `echo cxg-allowlist-name-probe`, submitted as that echo followed by the
+   marker. Confirmed if the marker runs: entries are matched on the leading
+   token, not on the command that executes (CWE-183). This arm is independent of
+   permissions — a tool whose trust gate holds can still fail it.
+
+`CXG_AGENT_RUN_SUBCOMMANDS` names the run/exec subcommand when the tool's help
+does not advertise one.
+
 ## `coding-agent-command-trace-composition` — what it proves
 
 A coding agent gates command execution behind a **validator** that judges one
@@ -135,16 +196,29 @@ inside the lab. No CVE is reproduced against any real tool's machine state.
 ## Proving it both ways
 
 ```bash
-tests/run-coding-agent-config-trust.sh        # config-trust template
-tests/prove-coding-agent-command-trace.sh     # command-trace-composition template
+tests/run-coding-agent-config-trust.sh          # the managed-root check alone
+tests/prove-coding-agent-exec-authority.sh      # the rest of the exec-authority pack, on four config shapes
+tests/prove-coding-agent-command-trace.sh       # the command-trace composition check
 ```
 
-Each harness runs its template against a benign synthetic twin pair and requires
-**confirmed on the flawed build, refuted on the fixed one** (the command-trace
-harness also asserts **skipped** on a non-validator), through the raw probe
-contract and again through a real `cxg scan`. Each fixture is materialised into
-its two twins by `build.sh` from **one source** — `agentcli.py` for config-trust,
-`cmdguard.py` for command-trace — so that "refuted" can never degrade into "the
+Each requires **confirmed on the flawed build, refuted on the fixed one** (the
+command-trace harness also asserts **skipped** on a non-validator), through the
+raw probe contract and again through a real `cxg scan`.
+
+`tests/fixtures/coding-agent-config-trust/agentcli.py` is the original synthetic
+"agent-like" CLI. `tests/fixtures/coding-agent-exec-authority/agentshape.py` is
+the pack fixture: one source materialised into the Claude Code / Cursor / Codex /
+Gemini configuration **shapes** (file names, on-disk format, hook schema,
+allowlist schema) and, per shape, into twins that differ only in whether the
+trust gate is on. Two extra variants exist so the verdicts that are neither
+confirm nor refute have a target too: `nogate` (no approval gate at all — the
+allowlist check must `skip`) and `prefixmatch` (trust gate on, allowlist matched
+by name — the allowlist check must confirm on its *other* branch).
+`tests/fixtures/coding-agent-command-trace/cmdguard.py` is the composition
+fixture — a synthetic command validator, one source materialised into a
+flawed/fixed twin pair.
+
+Because every twin comes from one source, "refuted" can never degrade into "the
 two files differ".
 
 ## References

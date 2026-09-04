@@ -4,6 +4,13 @@ name: CI
 # and was invisible until someone went looking: templates that never loaded,
 # duplicate @ids whose templates never ran, and a registry nine months stale.
 # All of it was mechanically detectable, and none of it made anything go red.
+#
+# TEMPLATE_REGISTRY.json is generated, and it is generated HERE, on main, by the
+# `registry` job below - never in a pull request. Requiring every template PR to
+# commit a regenerated registry made a shared file part of every PR's surface,
+# and two concurrent template PRs then always conflicted in its header counts.
+# A PR proves its templates load, generate, and are in a valid category; main
+# owns the file.
 
 on:
   pull_request:
@@ -34,7 +41,48 @@ jobs:
     name: Template integrity
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth 0: the shared-file guard below diffs against the merge base
+      # with the PR's base branch, which a shallow clone does not contain.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ---------------------------------------------------------------------
+      # 0. A pull request must not hand-edit the generated registry.
+      #
+      # TEMPLATE_REGISTRY.json is regenerated on main by the `registry` job and
+      # templates/TEMPLATE_REGISTRY.md is its human index; both are shared
+      # files, and an edit to either in a template PR is what made concurrent
+      # template PRs conflict. This states the convention positively so an
+      # author learns it from a red check rather than from a merge conflict.
+      #
+      # Escape hatch: label the PR `curation` (the once-per-wave pass that
+      # rewrites the human index by hand). The bot's own registry-refresh PR is
+      # exempt by branch and by actor.
+      # ---------------------------------------------------------------------
+      - name: Pull request does not hand-edit the generated registry
+        if: >-
+          github.event_name == 'pull_request'
+          && github.head_ref != 'ci/registry-refresh'
+          && github.actor != 'github-actions[bot]'
+          && !contains(github.event.pull_request.labels.*.name, 'curation')
+        run: |
+          base="origin/${{ github.base_ref }}"
+          git fetch --no-tags origin '${{ github.base_ref }}'
+          blocked="$(git diff --name-only "$base"...HEAD \
+                     | grep -E '^(TEMPLATE_REGISTRY\.json|templates/TEMPLATE_REGISTRY\.md)$' \
+                     || true)"
+          if [ -z "$blocked" ]; then
+            echo "No edits to the generated registry."
+            exit 0
+          fi
+          echo "::error::This pull request edits a generated/shared registry file:"
+          printf '  %s\n' $blocked
+          echo "TEMPLATE_REGISTRY.json is regenerated on main by the 'registry' job -"
+          echo "a template PR must not carry it. templates/TEMPLATE_REGISTRY.md is the"
+          echo "curated human index, rewritten once per wave under the 'curation' label."
+          echo "Drop both files from this PR ('git checkout origin/main -- <file>') and push again."
+          exit 1
 
       - uses: actions/setup-python@v5
         with:
@@ -89,39 +137,39 @@ jobs:
           path: loader.log
 
       # ---------------------------------------------------------------------
-      # 2. The registry must match the templates.
+      # 2. The registry must GENERATE cleanly from the templates.
       #
-      # Regenerate and diff. Any change means a template was added or edited
-      # without regenerating - which is exactly how the registry went nine
-      # months stale, and how merging five PRs made it stale again within the
-      # hour. The generator's exit contract carries the rest: 0 clean, 1 empty
-      # tree, 2 id collisions; a non-zero exit fails this step.
+      # This used to diff a fresh regeneration against the committed file and
+      # fail on any difference, which forced every template PR to commit the
+      # regenerated registry - a shared file with per-category and total counts
+      # in its header, so any two template PRs conflicted there and nowhere
+      # else. That gate is gone; `registry` (below) regenerates on main.
       #
-      # The one field excluded from the diff is last_updated, which the
-      # generator stamps with wall-clock time on every run. Left in, this check
-      # would fail on every commit including clean ones, which is not a check.
-      # Every other field is derived from templates/, so a surviving difference
-      # is real drift.
+      # What is NOT relaxed: the generator's exit contract still gates this
+      # step (0 clean, 1 empty tree, 2 id collisions), and its own report of
+      # load_failures and id_collisions is still a hard failure. Those are the
+      # correctness checks; matching a committed artifact never was one.
+      #
+      # The regenerated file is deliberately left in the working tree so the
+      # hygiene check below reads a registry that includes this PR's templates.
       # ---------------------------------------------------------------------
-      - name: Registry is current
+      - name: Registry generates cleanly
         run: |
-          cp TEMPLATE_REGISTRY.json /tmp/registry.committed.json
           python3 scripts/generate-index.py
           python3 - <<'PY'
-          import json
-          committed = json.load(open("/tmp/registry.committed.json"))
-          regenerated = json.load(open("TEMPLATE_REGISTRY.json"))
-          if "last_updated" in committed:
-              regenerated["last_updated"] = committed["last_updated"]
-          with open("TEMPLATE_REGISTRY.json", "w", encoding="utf-8") as fh:
-              json.dump(regenerated, fh, indent=2)
-              fh.write("\n")
+          import json, sys
+          reg = json.load(open("TEMPLATE_REGISTRY.json"))
+          bad = reg["load_failures"] + reg["id_collisions"]
+          if bad:
+              print("::error::registry generation reported problems:")
+              print(json.dumps(bad, indent=2))
+              sys.exit(1)
+          counts = reg["counts"]
+          print("registry generates cleanly: %d templates "
+                "(loadable %d, runnable %d, engine_registered %d)"
+                % (reg["total_templates"], counts["loadable"],
+                   counts["runnable"], counts["engine_registered"]))
           PY
-          if ! git diff --exit-code -- TEMPLATE_REGISTRY.json; then
-            echo "::error::TEMPLATE_REGISTRY.json is stale - the diff above is what regenerating produces. Run 'python3 scripts/generate-index.py' and commit the result."
-            exit 1
-          fi
-          echo "TEMPLATE_REGISTRY.json is current."
 
       # ---------------------------------------------------------------------
       # 3. The generator's own guard tests.
@@ -135,7 +183,91 @@ jobs:
 
       # ---------------------------------------------------------------------
       # 4. Hygiene: no absolute paths or empty names in the registry, no
-      #    template outside the nine valid categories.
+      #    template outside the ten valid categories.
+      #
+      # Runs against the registry regenerated in step 2, not the committed one,
+      # so a PR's new templates are the ones hygiene-checked.
       # ---------------------------------------------------------------------
       - name: Registry and layout hygiene
         run: python3 .github/scripts/check_hygiene.py
+
+  # -------------------------------------------------------------------------
+  # main owns TEMPLATE_REGISTRY.json.
+  #
+  # Runs only on push to main, only after `templates` is green, and regenerates
+  # the registry exactly once per merge. This is the other half of taking the
+  # registry off the PR surface: no template PR carries the file, and main can
+  # still never go stale.
+  #
+  # last_updated is a wall-clock stamp the generator rewrites on every run, so
+  # it is excluded from the "did anything change" comparison - included, this
+  # job would commit on every push forever.
+  #
+  # main requires a pull request (repository ruleset "default", 1 approval), so
+  # the direct push is attempted and a pull request is opened when it is
+  # refused. Granting github-actions bypass on that ruleset turns the fallback
+  # off by itself - no change here is needed.
+  # -------------------------------------------------------------------------
+  registry:
+    name: Regenerate registry on main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [templates]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Regenerate
+        id: regen
+        run: |
+          cp TEMPLATE_REGISTRY.json /tmp/registry.committed.json
+          python3 scripts/generate-index.py
+          python3 - <<'PY'
+          import json, os, subprocess
+          committed = json.load(open("/tmp/registry.committed.json"))
+          regenerated = json.load(open("TEMPLATE_REGISTRY.json"))
+          # Compare ignoring the wall-clock stamp, but keep the fresh stamp if
+          # anything else moved.
+          probe = dict(regenerated)
+          probe["last_updated"] = committed.get("last_updated")
+          changed = probe != committed
+          if not changed:
+              subprocess.check_call(["git", "checkout", "--", "TEMPLATE_REGISTRY.json"])
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write("changed=%s\n" % ("true" if changed else "false"))
+          print("registry changed" if changed else "registry already current")
+          PY
+
+      - name: Commit to main, or open a pull request if main refuses a push
+        if: steps.regen.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add TEMPLATE_REGISTRY.json
+          git commit -m 'chore(registry): regenerate TEMPLATE_REGISTRY.json [skip ci]'
+          if git push origin HEAD:main; then
+            echo 'Registry regenerated and pushed to main.'
+            exit 0
+          fi
+          echo 'Direct push to main refused; opening a pull request instead.'
+          branch=ci/registry-refresh
+          git push --force origin HEAD:"$branch"
+          if [ -z "$(gh pr list --head "$branch" --base main --state open --json number --jq '.[].number')" ]; then
+            gh pr create --head "$branch" --base main \
+              --title 'chore(registry): regenerate TEMPLATE_REGISTRY.json' \
+              --body 'Automated: `python3 scripts/generate-index.py` after a merge to `main`. Template PRs no longer carry the registry; this keeps main current. Force-updated on every merge that moves the registry.'
+          else
+            echo 'An open registry-refresh pull request already exists; it now carries the latest registry.'
+          fi
