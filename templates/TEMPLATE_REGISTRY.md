@@ -2,7 +2,7 @@
 
 This document provides a complete registry of all available templates organized by purpose-based categories.
 
-> **Total templates:** 147 | **Languages:** 12 | **Categories:** 9
+> **Total templates:** 161 | **Languages:** 12 | **Categories:** 10
 >
 > **Playbooks & learning content:** Published on the [BugB Blog](https://bugb.io/blogs)
 
@@ -282,13 +282,37 @@ This document provides a complete registry of all available templates organized 
 
 ---
 
-## 8. Recon (`recon/`)
+## 8. CLI Security Baseline (`cli-baseline/`)
+
+Fourteen behavioural probes for command-line tools, one per baseline vulnerability
+class (B01–B14). Each is a self-contained shell template targeting `cli` kinds, sourcing
+the shared probe library `cli-baseline/cli-baseline.lib` via `$(dirname "$0")/cli-baseline.lib`.
+See `cli-baseline/README.md` for the class taxonomy, oracle model, and lab conventions.
+
+- **CLI Baseline B01 — Argument Injection (CWE-88)** — `cli-baseline/cli-baseline-b01-argument-injection.sh`
+- **CLI Baseline B02 — Command Injection (CWE-78)** — `cli-baseline/cli-baseline-b02-command-injection.sh`
+- **CLI Baseline B03 — Path Traversal (CWE-22)** — `cli-baseline/cli-baseline-b03-path-traversal.sh`
+- **CLI Baseline B04 — Archive Traversal (CWE-22)** — `cli-baseline/cli-baseline-b04-archive-traversal.sh`
+- **CLI Baseline B05 — Secrets in argv (CWE-214)** — `cli-baseline/cli-baseline-b05-argv-secrets.sh`
+- **CLI Baseline B06 — Insecure Temp Files (CWE-377)** — `cli-baseline/cli-baseline-b06-insecure-temp-files.sh`
+- **CLI Baseline B07 — PATH Hijack (CWE-426)** — `cli-baseline/cli-baseline-b07-path-hijack.sh`
+- **CLI Baseline B08 — Terminal Escape Injection (CWE-150)** — `cli-baseline/cli-baseline-b08-terminal-escape.sh`
+- **CLI Baseline B09 — Environment Trust (CWE-454)** — `cli-baseline/cli-baseline-b09-environment-trust.sh`
+- **CLI Baseline B10 — Config Credential Handling (CWE-732)** — `cli-baseline/cli-baseline-b10-config-credential-handling.sh`
+- **CLI Baseline B11 — Memory Safety (CWE-787)** — `cli-baseline/cli-baseline-b11-memory-safety.sh`
+- **CLI Baseline B12 — Crash / Hang (CWE-20)** — `cli-baseline/cli-baseline-b12-crash-hang.sh`
+- **CLI Baseline B13 — TOCTOU Symlink Race (CWE-367)** — `cli-baseline/cli-baseline-b13-toctou-symlink-race.sh`
+- **CLI Baseline B14 — Format String (CWE-134)** — `cli-baseline/cli-baseline-b14-format-string.sh`
+
+---
+
+## 9. Recon (`recon/`)
 
 - **System Context Recon** — `recon/system/system-context-recon.sh`
 
 ---
 
-## 9. Skeleton Templates (`skeleton/`)
+## 10. Skeleton Templates (`skeleton/`)
 
 Boilerplate templates and AI-assisted authoring notes for all 12 supported languages:
 

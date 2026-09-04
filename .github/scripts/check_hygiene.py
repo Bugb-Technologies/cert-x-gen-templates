@@ -11,7 +11,7 @@ Three cheap invariants, each one a mistake this repo has actually shipped:
   EMPTY NAMES     A blank name field indexes a template that cannot be found by
                   name and shows up nameless in reports.
 
-  CATEGORY DRIFT  templates/ is organised by the nine categories below and
+  CATEGORY DRIFT  templates/ is organised by the ten categories below and
                   tooling downstream assumes it. A template dropped into a
                   tenth directory - or loose at the top of templates/ - is what
                   the superseded contribution PRs kept getting wrong.
@@ -34,7 +34,7 @@ REGISTRY = REPO_ROOT / "TEMPLATE_REGISTRY.json"
 TEMPLATES_DIR = REPO_ROOT / "templates"
 
 VALID_CATEGORIES = {
-    "ai", "databases", "devops", "messaging", "monitoring",
+    "ai", "cli-baseline", "databases", "devops", "messaging", "monitoring",
     "network", "recon", "tooling", "web",
 }
 
