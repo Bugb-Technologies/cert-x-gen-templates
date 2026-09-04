@@ -34,6 +34,15 @@ This document provides a complete registry of all available templates organized 
 - **Copilot YOLO AutoApprove Enabled** — `ai/copilot/copilot-yolo-autoapprove-enabled.py`
 - **Cursor MCP Poisoning Config Risk** — `ai/cursor/cursor-mcpoison-config-risk.py`
 
+### Model Context Protocol (`ai/mcp/`)
+- **MCP Invisible-Unicode Tool Poisoning (Approval-View Fidelity Gap)** — `ai/mcp/mcp-invisible-unicode-poisoning.py` *(property oracle; fixture in `fixtures/mcp-invisible-unicode/`)*
+- **MCP Tool Poisoning (Hidden Instructions in Tool Metadata)** — `ai/mcp/mcp-tool-poisoning.py`
+- **MCP Rug Pull Detection** — `ai/mcp/mcp-rug-pull-detection.py`
+- **MCP Excessive Tool Permissions** — `ai/mcp/mcp-excessive-tool-permissions.py`
+- **MCP Credential Exposure** — `ai/mcp/mcp-credential-exposure.py`
+- **MCP Broken Token Validation** — `ai/mcp/mcp-broken-token-validation.py`
+- **MCP Unauthenticated Access** — `ai/mcp/mcp-unauthenticated.py`
+
 ---
 
 ## 2. Databases (`databases/`)

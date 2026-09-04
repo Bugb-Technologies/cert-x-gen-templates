@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-04T07:49:04.834554Z",
+  "last_updated": "2026-09-04T09:50:40.097084Z",
   "counts": {
-    "files_on_disk": 176,
-    "loadable": 176,
-    "runnable": 176,
-    "engine_registered": 176
+    "files_on_disk": 177,
+    "loadable": 177,
+    "runnable": 177,
+    "engine_registered": 177
   },
-  "total_templates": 176,
+  "total_templates": 177,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -19,14 +19,14 @@
     "javascript": 7,
     "perl": 1,
     "php": 1,
-    "python": 64,
+    "python": 65,
     "ruby": 1,
     "rust": 5,
     "shell": 22,
     "yaml": 49
   },
   "categories": {
-    "ai": 20,
+    "ai": 21,
     "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
@@ -103,6 +103,16 @@
       "severity": "high",
       "language": "python",
       "path": "templates/ai/mcp/mcp-excessive-tool-permissions.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-invisible-unicode-poisoning",
+      "name": "MCP Invisible-Unicode Tool Poisoning (Approval-View Fidelity Gap)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-invisible-unicode-poisoning.py",
       "category": "ai",
       "loadable": true,
       "runnable": true
