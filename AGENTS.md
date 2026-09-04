@@ -24,6 +24,11 @@ Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50
 
 A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. An extension the engine does not recognise (`cli-baseline.lib`) is the only way to keep a non-template file inside `templates/`. Give each fixture a flawed/fixed twin built from one source plus a `prove.sh` that asserts **both** directions: `fixtures/mcp-invisible-unicode/` is the shape, and `fixtures/mcp-token-audience-confusion/` adds the SKIP path a differential check must keep distinct from a refutation.
 
+A fixture may serve more than one target kind. `fixtures/mcp-excessive-scope-proof/`
+is one MCP server that speaks streamable HTTP *and* stdio behind `--transport`, so a
+single flawed/fixed pair proves both halves of a `@target_kinds: http, cli` template;
+copy that shape rather than shipping two servers.
+
 The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
 
 ## Writing a `cli` target-kind template
@@ -48,6 +53,21 @@ currently `v1.3.0`), which is behind the engine source; re-check when the pin mo
 Prove a `cli` template both ways before shipping it, on a flawed and a fixed twin built
 from **one** source. `tests/run-coding-agent-config-trust.sh` and
 `tests/prove-supply-chain-install-hook.sh` are the worked examples.
+
+A **Python** template can take `cli` too, and the same env-var caveats apply: derive the
+kind by looking for the `cli://` prefix on `CERT_X_GEN_TARGET_HOST` (and fall back to
+"is this an existing file path"), because `CERT_X_GEN_TARGET_KIND` is usually unset.
+There is no `--arg` channel, so extra argv for a spawned binary needs its own env var.
+`templates/ai/mcp/mcp-excessive-scope-proof.py` is the worked example of one template
+serving both `http` and `cli`.
+
+## Playbooks
+
+A differentiated template ships a visual playbook at `docs/playbooks/<template-id>.md`:
+the human case for the check, a ```mermaid``` diagram of the probe flow ending at the
+CONFIRMED/REFUTED/SKIP decision, and a competitor table. Describe and link the template,
+never paste it. No CI check covers this directory, so validate mermaid before pushing -
+GitHub renders it natively and a parse error just shows the source.
 
 ## Maintaining this file
 
