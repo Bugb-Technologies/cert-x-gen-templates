@@ -1,0 +1,10 @@
+{
+  "name": "cxg-fixture-installhook-flawed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BENIGN synthetic fixture: an npm package whose postinstall hook produces the three observables supply-chain-install-hook-behavior confirms on. It touches only the sentinel HOME it is handed and beacons to a .invalid host that can never resolve.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}
