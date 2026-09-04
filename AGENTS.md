@@ -66,6 +66,10 @@ currently `v1.3.0`), which is behind the engine source; re-check when the pin mo
 - **Per-finding `cwe_ids` are overwritten by the engine** with a value derived from the
   template's own annotations, so a finding's CWE list does not survive into the report
   as emitted.
+- **`cxg scan --output <path>` REPLACES a file extension rather than appending one**, so
+  a harness that names its report after a `.py` fixture (`--output scan-agent_x.py`) then
+  reads `scan-agent_x.py.json` and silently finds nothing. Name report paths without a
+  dot.
 
 Prove a `cli` template both ways before shipping it, on a flawed and a fixed twin built
 from **one** source. `tests/run-coding-agent-config-trust.sh` and
@@ -80,6 +84,15 @@ gone, observes whether an artifact written inside it fires *outside* it. Its
 `nosandbox` third twin exists so the SKIP branch has a target — a boundary-class
 check needs a "no genuine boundary" twin, not just an absent-surface one, to
 reach `skipped` honestly.
+
+The three config-trust templates differ by which variable their differential moves, and a
+fourth must too or it is a duplicate: `coding-agent-shared-config-trust` and
+`coding-agent-project-local-config-trust` vary the **permissions** of the directory the
+config came from, `coding-agent-repo-config-autoexec` holds permissions fixed (both arms
+0700, same owner — it *errors* if they diverge) and varies **provenance**, whether the
+user's trust store records that workspace. State the held-fixed axis in the template
+header and assert it at runtime; a confirmation that let two variables move proves nothing
+about either.
 
 A **Python** template can take `cli` too, and the same env-var caveats apply: derive the
 kind by looking for the `cli://` prefix on `CERT_X_GEN_TARGET_HOST` (and fall back to

@@ -15,7 +15,10 @@ the agent wrote *inside* a sandbox does when an unsandboxed consumer runs it
 *after* the sandbox has exited. A sixth,
 `agent-skill-hidden-instruction-trust`, asks a question about the agent's
 *extensions*: when a loaded skill contains a directive the approving human could
-not see, does the agent act on it?
+not see, does the agent act on it? A seventh,
+`coding-agent-repo-config-autoexec`, asks who *authored* the config the tool
+obeys: it holds permissions fixed and varies whether a human ever approved the
+workspace the configuration arrived in.
 
 These are `cli` target-kind templates: cxg runs the binary and reads an oracle,
 rather than matching a pattern against a file. Point one at a tool:
@@ -35,6 +38,7 @@ cxg scan --scope cli:///usr/local/bin/youragent \
 | `coding-agent-command-trace-composition.sh` | Command validator approves a trace whose composition executes an unvalidated command | CWE-77, CWE-693, CWE-807 | `property` (stateful trace) |
 | `coding-agent-sandbox-trust-handoff.sh` | Sandbox contains the agent process but not its files: deferred consumers execute agent-authored surfaces after the sandbox exits | CWE-668, CWE-693, CWE-829 | `property` + `detector` (two-phase) |
 | `agent-skill-hidden-instruction-trust.py` | A loaded skill's concealed directive executes with no consent boundary between loaded and executed | CWE-1427, CWE-829, CWE-693 | `property` (sentinel per channel + egress canary) |
+| `coding-agent-repo-config-autoexec.sh` | Repo-supplied configuration honoured on first open of a workspace nobody approved | CWE-1188, CWE-829, CWE-94 | `property` (differential over provenance) |
 
 The first three form the **execution-authority pack** and are each a
 **differential**: a control arm in a private `0700` directory must be honoured
@@ -49,8 +53,10 @@ differential — phase 1 must first prove the sandbox truly confines the agent
 after the sandbox has exited, checks whether an agent-written file executes
 *outside* the boundary. So is the sixth, the skill hidden-instruction check: a
 plainly visible directive must be honoured before a concealed one counts for
-anything. Across all six, a refutation is a positive result, and a `skip` names
-the precondition that was missing.
+anything. The seventh moves a different variable again: both of its arms are
+`0700` checkouts owned by the same user, and what changes is whether the
+operator's trust store records the workspace. Across all seven, a refutation is a
+positive result, and a `skip` names the precondition that was missing.
 
 ## `coding-agent-shared-config-trust` — what it proves
 
@@ -271,6 +277,46 @@ are in the [visual playbook](../../../docs/playbooks/agent-skill-hidden-instruct
 | `CXG_SKILL_DIRECTIVE` | `RUN:` | the directive prefix this agent's skills use |
 | `CXG_AGENT_TIMEOUT` | `20` | seconds per target invocation |
 
+## `coding-agent-repo-config-autoexec` — what it proves
+
+Cloning a repository is not consent to run its code, but a coding agent's
+per-workspace configuration **is in the repository** — and it is not
+preferences. `.claude/settings.json` declares `SessionStart` hooks,
+`.mcp.json` and `.cursor/mcp.json` declare an MCP server alongside the
+`autoApprove` list that says not to prompt for it, `.vscode/tasks.json` can mark
+a task `runOn: folderOpen`, and `AGENTS.md` carries standing orders. Each is
+execution chosen by whoever wrote the branch and delivered to whoever opens it —
+the developer reviewing a fork's pull request, the CI job checking out an
+untrusted ref. **Amazon Q Developer** shipped this: repo-supplied configuration
+honoured out of a workspace nobody had approved.
+
+Its two neighbours above vary **permissions** — who else on this box could have
+written the file. This template holds permissions fixed and varies
+**provenance**:
+
+| Arm | Checkout | What it establishes |
+|---|---|---|
+| control | `0700`, owner = invoking user, **recorded** in a trust store planted under the probe's own `$HOME` | the tool is repo-config-driven **at all** — without this the template `skipped`s |
+| probe | `0700`, same owner, same six documents, **absent** from that same well-formed trust store | cloning is consent: the trust decision was made by the attacker at commit time |
+
+Both arms are `git init`-ed checkouts and the template **errors** rather than
+confirms if their modes diverge or the probe arm comes out group/other-writable
+— otherwise a permissions finding could walk out wearing this finding's clothes.
+One probe covers six surfaces, each with its own nonce and its own canary file,
+so the verdict names *which* parts of a repository the tool obeys on sight.
+
+**Confirmed** at confidence 92 when a declared command actually ran (a canary
+holds that surface's nonce), and at 78 when the values took effect but no
+execution was witnessed — different claims, reported as different claims.
+**Refuted** when the approved arm is honoured and all six unapproved surfaces
+are refused: a workspace-trust gate stands in front of the repo-config layer.
+**Skipped** when even the approved arm honours nothing, which means either the
+tool reads no repo-supplied configuration or its trust store is not one of the
+five paths the probe seeds.
+
+The full case, a testing-flow diagram, and the competitor landscape are in the
+[visual playbook](../../../docs/playbooks/coding-agent-repo-config-autoexec.md).
+
 ## Safety
 
 Every probe here runs inside a `mktemp -d` lab removed on exit; no system path
@@ -289,8 +335,13 @@ check needs them to do anything destructive. For
 synthetic and written by the template — no marketplace skill is installed and no
 real agent is driven by the proof harness — and its concealed directives compose
 exactly two actions: `touch <nonce>` inside the lab, and one HTTP GET at a
-`127.0.0.1` port the template opened. Nothing leaves the loopback interface. No
-CVE is reproduced against any real tool's machine state.
+`127.0.0.1` port the template opened. Nothing leaves the loopback interface. For
+`coding-agent-repo-config-autoexec`, `$HOME` is redirected
+into the lab for every probe run so no real user configuration is read or
+written, and every command a planted surface can declare is
+`printf <nonce> > <lab-file>`; `autoApprove`, `bypassPermissions` and
+`runOn: folderOpen` appear as inert strings because they are what the class is
+about. No CVE is reproduced against any real tool's machine state.
 
 ## Proving it both ways
 
@@ -300,13 +351,15 @@ tests/prove-coding-agent-exec-authority.sh      # the rest of the exec-authority
 tests/prove-coding-agent-command-trace.sh       # the command-trace composition check
 tests/prove-coding-agent-sandbox-trust-handoff.sh  # the sandbox trust-handoff escape check
 tests/prove-agent-skill-hidden-instruction.sh  # the skill hidden-instruction check
+tests/prove-coding-agent-repo-config-autoexec.sh  # the untrusted-workspace check
 ```
 
 Each requires **confirmed on the flawed build, refuted on the fixed one** (the
-command-trace harness also asserts **skipped** on a non-validator, and the
+command-trace harness also asserts **skipped** on a non-validator, the
 sandbox trust-handoff harness **skipped** on both an unconfined twin and a
-non-sandbox binary), through the raw probe contract and again through a real
-`cxg scan`.
+non-sandbox binary, and the repo-config harness **skipped** on a CLI with no
+repo-scoped config layer), through the raw probe contract and again through a
+real `cxg scan`.
 
 `tests/fixtures/coding-agent-config-trust/agentcli.py` is the original synthetic
 "agent-like" CLI. `tests/fixtures/coding-agent-exec-authority/agentshape.py` is
@@ -329,6 +382,12 @@ fixture: one source materialised into three twins on two independent switches �
 which view of a skill is authoritative (`flawed` takes the model's, `fixed` the
 approver's) and whether there is a skills surface at all (`noskills`), so one
 file reaches `confirmed`, `refuted` and `skipped`.
+`tests/fixtures/coding-agent-repo-config-autoexec/repoagent.py` is the
+untrusted-workspace fixture: a synthetic agent that reads all six repo-scoped
+surfaces, materialised into twins that differ only in whether
+`workspace_is_trusted()` gates the load. Its refusal path deliberately never
+echoes a marker — a gate that printed the value it refused would be
+indistinguishable from no gate.
 
 Because every twin comes from one source, "refuted" can never degrade into "the
 two files differ".
@@ -339,3 +398,4 @@ two files differ".
 - Xie et al. 2026, *Benign in Isolation, Harmful in Composition* (SCR-Bench) — the compositional-harm class the command-trace template exercises
 - Cloud Security Alliance — agent-sandbox test design for deferred execution of agent-authored files (the trust-handoff class the sandbox template exercises)
 - [Trojan Source (CVE-2021-42574)](https://trojansource.codes/) — the source-vs-rendered-view gap the skill hidden-instruction template measures behaviourally
+- Amazon Q Developer repo-supplied configuration RCE — the untrusted-workspace class `coding-agent-repo-config-autoexec` exercises
