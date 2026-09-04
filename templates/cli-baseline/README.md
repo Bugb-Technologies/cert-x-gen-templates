@@ -31,7 +31,7 @@ Baseline** specification. This directory is its reference implementation.
 | B08 | Terminal escape injection | CWE-150, CWE-117 | `property` | Clean |
 | B09 | Unvalidated trust in environment variables | CWE-454, CWE-526 | `property` | Clean |
 | B10 | Insecure config / credential file handling | CWE-732, CWE-276 | `property` | Clean |
-| B11 | Memory-safety defect | CWE-787, CWE-125, CWE-416 | `asan`, `ubsan`, `msan` | **Partial** — needs instrumentation |
+| B11 | Memory-safety defect | CWE-787, CWE-125, CWE-416, CWE-190 | `asan`, `ubsan`, `msan`, `tsan`, `overflow` | **Partial** — needs instrumentation |
 | B12 | Crash or hang on malformed input | CWE-20, CWE-400 | `signal`, `timeout`, `exception` | **Partial** |
 | B13 | TOCTOU / symlink race | CWE-367 | `property` | **Partial** — probabilistic |
 | B14 | Format-string defect | CWE-134 | `property`, `signal` | **Hint** |
@@ -49,9 +49,13 @@ For B11–B14 a quiet run is *not* evidence, and the pack refuses to pretend
 otherwise. Three mechanisms enforce that:
 
 1. **Each template declares the oracle it genuinely reads.** B11 declares
-   `asan, ubsan, msan`, none of which a build can provide without a sanitizer,
-   so cxg skips it with `no-instrumentation-detected` rather than letting it
-   report a refutation it did not earn. B12–B14 declare build-independent
+   `asan, ubsan, msan, tsan, overflow`, none of which a build can provide
+   without a sanitizer or a compiled-in check, so cxg skips it with
+   `no-instrumentation-detected` rather than letting it report a refutation it
+   did not earn. `overflow` is the Rust integer class: Rust has no UBSan, so
+   the equivalent evidence is the `-C overflow-checks=on` panic, and that
+   branch is gated on the build record naming `rust-overflow-checks` so it can
+   never fire on a build where the check was compiled out. B12–B14 declare build-independent
    oracles because they genuinely use them, so they still run — declaring a
    sanitizer oracle a template never consults would buy a false negative for
    nothing.
