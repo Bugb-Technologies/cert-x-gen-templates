@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-04T07:49:04.834554Z",
+  "last_updated": "2026-09-04T09:57:07.903829Z",
   "counts": {
-    "files_on_disk": 176,
-    "loadable": 176,
-    "runnable": 176,
-    "engine_registered": 176
+    "files_on_disk": 177,
+    "loadable": 177,
+    "runnable": 177,
+    "engine_registered": 177
   },
-  "total_templates": 176,
+  "total_templates": 177,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -22,11 +22,11 @@
     "python": 64,
     "ruby": 1,
     "rust": 5,
-    "shell": 22,
+    "shell": 23,
     "yaml": 49
   },
   "categories": {
-    "ai": 20,
+    "ai": 21,
     "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
@@ -153,6 +153,16 @@
       "severity": "high",
       "language": "python",
       "path": "templates/ai/ml/torch-unsafe-load-usage.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-shared-config-trust",
+      "name": "Coding-agent CLI honours managed configuration from a world-writable shared path",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-shared-config-trust.sh",
       "category": "ai",
       "loadable": true,
       "runnable": true

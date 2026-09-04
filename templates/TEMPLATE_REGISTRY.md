@@ -2,7 +2,7 @@
 
 This document provides a complete registry of all available templates organized by purpose-based categories.
 
-> **Total templates:** 161 | **Languages:** 12 | **Categories:** 10
+> **Total templates:** 162 | **Languages:** 12 | **Categories:** 10
 >
 > **Playbooks & learning content:** Published on the [BugB Blog](https://bugb.io/blogs)
 
@@ -33,6 +33,11 @@ This document provides a complete registry of all available templates organized 
 - **Claude Code sed Bypass Usage (CVE-2025-64755)** — `ai/claude/claude-code-sed-bypass-usage.py`
 - **Copilot YOLO AutoApprove Enabled** — `ai/copilot/copilot-yolo-autoapprove-enabled.py`
 - **Cursor MCP Poisoning Config Risk** — `ai/cursor/cursor-mcpoison-config-risk.py`
+
+### Coding-agent CLI (behavioural, `cli` target kind)
+See `ai/coding-agent/README.md` for the class, the differential oracle, and the
+synthetic twin pair it is proved against.
+- **Coding-agent CLI honours managed configuration from a world-writable shared path (CVE-2026-35603)** — `ai/coding-agent/coding-agent-shared-config-trust.sh`
 
 ---
 
