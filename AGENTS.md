@@ -46,6 +46,8 @@ copy that shape rather than shipping two servers.
 
 The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
 
+The invisible-Unicode oracle is **duplicated**, not shared: `mcp-tool-poisoning.py` carries its own copy (`unicode_classes()`) of the five positional classes in `mcp-invisible-unicode-poisoning.py`, because a template must be one self-contained file. `fixtures/mcp-tool-poisoning/natural_corpus.py` runs both over one corpus and fails on any disagreement — **change one copy and you must change the other**, or that no-drift check trips. The precision idiom these MCP checks share (issues #31/#32): report only a structural conjunction or an *observed* secret/marker, and record every near-miss (a lone tag, a BOM, a credential-*named* resource, a placeholder value) as an `observations`/`soft` entry that the refutation names but never fires on.
+
 ## Writing a `cli` target-kind template
 
 Verified against the CI-pinned `cxg` (`CXG_VERSION` in `.github/workflows/ci.yml`,
