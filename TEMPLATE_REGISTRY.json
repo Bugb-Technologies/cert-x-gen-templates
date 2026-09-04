@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-04T07:49:04.834554Z",
+  "last_updated": "2026-09-04T10:09:47.281412Z",
   "counts": {
-    "files_on_disk": 176,
-    "loadable": 176,
-    "runnable": 176,
-    "engine_registered": 176
+    "files_on_disk": 177,
+    "loadable": 177,
+    "runnable": 177,
+    "engine_registered": 177
   },
-  "total_templates": 176,
+  "total_templates": 177,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -22,7 +22,7 @@
     "python": 64,
     "ruby": 1,
     "rust": 5,
-    "shell": 22,
+    "shell": 23,
     "yaml": 49
   },
   "categories": {
@@ -34,6 +34,7 @@
     "monitoring": 16,
     "network": 34,
     "recon": 1,
+    "tooling": 1,
     "web": 32
   },
   "templates": [
@@ -1474,6 +1475,16 @@
       "language": "shell",
       "path": "templates/recon/system/system-context-recon.sh",
       "category": "recon",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "supply-chain-install-hook-behavior",
+      "name": "Supply chain - install and import-time hook behaviour",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/tooling/supply-chain/supply-chain-install-hook-behavior.sh",
+      "category": "tooling",
       "loadable": true,
       "runnable": true
     },

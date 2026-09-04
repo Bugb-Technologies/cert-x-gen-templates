@@ -2,7 +2,7 @@
 
 This document provides a complete registry of all available templates organized by purpose-based categories.
 
-> **Total templates:** 161 | **Languages:** 12 | **Categories:** 10
+> **Total templates:** 177 | **Languages:** 12 | **Categories:** 10
 >
 > **Playbooks & learning content:** Published on the [BugB Blog](https://bugb.io/blogs)
 
@@ -306,13 +306,24 @@ See `cli-baseline/README.md` for the class taxonomy, oracle model, and lab conve
 
 ---
 
-## 9. Recon (`recon/`)
+## 9. Tooling / Supply Chain (`tooling/`)
+
+- **Supply chain — install and import-time hook behaviour (CWE-506)** — `tooling/supply-chain/supply-chain-install-hook-behavior.sh`
+
+Behavioural, not signature-based: it installs a package with a real package
+manager in a hermetic lab and reports the side effects of the install, the
+interpreter startup and the first import, differenced against the same phase
+on an inert control package. See `tooling/supply-chain/README.md`.
+
+---
+
+## 10. Recon (`recon/`)
 
 - **System Context Recon** — `recon/system/system-context-recon.sh`
 
 ---
 
-## 10. Skeleton Templates (`skeleton/`)
+## 11. Skeleton Templates (`skeleton/`)
 
 Boilerplate templates and AI-assisted authoring notes for all 12 supported languages:
 

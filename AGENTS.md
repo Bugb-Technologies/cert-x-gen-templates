@@ -14,6 +14,30 @@ CI (`.github/workflows/ci.yml`) gates every PR on four checks; run them locally 
 
 Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — update it too when adding a category.
 
+## Sharp edges
+
+**Fixtures and test data must live outside `templates/`.** `scripts/generate-index.py`
+skips a `tests/` directory; the engine loader (`src/template/engine.rs`) does not. Any
+file under `templates/` with a language extension - even in a `tests/` or `fixtures/`
+subdirectory - is loaded as a template, so the loader count and the generator count
+diverge and CI check 1 fails. This repo's fixtures live at the repo root under `tests/`.
+
+**`.gitignore` swallows `*.lib`, and with it `templates/cli-baseline/cli-baseline.lib`.**
+The fourteen `cli-baseline` templates source that library as their first act and it has
+never been committed, so from a clone every one of them prints
+`probe-library-not-found` and exits. The only copy is in the engine repo at
+`tests/fixtures/cli-baseline/pack/`. Nothing in CI notices, because the templates still
+load and still emit valid JSON. A new pack should be self-contained rather than inherit
+this.
+
+**The pinned cxg release is behind the engine source.** `v1.3.0` as pinned in
+`.github/workflows/ci.yml` predates the probe-input work: it has no `--input` /
+`--arg` / `--stdin-file`, never sets `CERT_X_GEN_TARGET_KIND`, leaves the `cli://`
+prefix on `CERT_X_GEN_TARGET_HOST`, and **discards the stdout of any template that
+exits non-zero regardless of `@allow_nonzero_exit`**. A template that wants to run on
+the pinned binary as well as on a current engine must tolerate all four, and must carry
+its verdict in `metadata.status` rather than in an exit code.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.

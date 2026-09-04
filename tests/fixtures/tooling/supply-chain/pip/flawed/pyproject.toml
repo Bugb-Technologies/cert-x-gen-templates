@@ -1,0 +1,14 @@
+# BENIGN SYNTHETIC FIXTURE - the FLAWED pip twin.
+#
+# An in-tree PEP 517 backend with no requirements at all, so the fixture builds
+# and installs with `pip install --no-index --no-build-isolation` and never
+# touches a network.
+[build-system]
+requires = []
+build-backend = "cxg_fixture_backend"
+backend-path = ["."]
+
+[project]
+name = "cxg-fixture-installhook-flawed"
+version = "1.0.0"
+description = "Benign synthetic fixture: a PyPI package that acts at build, startup and import time"
