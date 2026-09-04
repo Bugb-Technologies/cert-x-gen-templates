@@ -46,7 +46,7 @@ copy that shape rather than shipping two servers.
 
 The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
 
-The invisible-Unicode oracle is **duplicated**, not shared: `mcp-tool-poisoning.py` carries its own copy (`unicode_classes()`) of the five positional classes in `mcp-invisible-unicode-poisoning.py`, because a template must be one self-contained file. `fixtures/mcp-tool-poisoning/natural_corpus.py` runs both over one corpus and fails on any disagreement — **change one copy and you must change the other**, or that no-drift check trips. The precision idiom these MCP checks share (issues #31/#32): report only a structural conjunction or an *observed* secret/marker, and record every near-miss (a lone tag, a BOM, a credential-*named* resource, a placeholder value) as an `observations`/`soft` entry that the refutation names but never fires on.
+The invisible-Unicode oracle is **duplicated**, not shared: `mcp-tool-poisoning.py` and `ai/coding-agent/agent-skill-hidden-instruction-trust.py` each carry their own copy (`unicode_classes()`) of the five positional classes in `mcp-invisible-unicode-poisoning.py`, because a template must be one self-contained file. `fixtures/mcp-tool-poisoning/natural_corpus.py` runs all three over one corpus and fails on any disagreement — **change one copy and you must change the others**, or that no-drift check trips; a template carrying a fourth copy must add itself there. The precision idiom these MCP checks share (issues #31/#32): report only a structural conjunction or an *observed* secret/marker, and record every near-miss (a lone tag, a BOM, a credential-*named* resource, a placeholder value) as an `observations`/`soft` entry that the refutation names but never fires on.
 
 ## Writing a `cli` target-kind template
 
@@ -77,6 +77,13 @@ from **one** source. `tests/run-coding-agent-config-trust.sh` and
 `tests/prove-coding-agent-command-trace.sh` is the worked example for a **stateful**
 check whose finding lives in a *sequence* of observations, not one — it runs a
 control trace to establish the surface, then the probe, and asserts skip/refute/confirm.
+`tests/prove-coding-agent-sandbox-trust-handoff.sh` is the worked example for a
+**two-phase, post-exit boundary** check: phase 1 must first prove a boundary
+exists (a direct escape is *blocked*) before phase 2, run after the boundary is
+gone, observes whether an artifact written inside it fires *outside* it. Its
+`nosandbox` third twin exists so the SKIP branch has a target — a boundary-class
+check needs a "no genuine boundary" twin, not just an absent-surface one, to
+reach `skipped` honestly.
 
 The three config-trust templates differ by which variable their differential moves, and a
 fourth must too or it is a duplicate: `coding-agent-shared-config-trust` and
