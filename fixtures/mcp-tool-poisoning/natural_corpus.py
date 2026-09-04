@@ -11,11 +11,13 @@ NATURAL is that list, plus the descriptions those routes actually appear in.
 None may produce a hard hit. POISONED must still produce the named class - a
 check that goes quiet everywhere is not precise, it is broken.
 
-A third assertion guards the one real risk of folding the invisible-Unicode
-oracle into a second template: DRIFT. Every string in both corpora is run
-through `mcp-tool-poisoning.unicode_classes` and through
-`mcp-invisible-unicode-poisoning.analyze`, and the two must agree on the class
-set. A change to one that is not made to the other fails here.
+A third assertion guards the one real risk of carrying the invisible-Unicode
+oracle in more than one template: DRIFT. Every string in both corpora is run
+through `mcp-tool-poisoning.unicode_classes`, through
+`mcp-invisible-unicode-poisoning.analyze`, and through
+`agent-skill-hidden-instruction-trust.unicode_classes`, and all three must
+agree on the class set. A change to one that is not made to the others fails
+here.
 
     python3 natural_corpus.py      # exit 0 = the oracle holds
 """
@@ -37,6 +39,10 @@ def load(name, relpath):
 
 tp = load("mcp_tool_poisoning", "ai/mcp/mcp-tool-poisoning.py")
 iu = load("mcp_invisible_unicode", "ai/mcp/mcp-invisible-unicode-poisoning.py")
+# A third carrier of the same oracle: the skill hidden-instruction template uses
+# it to certify that its own concealed payload really is invisible before it
+# delivers it. Same code, same corpus, same assertion.
+sh = load("agent_skill_hidden", "ai/coding-agent/agent-skill-hidden-instruction-trust.py")
 
 ZWSP, ZWNJ, ZWJ, WJ, BOM = "​", "‌", "‍", "⁠", "﻿"
 RLO, LRO, PDF, RLI, PDI = "‮", "‭", "‬", "⁧", "⁩"
@@ -126,18 +132,20 @@ for expect, text in POISONED:
         print("FAIL  %-34s expected %s, got %s" % (expect, expect, classes))
         failed = 1
 
-print("--- no drift: the two Unicode oracles agree ---")
+print("--- no drift: the three Unicode oracles agree ---")
 drift = 0
 for label, text in NATURAL + POISONED:
     mine = sorted(c for c, _ in tp.unicode_classes(text)[0])
     theirs = sorted(c for c, _ in iu.analyze(text)[0])
-    if mine != theirs:
-        print("FAIL  %-34s tool-poisoning=%s invisible-unicode=%s" % (label, mine, theirs))
+    skill = sorted(c for c, _ in sh.unicode_classes(text)[0])
+    if not (mine == theirs == skill):
+        print("FAIL  %-34s tool-poisoning=%s invisible-unicode=%s skill-hidden=%s"
+              % (label, mine, theirs, skill))
         drift = 1
 if drift:
     failed = 1
 else:
-    print("ok    %d string(s) classified identically by both templates"
+    print("ok    %d string(s) classified identically by all three templates"
           % len(NATURAL + POISONED))
 
 print("CORPUS OK" if not failed else "CORPUS FAILED")
