@@ -20,9 +20,21 @@ run `git check-ignore -v <path>`** and add a negation if it hits.
 
 Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — update it too when adding a category.
 
+Each template (or pack of related templates) also gets a human-facing **playbook** at
+`docs/playbooks/<name>.md`: use case, a ```mermaid``` probe-flow diagram ending at
+CONFIRMED/REFUTED/SKIP, a competitor table, and why behavioural beats static here.
+`docs/playbooks/coding-agent-execution-authority.md` is the worked example.
+
 ## Fixtures
 
 A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. An extension the engine does not recognise (`cli-baseline.lib`) is the only way to keep a non-template file inside `templates/`. Give each fixture a flawed/fixed twin built from one source plus a `prove.sh` that asserts **both** directions: `fixtures/mcp-invisible-unicode/` is the shape, and `fixtures/mcp-token-audience-confusion/` adds the SKIP path a differential check must keep distinct from a refutation.
+
+A check is only proved when every verdict it can emit has a fixture that produces
+it — including `skipped`. Give the fixture source independent switches rather than
+one flawed/fixed axis: `tests/fixtures/coding-agent-exec-authority/` sets config-path
+trust and allowlist matching separately, so its four variants reach all four branches
+of the pack from one file. Behavioural proof harnesses are slow (that pack's is ~4
+min); they are not in the four CI checks, so run them by hand before pushing.
 
 The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
 
