@@ -73,6 +73,13 @@ from **one** source. `tests/run-coding-agent-config-trust.sh` and
 `tests/prove-coding-agent-command-trace.sh` is the worked example for a **stateful**
 check whose finding lives in a *sequence* of observations, not one — it runs a
 control trace to establish the surface, then the probe, and asserts skip/refute/confirm.
+`tests/prove-coding-agent-sandbox-trust-handoff.sh` is the worked example for a
+**two-phase, post-exit boundary** check: phase 1 must first prove a boundary
+exists (a direct escape is *blocked*) before phase 2, run after the boundary is
+gone, observes whether an artifact written inside it fires *outside* it. Its
+`nosandbox` third twin exists so the SKIP branch has a target — a boundary-class
+check needs a "no genuine boundary" twin, not just an absent-surface one, to
+reach `skipped` honestly.
 
 A **Python** template can take `cli` too, and the same env-var caveats apply: derive the
 kind by looking for the `cli://` prefix on `CERT_X_GEN_TARGET_HOST` (and fall back to
