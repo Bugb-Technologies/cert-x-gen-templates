@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-08-13T10:18:24.226805Z",
+  "last_updated": "2026-09-04T07:49:04.834554Z",
   "counts": {
-    "files_on_disk": 162,
-    "loadable": 162,
-    "runnable": 162,
-    "engine_registered": 162
+    "files_on_disk": 176,
+    "loadable": 176,
+    "runnable": 176,
+    "engine_registered": 176
   },
-  "total_templates": 162,
+  "total_templates": 176,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -22,11 +22,12 @@
     "python": 64,
     "ruby": 1,
     "rust": 5,
-    "shell": 8,
+    "shell": 22,
     "yaml": 49
   },
   "categories": {
     "ai": 20,
+    "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
     "messaging": 7,
@@ -233,6 +234,146 @@
       "language": "yaml",
       "path": "templates/ai/triton/triton-model-control-exposed.yaml",
       "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b01-argument-injection",
+      "name": "CLI Baseline B01 - argument injection via un-separated argv",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b01-argument-injection.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b02-command-injection",
+      "name": "CLI Baseline B02 - OS command injection through an argument",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b02-command-injection.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b03-path-traversal",
+      "name": "CLI Baseline B03 - path traversal in a file-naming argument",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b03-path-traversal.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b04-archive-traversal",
+      "name": "CLI Baseline B04 - zip-slip / archive extraction traversal",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b04-archive-traversal.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b05-argv-secrets",
+      "name": "CLI Baseline B05 - credentials exposed in the process table",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b05-argv-secrets.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b06-insecure-temp-files",
+      "name": "CLI Baseline B06 - insecure temporary file creation",
+      "severity": "medium",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b06-insecure-temp-files.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b07-path-hijack",
+      "name": "CLI Baseline B07 - untrusted search path / PATH hijack",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b07-path-hijack.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b08-terminal-escape",
+      "name": "CLI Baseline B08 - terminal escape sequence injection",
+      "severity": "medium",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b08-terminal-escape.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b09-environment-trust",
+      "name": "CLI Baseline B09 - unvalidated trust in environment variables",
+      "severity": "medium",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b09-environment-trust.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b10-config-credential-handling",
+      "name": "CLI Baseline B10 - insecure config and credential file handling",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b10-config-credential-handling.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b11-memory-safety",
+      "name": "CLI Baseline B11 - memory-safety defect (instrumentation-dependent)",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b11-memory-safety.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b12-crash-hang",
+      "name": "CLI Baseline B12 - crash or hang on malformed input",
+      "severity": "medium",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b12-crash-hang.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b13-toctou-symlink-race",
+      "name": "CLI Baseline B13 - TOCTOU / symlink race",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b13-toctou-symlink-race.sh",
+      "category": "cli-baseline",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "cli-baseline-b14-format-string",
+      "name": "CLI Baseline B14 - format-string defect",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/cli-baseline/cli-baseline-b14-format-string.sh",
+      "category": "cli-baseline",
       "loadable": true,
       "runnable": true
     },
