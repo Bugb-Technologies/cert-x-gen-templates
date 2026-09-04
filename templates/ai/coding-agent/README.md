@@ -17,6 +17,7 @@ cxg scan --scope cli:///usr/local/bin/youragent \
 | Template | Class | CWE | Oracle |
 |---|---|---|---|
 | `coding-agent-shared-config-trust.sh` | Managed configuration honoured from a world-writable shared path | CWE-732, CWE-276, CWE-15 | `property` (differential) |
+| `coding-agent-command-trace-composition.sh` | Command validator approves a trace whose composition executes an unvalidated command | CWE-77, CWE-693, CWE-807 | `property` (stateful trace) |
 
 ## `coding-agent-shared-config-trust` — what it proves
 
@@ -81,28 +82,72 @@ defined by (`XDG_CONFIG_DIRS`, `PROGRAMDATA`, `ALLUSERSPROFILE`).
 | `CXG_AGENT_TIMEOUT` | `10` | seconds per target invocation |
 | `CXG_AGENT_PROBE_BUDGET` | `64` | cap on control-phase invocations, so a slow target cannot hold a scan for the whole variable × subcommand grid |
 
+## `coding-agent-command-trace-composition` — what it proves
+
+A coding agent gates command execution behind a **validator** that judges one
+command at a time. But a session is a *sequence*, and state accumulates across
+it: a value bound in step 1 is read in step 3, two approved strings are
+concatenated into one that is not. Each step alone is benign; the danger is
+**emergent** in the composition, which is never handed to the validator as a
+single thing to judge. This is the shape of the **Cursor 9.8 / Claude Code
+single-quote-strip validator bug** (the string the gate approves is not the
+string that runs) and of **SCR-Bench** (Xie et al. 2026, *"Benign in Isolation,
+Harmful in Composition"*) — named here for motivation only; neither is
+reproduced.
+
+The probe is a **stateful differential**, not a single observation:
+
+| Phase | Trace | What it establishes |
+|---|---|---|
+| control | `set a NONCE_A` · `set b NONCE_B` · `join c a b` · `show c` | the target is a stateful trace validator **at all** — it reconstructs a joined nonce it was never handed whole. Without this the template `skipped`s, because there is no validator here to bypass. It executes nothing. |
+| probe | `set verb touch` · `set marker MARK` · `join cmd verb marker` · `run cmd` | four individually-allowed statements whose def-use chain assembles `touch <marker>` and invokes it. The only change from the control is that the joined value is *run*, not *shown*. |
+
+**Confirmed** when the decoy marker fires **and** the execution ledger shows
+every statement was allowed (`block=0`) — the composition executed a command no
+single statement was, and the same validator refuses the equivalent
+single-statement form. **Refuted** when the validator re-validates the resolved,
+composed command at the exec sink and blocks it (marker absent, `block>0`) — a
+positive property in its own right: this validator is stateful. **Skipped** when
+no command-trace surface threads session state; name its subcommand with
+`CXG_TRACE_SUBCOMMAND` if the tool has one.
+
+The full case, a testing-flow diagram, and the competitor landscape are in the
+[visual playbook](../../../docs/playbooks/coding-agent-command-trace-composition.md).
+
+### Knobs
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `CXG_TRACE_SUBCOMMAND` | — | trace-evaluation subcommand to try first, before the conventional names (`run-trace`, `trace`, `eval-trace`, `replay`, `batch`, …) |
+| `CXG_AGENT_TIMEOUT` | `10` | seconds per target invocation |
+
 ## Safety
 
-Nothing is written outside a `mktemp -d` lab removed on exit. No system path is
-created, `chmod`-ed or read. The sandbox- and approval-weakening keys appear in
-the planted document as inert strings, because they are what makes this class
-privilege escalation — not because the template needs them to fire. No CVE is
-reproduced against any real tool's machine state.
+Every probe here runs inside a `mktemp -d` lab removed on exit; no system path
+is created, `chmod`-ed, or read. For `coding-agent-shared-config-trust`, the
+sandbox- and approval-weakening keys appear in the planted document as inert
+strings, because they are what makes that class privilege escalation — not
+because the template needs them to fire. For
+`coding-agent-command-trace-composition`, the only command the "dangerous"
+composition ever assembles is `touch <nonce>`, dropping one empty decoy sentinel
+inside the lab. No CVE is reproduced against any real tool's machine state.
 
 ## Proving it both ways
 
 ```bash
-tests/run-coding-agent-config-trust.sh
+tests/run-coding-agent-config-trust.sh        # config-trust template
+tests/prove-coding-agent-command-trace.sh     # command-trace-composition template
 ```
 
-runs the template against a benign synthetic twin pair and requires **confirmed
-on the flawed build, refuted on the fixed one**, through the raw probe contract
-and again through a real `cxg scan`. The fixture is
-`tests/fixtures/coding-agent-config-trust/agentcli.py` — a synthetic
-"agent-like" CLI with a managed-settings layer and session hooks, materialised
-into its two twins by `build.sh` from **one source**, so that "refuted" can
-never degrade into "the two files differ".
+Each harness runs its template against a benign synthetic twin pair and requires
+**confirmed on the flawed build, refuted on the fixed one** (the command-trace
+harness also asserts **skipped** on a non-validator), through the raw probe
+contract and again through a real `cxg scan`. Each fixture is materialised into
+its two twins by `build.sh` from **one source** — `agentcli.py` for config-trust,
+`cmdguard.py` for command-trace — so that "refuted" can never degrade into "the
+two files differ".
 
 ## References
 
 - [CVE-2026-35603 — AI coding tools privilege escalation (Cymulate)](https://cymulate.com/blog/cve-2026-35603-ai-coding-tools-privilege-escalation/)
+- Xie et al. 2026, *Benign in Isolation, Harmful in Composition* (SCR-Bench) — the compositional-harm class the command-trace template exercises

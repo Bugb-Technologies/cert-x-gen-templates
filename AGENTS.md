@@ -47,7 +47,10 @@ currently `v1.3.0`), which is behind the engine source; re-check when the pin mo
 
 Prove a `cli` template both ways before shipping it, on a flawed and a fixed twin built
 from **one** source. `tests/run-coding-agent-config-trust.sh` and
-`tests/prove-supply-chain-install-hook.sh` are the worked examples.
+`tests/prove-supply-chain-install-hook.sh` are the worked examples;
+`tests/prove-coding-agent-command-trace.sh` is the worked example for a **stateful**
+check whose finding lives in a *sequence* of observations, not one — it runs a
+control trace to establish the surface, then the probe, and asserts skip/refute/confirm.
 
 ## Maintaining this file
 
