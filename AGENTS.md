@@ -12,6 +12,12 @@ CI (`.github/workflows/ci.yml`) gates every PR on four checks; run them locally 
 3. **Generator guard tests** — `python3 scripts/test_generate_index.py`.
 4. **Hygiene** — `python3 .github/scripts/check_hygiene.py`. A **new category directory under `templates/` must be added to `VALID_CATEGORIES` in `.github/scripts/check_hygiene.py`**, or this fails.
 
+A template's non-template companions can be swallowed by `.gitignore` — its C/C++ section
+ignores `*.lib`, `*.a`, `*.out`, `*.exe`, and none of the four CI checks look at a file that
+is not a template, so a missing helper is invisible until a scan errors. `cli-baseline.lib`
+shipped absent for exactly this reason. **After adding any non-`.sh` file under `templates/`,
+run `git check-ignore -v <path>`** and add a negation if it hits.
+
 Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — update it too when adding a category.
 
 ## Maintaining this file
