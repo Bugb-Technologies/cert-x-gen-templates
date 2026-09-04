@@ -14,6 +14,10 @@ CI (`.github/workflows/ci.yml`) gates every PR on four checks; run them locally 
 
 Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — update it too when adding a category.
 
+## Fixtures
+
+A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. Give each fixture a flawed/fixed twin and a `prove.sh` that asserts **both** directions (confirm and refute) — see `fixtures/mcp-token-audience-confusion/` for a behavioural (property-oracle) example that also proves the SKIP path a differential check must keep distinct.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
