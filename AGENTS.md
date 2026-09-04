@@ -22,7 +22,32 @@ Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50
 
 ## Fixtures
 
-A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. An extension the engine does not recognise (`cli-baseline.lib`) is the only way to keep a non-template file inside `templates/`. `fixtures/mcp-invisible-unicode/` is the shape: a flawed/fixed twin target plus a `prove.sh` that asserts confirm **and** refute.
+A template's synthetic target lives in `fixtures/<template-id>/`, **never** beside the template: `discover()` in `scripts/generate-index.py` indexes every file under `templates/` carrying a language extension, so a `.py` fixture stored there is loaded and run as a check. An extension the engine does not recognise (`cli-baseline.lib`) is the only way to keep a non-template file inside `templates/`. Give each fixture a flawed/fixed twin built from one source plus a `prove.sh` that asserts **both** directions: `fixtures/mcp-invisible-unicode/` is the shape, and `fixtures/mcp-token-audience-confusion/` adds the SKIP path a differential check must keep distinct from a refutation.
+
+The generator and the engine disagree about `tests/`: `discover()` skips a `tests/` directory, the engine loader does not. A fixture parked under `templates/**/tests/` therefore makes CI check 1 and check 2 report different totals. Behavioural fixtures too large for `fixtures/<template-id>/` live at the repo root under `tests/fixtures/` with their runner in `tests/`.
+
+## Writing a `cli` target-kind template
+
+Verified against the CI-pinned `cxg` (`CXG_VERSION` in `.github/workflows/ci.yml`,
+currently `v1.3.0`), which is behind the engine source; re-check when the pin moves.
+
+- **A shell template must `exit 0`, even when it confirms.** The pinned engine
+  discards a shell template's findings entirely if the process exits non-zero, and
+  `@allow_nonzero_exit: true` does not change that. Carry the verdict in the emitted
+  JSON's `metadata.status`, never in the exit code.
+- **`CERT_X_GEN_TARGET_KIND` and `CERT_X_GEN_TARGET_INSTRUMENTATION` are not set,
+  and the `cli://` prefix is left on `CERT_X_GEN_TARGET_HOST`.** A `cli` template
+  receives only `CERT_X_GEN_TARGET_HOST` holding the raw scope string
+  (`cli:///abs/path`), plus `CERT_X_GEN_TARGET_PORT` and `CERT_X_GEN_MODE`; derive the
+  kind and the binary path from that string when the explicit variables are absent.
+  There is also no `--input` / `--arg` / `--stdin-file`.
+- **Per-finding `cwe_ids` are overwritten by the engine** with a value derived from the
+  template's own annotations, so a finding's CWE list does not survive into the report
+  as emitted.
+
+Prove a `cli` template both ways before shipping it, on a flawed and a fixed twin built
+from **one** source. `tests/run-coding-agent-config-trust.sh` and
+`tests/prove-supply-chain-install-hook.sh` are the worked examples.
 
 ## Maintaining this file
 

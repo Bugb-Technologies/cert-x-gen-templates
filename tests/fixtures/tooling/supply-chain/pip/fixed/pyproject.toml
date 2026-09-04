@@ -1,0 +1,14 @@
+# BENIGN SYNTHETIC FIXTURE - the FIXED pip twin.
+#
+# Same shape as the flawed twin: an in-tree PEP 517 backend, a package that
+# does real work when it is imported, a wheel built offline. What it does not
+# do is act outside its own tree at build, startup or import time.
+[build-system]
+requires = []
+build-backend = "cxg_fixture_backend"
+backend-path = ["."]
+
+[project]
+name = "cxg-fixture-installhook-fixed"
+version = "1.0.0"
+description = "Benign synthetic fixture: the fixed twin, active but confined"
