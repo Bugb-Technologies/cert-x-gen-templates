@@ -13,8 +13,10 @@
 - [ ] **It loads** — `cxg --disable-update-check -vv template list` from the
       repo root reports no `WARN` for your file. The engine, not
       `cxg template validate`; the two disagree and the engine is what runs.
-- [ ] **Registry regenerated** — ran `python3 scripts/generate-index.py` and
-      committed the resulting `TEMPLATE_REGISTRY.json`.
+- [ ] **No shared files** — this PR does **not** contain `TEMPLATE_REGISTRY.json`
+      or `templates/TEMPLATE_REGISTRY.md`. The registry is regenerated on `main`
+      after merge; `python3 scripts/generate-index.py` is a local check (it must
+      exit 0 with no load failures and no id collisions), not something to commit.
 - [ ] **Terminology** — the template describes an audit and what it exposes.
       Not exploit, manipulation, or confusion.
 - [ ] **No third-party traffic** — a scan touches the target and nothing else.

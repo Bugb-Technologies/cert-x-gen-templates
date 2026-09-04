@@ -188,7 +188,10 @@ git checkout -b feature/redis-authentication-bypass
 
 1. Add your template
 2. Update CHANGELOG.md
-3. Update TEMPLATE_REGISTRY.json (or run `scripts/generate-index.py`)
+3. Run `python3 scripts/generate-index.py` as a check — it must exit 0 with no
+   load failures and no id collisions — but **do not commit** the resulting
+   `TEMPLATE_REGISTRY.json`. It is regenerated on `main` after merge, and CI
+   fails a pull request that edits it (or `templates/TEMPLATE_REGISTRY.md`).
 
 ### Validate
 
