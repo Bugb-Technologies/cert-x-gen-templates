@@ -127,6 +127,10 @@ out/
 *.dll
 *.a
 *.lib
+# ...but a shell probe library under templates/ is source, not a C archive.
+# Without this the cli-baseline pack ships without cli-baseline.lib and every
+# template in it exits with `probe-library-not-found`.
+!templates/**/*.lib
 *.exe
 *.out
 *.app

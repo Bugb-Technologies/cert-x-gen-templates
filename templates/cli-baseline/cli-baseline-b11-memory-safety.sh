@@ -7,7 +7,7 @@
 # @tags: cli, baseline, memory-safety, cwe-787, cwe-125, cwe-416, instrumentation-dependent
 # @cwe: CWE-787
 # @target_kinds: cli
-# @oracles: asan, ubsan, msan
+# @oracles: asan, ubsan, msan, tsan, overflow
 # @allow_nonzero_exit: true
 #
 # BASELINE CLASS B11 - memory-safety defect (CWE-787, CWE-125, CWE-416).
@@ -44,7 +44,7 @@ fi
 cxg_require_cli_target
 # The self-check: no sanitizer, no verdict. This runs whether or not the
 # operator passed --require-instrumentation.
-cxg_require_instrumentation asan ubsan msan tsan
+cxg_require_instrumentation asan ubsan msan tsan rust-overflow-checks
 cxg_control_alive
 cxg_lab b11
 cxg_seed_corpus
@@ -55,6 +55,17 @@ LONG_256="$(python3 -c 'print("A"*257)')"
 LONG_4K="$(python3 -c 'print("A"*4096)')"
 LONG_64K="$(python3 -c 'print("A"*65536)')"
 
+# Numeric boundaries. The over-length payloads above parse to 0 in any option
+# that expects a number, so without these the integer family is only reachable
+# through a length-derived computation. s16's B11 recipe says "over-length AND
+# boundary-shaped"; these are the boundary-shaped half.
+NUM_BOUNDARIES="2147483647
+2147483648
+4294967295
+9223372036854775807
+-1
+-2147483648"
+
 SUBS="$(cxg_subcommands | head -8)"
 OPTS="$(cxg_help_text | grep -oE '^[[:space:]]+--[a-z][a-z0-9-]*' | tr -d ' ' | sort -u | head -8)"
 TARGETS="$(printf '%s\n%s\n' "$SUBS" "$OPTS" | grep -v '^$')"
@@ -62,22 +73,75 @@ TARGETS="$(printf '%s\n%s\n' "$SUBS" "$OPTS" | grep -v '^$')"
 
 CXG_TARGET_OUTPUT=""
 
-check_report() { # check_report <what>
-    case "$CXG_OUT" in
-        *AddressSanitizer*|*MemorySanitizer*|*ThreadSanitizer*|*LeakSanitizer*|*"runtime error:"*)
-            SAN="$(printf '%s' "$CXG_OUT" | grep -oE '(AddressSanitizer|MemorySanitizer|ThreadSanitizer|LeakSanitizer|runtime error)[^\n]{0,80}' | head -1)"
-            FINDINGS="$(cxg_finding \
-                critical 95 \
-                "Memory-safety defect reported by the sanitizer runtime" \
-                "Over-length input delivered through \`$1\` produced a sanitizer report: $SAN. The target exited $CXG_RC. A sanitizer report is a direct observation of memory corruption, not an inference from behaviour -- which is exactly the evidence an uninstrumented build cannot provide, and why this class is only ever adjudicated on a build that carries one." \
-                "CWE-787,CWE-125,CWE-416" \
-                "$CXG_BIN $1 <over-length input>" \
-                "$CXG_OUT" \
-                "sanitizer-report" \
-                "{\"oracle\":\"asan\",\"instrumentation\":\"$CXG_INSTR\",\"probe\":\"$1\",\"target_exit_code\":$CXG_RC}")"
-            cxg_confirm "oracle=asan($SAN) exit=$CXG_RC probe=$1 instrumentation=$CXG_INSTR class=B11" "$FINDINGS"
-            ;;
+# Which runtime spoke, and what that runtime is actually evidence OF.
+#
+# The shipped version hard-coded `oracle=asan` and the memory CWE set for every
+# branch, so a UBSan `runtime error: signed integer overflow` was reported as
+# `oracle=asan(...)` with cwe=CWE-787,CWE-125,CWE-416 -- the wrong oracle and
+# the wrong weakness. A sanitizer report is only as useful as the name it is
+# filed under.
+classify() { # classify <combined-output>  ->  sets ORACLE, CWES, TITLE
+    case "$1" in
+        *AddressSanitizer*)
+            ORACLE=asan; CWES="CWE-787,CWE-125,CWE-416"
+            TITLE="Memory-safety defect reported by the sanitizer runtime" ;;
+        *MemorySanitizer*)
+            ORACLE=msan; CWES="CWE-908,CWE-457"
+            TITLE="Use of uninitialised memory reported by the sanitizer runtime" ;;
+        *ThreadSanitizer*)
+            ORACLE=tsan; CWES="CWE-362"
+            TITLE="Data race reported by the sanitizer runtime" ;;
+        *LeakSanitizer*)
+            ORACLE=asan; CWES="CWE-401"
+            TITLE="Memory leak reported by the sanitizer runtime" ;;
+        *"runtime error: signed integer overflow"*|\
+        *"runtime error: unsigned integer overflow"*|\
+        *"runtime error: implicit conversion"*)
+            ORACLE=ubsan; CWES="CWE-190,CWE-681"
+            TITLE="Integer overflow reported by the undefined-behaviour sanitizer" ;;
+        *"runtime error:"*)
+            ORACLE=ubsan; CWES="CWE-758"
+            TITLE="Undefined behaviour reported by the sanitizer runtime" ;;
+        *"attempt to multiply with overflow"*|*"attempt to add with overflow"*|\
+        *"attempt to subtract with overflow"*|*"attempt to negate with overflow"*|\
+        *"attempt to shift left with overflow"*)
+            ORACLE=overflow; CWES="CWE-190"
+            TITLE="Integer overflow caught by the compiled-in overflow check" ;;
+        *)
+            ORACLE=""; CWES=""; TITLE="" ;;
     esac
+}
+
+check_report() { # check_report <what>
+    classify "$CXG_OUT"
+
+    # Rust has NO UndefinedBehaviorSanitizer -- there is no
+    # `-Zsanitizer=undefined`, on any target. The equivalent for the integer
+    # class is `-C overflow-checks=on`, which turns the same defect into a
+    # panic. That panic is only evidence when the check was actually compiled
+    # in, so this branch is gated on the instrumentation record saying so --
+    # exactly the gate a sanitizer branch gets, for exactly the same reason.
+    if [ "$ORACLE" = "overflow" ]; then
+        case ",$CXG_INSTR," in
+            *,rust-overflow-checks,*) : ;;
+            *) ORACLE="" ;;
+        esac
+    fi
+
+    if [ -n "$ORACLE" ]; then
+        SAN="$(printf '%s' "$CXG_OUT" | tr '\n' ' ' | grep -oE '(AddressSanitizer|MemorySanitizer|ThreadSanitizer|LeakSanitizer|runtime error|attempt to [a-z]+ with overflow)[^|]{0,80}' | head -1)"
+        FINDINGS="$(cxg_finding \
+            critical 95 \
+            "$TITLE" \
+            "Over-length input delivered through \`$1\` produced a $ORACLE report: $SAN. The target exited $CXG_RC. A sanitizer report is a direct observation, not an inference from behaviour -- which is exactly the evidence an uninstrumented build cannot provide, and why this class is only ever adjudicated on a build that carries the matching instrumentation." \
+            "$CWES" \
+            "$CXG_BIN $1 <over-length input>" \
+            "$CXG_OUT" \
+            "sanitizer-report" \
+            "{\"oracle\":\"$ORACLE\",\"instrumentation\":\"$CXG_INSTR\",\"probe\":\"$1\",\"target_exit_code\":$CXG_RC}")"
+        cxg_confirm "oracle=$ORACLE($SAN) exit=$CXG_RC probe=$1 instrumentation=$CXG_INSTR class=B11" "$FINDINGS"
+    fi
+
     # A fatal signal on an instrumented build is also a memory-safety
     # observation, even when the runtime printed nothing readable.
     if [ "$CXG_RC" -ge 128 ] && [ "$CXG_RC" -ne 143 ]; then
@@ -96,7 +160,7 @@ check_report() { # check_report <what>
 
 while IFS= read -r WHAT; do
     [ -n "$WHAT" ] || continue
-    for PAYLOAD in "$LONG_64" "$LONG_256" "$LONG_4K" "$LONG_64K"; do
+    for PAYLOAD in "$LONG_64" "$LONG_256" "$LONG_4K" "$LONG_64K" $NUM_BOUNDARIES; do
         cxg_run "$WHAT" "$PAYLOAD"
         CXG_TARGET_OUTPUT="$CXG_OUT"
         check_report "$WHAT"
