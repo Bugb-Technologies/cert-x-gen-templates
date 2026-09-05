@@ -390,7 +390,7 @@ release notes.
 
 ## Questions?
 
-- 💬 Discord: [Join our community](https://discord.gg/cert-x-gen)
+- 💬 Discord: [Join our community](https://discord.gg/3RFkNtHRE)
 - 💬 [GitHub Discussions](https://github.com/Bugb-Technologies/cert-x-gen/discussions) — questions and ideas
 - 🐛 [GitHub Issues](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues) — template bugs and proposals
 - 🔒 Security: **security@bugb.io** (see [SECURITY.md](SECURITY.md))
