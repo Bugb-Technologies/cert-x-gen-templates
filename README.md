@@ -4,7 +4,7 @@
 <p align="center">
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/releases"><img src="https://img.shields.io/badge/version-1.1.0-blue?style=flat-square"></a>
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square"></a>
-<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-147-orange?style=flat-square"></a>
+<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-194-orange?style=flat-square"></a>
 <a href="#supported-languages"><img src="https://img.shields.io/badge/languages-12-purple?style=flat-square"></a>
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square"></a>
 </p>
