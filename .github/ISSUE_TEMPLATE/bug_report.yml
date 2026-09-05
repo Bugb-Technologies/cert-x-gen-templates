@@ -1,0 +1,114 @@
+name: Bug report — a template misbehaves
+description: A template fires when it should not, stays silent when it should fire, fails to load, or crashes.
+title: "[bug] <template-id>: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The most useful bug report against this repo names
+        one template and one target, and says which verdict you got versus which
+        one you expected — `confirmed`, `refuted`, or `skipped`.
+
+        **Do not report security vulnerabilities here.** Email security@bugb.io
+        instead; see [SECURITY.md](https://github.com/Bugb-Technologies/cert-x-gen-templates/blob/main/SECURITY.md).
+
+  - type: input
+    id: template_id
+    attributes:
+      label: Template
+      description: The `@id` from the template header, and its path if you know it.
+      placeholder: "mcp-tool-poisoning (templates/ai/mcp/mcp-tool-poisoning.py)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of bug
+      options:
+        - False positive — it confirmed against a target that is not affected
+        - False negative — it stayed silent against a target that is affected
+        - Wrong verdict — confirmed/refuted/skipped, but not the one that fits
+        - Template does not load — `cxg template list` WARNs on it
+        - Template crashes or hangs
+        - Output is malformed (not valid JSON, missing fields)
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: >-
+        The exact command, and the target it ran against. A synthetic target we
+        can stand up ourselves is worth far more than a description of a real
+        one — if the flaw lives in a config file or a server response, paste the
+        minimal version of it.
+      value: |
+        ```bash
+        cxg --disable-update-check scan --scope <target> --templates <template>
+        ```
+
+        Target:
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      description: >-
+        Which verdict you expected and why, and which one you got. Paste the
+        relevant slice of the JSON finding (`metadata.status`, `evidence`,
+        `observations`) rather than the whole report.
+      placeholder: |
+        Expected: skipped — the server advertises no tools at all.
+        Actual:   confirmed, with evidence "<important>" from a description
+                  that is ordinary emphasis markup.
+    validations:
+      required: true
+
+  - type: input
+    id: cxg_version
+    attributes:
+      label: cxg version
+      description: Output of `cxg --version`.
+      placeholder: "v1.3.0"
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "macOS 15.6 arm64 / Ubuntu 24.04 amd64"
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Logs from `cxg -vv`, a suggested fix, related templates.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you file
+      options:
+        - label: I searched existing issues for this template id.
+          required: true
+        - label: >-
+            This is about a template in this repo, not the cxg engine (crashes,
+            CLI flags, and scan orchestration belong to the engine repo).
+          required: true
+        - label: >-
+            I ran with `--disable-update-check`, or I know the finding came from
+            this repo's tree and not the published set merged in from
+            `~/.cert-x-gen/templates`.
+          required: false
