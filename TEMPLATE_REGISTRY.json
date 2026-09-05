@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-05T04:45:22.759268Z",
+  "last_updated": "2026-09-05T15:43:39.792100Z",
   "counts": {
-    "files_on_disk": 194,
-    "loadable": 194,
-    "runnable": 194,
-    "engine_registered": 194
+    "files_on_disk": 207,
+    "loadable": 207,
+    "runnable": 207,
+    "engine_registered": 207
   },
-  "total_templates": 194,
+  "total_templates": 207,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -19,14 +19,14 @@
     "javascript": 7,
     "perl": 1,
     "php": 1,
-    "python": 70,
+    "python": 77,
     "ruby": 1,
     "rust": 5,
-    "shell": 34,
+    "shell": 40,
     "yaml": 49
   },
   "categories": {
-    "ai": 37,
+    "ai": 49,
     "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
@@ -34,7 +34,7 @@
     "monitoring": 16,
     "network": 34,
     "recon": 1,
-    "tooling": 1,
+    "tooling": 2,
     "web": 32
   },
   "templates": [
@@ -99,11 +99,51 @@
       "runnable": true
     },
     {
+      "id": "mcp-cache-scope-identity-leak",
+      "name": "MCP CacheableResult Cross-Identity Leak (identity-dependent response marked publicly cacheable)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-cache-scope-identity-leak.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-client-header-value-encoding",
+      "name": "MCP Client x-mcp-header Value-Encoding Failure (Model-Controlled HTTP Header Injection)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/client-conformance/mcp-client-header-value-encoding.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-client-mrtr-conformance",
+      "name": "MCP Client MRTR Conformance (inputRequests Provenance Boundary and the resultType Default)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/client-conformance/mcp-client-mrtr-conformance.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "mcp-client-oauth-issuer-binding",
       "name": "MCP Client OAuth Issuer Binding (Authorization-Server Mix-Up / Cross-Issuer Credential Reuse)",
       "severity": "high",
       "language": "python",
       "path": "templates/ai/mcp/mcp-client-oauth-issuer-binding.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-client-untrusted-annotation-approval",
+      "name": "MCP Client Auto-Approves a Tool on an Untrusted Server's `readOnlyHint` Annotation",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/client-conformance/mcp-client-untrusted-annotation-approval.py",
       "category": "ai",
       "loadable": true,
       "runnable": true
@@ -139,6 +179,16 @@
       "runnable": true
     },
     {
+      "id": "mcp-handle-binding-integrity",
+      "name": "MCP Handle Binding and requestState Integrity (Stateless Core)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-handle-binding-integrity.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "mcp-invisible-unicode-poisoning",
       "name": "MCP Invisible-Unicode Tool Poisoning (Approval-View Fidelity Gap)",
       "severity": "high",
@@ -149,11 +199,31 @@
       "runnable": true
     },
     {
+      "id": "mcp-manifest-runtime-divergence",
+      "name": "MCP Declared-Manifest / Runtime-Surface Divergence",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-manifest-runtime-divergence.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "mcp-method-desync",
       "name": "MCP Routing-Header / Body Method Desync (Gateway Authz Bypass)",
       "severity": "high",
       "language": "python",
       "path": "templates/ai/mcp/mcp-method-desync.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-oauth-consent-dcr-abuse",
+      "name": "MCP OAuth Consent-Layer Confused Deputy via Open Dynamic Client Registration",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-oauth-consent-dcr-abuse.py",
       "category": "ai",
       "loadable": true,
       "runnable": true
@@ -259,6 +329,46 @@
       "runnable": true
     },
     {
+      "id": "coding-agent-cross-tool-config-bleed",
+      "name": "Coding agent honours another agent's configuration, and one marketplace consent arms more than one agent",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-cross-tool-config-bleed.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-deny-rule-reachability",
+      "name": "A coding agent's strongest deny rule is reachable around - the same protected file is read through syntactically different channels, and through a symlink swapped between check and use",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-deny-rule-reachability.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-git-config-exec",
+      "name": "Coding-agent CLI lets an untrusted workspace's own .git/config execute code through its background git calls (GitSpawn)",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-git-config-exec.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-hook-gate-integrity",
+      "name": "User-installed hook gate does not hold - a pre-execution security hook is bypassed, disarmed by repo-scoped config, or fails open",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-hook-gate-integrity.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "coding-agent-project-local-config-trust",
       "name": "Coding-agent CLI executes project-local hooks from a world-writable workspace or a world-writable ancestor of one",
       "severity": "high",
@@ -314,6 +424,16 @@
       "severity": "high",
       "language": "shell",
       "path": "templates/ai/coding-agent/coding-agent-shared-config-trust.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-workspace-interpreter-shadowing",
+      "name": "Coding-agent CLI runs an interpreter in an untrusted workspace whose files shadow the standard library",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-workspace-interpreter-shadowing.sh",
       "category": "ai",
       "loadable": true,
       "runnable": true
@@ -1645,6 +1765,16 @@
       "language": "shell",
       "path": "templates/recon/system/system-context-recon.sh",
       "category": "recon",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "supply-chain-install-credential-access",
+      "name": "Supply chain - install-time credential access and workflow planting",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/tooling/supply-chain/supply-chain-install-credential-access.sh",
+      "category": "tooling",
       "loadable": true,
       "runnable": true
     },
