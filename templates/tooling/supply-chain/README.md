@@ -1,4 +1,25 @@
-# Supply-chain install-hook behavioural probe
+# Supply-chain install-hook behavioural probes
+
+Two checks, same lab, two different questions.
+
+| Template | Asks | Playbook |
+|---|---|---|
+| [`supply-chain-install-hook-behavior`](./supply-chain-install-hook-behavior.sh) | does installing this package **do something it should not**, at the moment it is installed, started or first imported? | — |
+| [`supply-chain-install-credential-access`](./supply-chain-install-credential-access.sh) | **which secret** does the install step read, and does it **plant a GitHub Actions workflow**? | [playbook](../../../docs/playbooks/supply-chain-install-credential-access.md) |
+
+The second is the Shai-Hulud / CHAINDROP worm mechanic stated as a behaviour:
+per-source canary credentials in `~/.npmrc`, `~/.aws/credentials` and
+`~/.config/gh/hosts.yml`, an access-time read witness that is liveness-tested
+before it is trusted, and a seeded checkout for a planted workflow to appear in.
+Where the first template says *a package is misbehaving*, it says **which token
+to rotate and which branch to rewrite**. It has its own fixtures
+(`tests/fixtures/tooling/supply-chain-credential-access/`) and its own proof
+harness (`tests/prove-supply-chain-install-credential-access.sh`); everything
+below describes the first template.
+
+---
+
+## `supply-chain-install-hook-behavior`
 
 One check: **does installing this package do something it should not, at the
 moment it is installed, started or first imported?**

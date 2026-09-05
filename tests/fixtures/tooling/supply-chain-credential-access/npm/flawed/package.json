@@ -1,0 +1,10 @@
+{
+  "name": "cxg-fixture-credaccess-flawed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BENIGN synthetic fixture: an npm package whose postinstall reproduces the Shai-Hulud shape - it reads the canary credential files the probe seeded, plants a GitHub Actions workflow in the checkout, and beacons the canary to a .invalid host. It touches only the throwaway HOME and checkout the probe hands it.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}

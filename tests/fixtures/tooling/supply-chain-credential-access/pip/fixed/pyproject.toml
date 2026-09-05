@@ -1,0 +1,13 @@
+# BENIGN SYNTHETIC FIXTURE - the FIXED pip twin.
+#
+# Same shape as the flawed twin - an in-tree PEP 517 backend that runs real
+# code while pip builds - without any of its reach.
+[build-system]
+requires = []
+build-backend = "cxg_credfixture_backend"
+backend-path = ["."]
+
+[project]
+name = "cxg-fixture-credaccess-fixed"
+version = "1.0.0"
+description = "Benign synthetic fixture: the fixed twin, active at build time but confined to its own tree"

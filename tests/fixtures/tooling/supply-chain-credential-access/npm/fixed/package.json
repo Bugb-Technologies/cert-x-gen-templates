@@ -1,0 +1,10 @@
+{
+  "name": "cxg-fixture-credaccess-fixed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BENIGN synthetic fixture: the FIXED twin. Its postinstall is present and genuinely active - it spawns a shell and generates a file - but it reads no credential, plants no workflow and opens no socket, so the probe must refute.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}
