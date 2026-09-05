@@ -1,14 +1,14 @@
 {
   "version": "2.0.0",
   "generated_by": "scripts/generate-index.py",
-  "last_updated": "2026-09-04T13:50:32.638101Z",
+  "last_updated": "2026-09-05T04:36:40.626636Z",
   "counts": {
-    "files_on_disk": 184,
-    "loadable": 184,
-    "runnable": 184,
-    "engine_registered": 184
+    "files_on_disk": 194,
+    "loadable": 194,
+    "runnable": 194,
+    "engine_registered": 194
   },
-  "total_templates": 184,
+  "total_templates": 194,
   "load_failures": [],
   "id_collisions": [],
   "languages": {
@@ -19,14 +19,14 @@
     "javascript": 7,
     "perl": 1,
     "php": 1,
-    "python": 67,
+    "python": 70,
     "ruby": 1,
     "rust": 5,
-    "shell": 27,
+    "shell": 34,
     "yaml": 49
   },
   "categories": {
-    "ai": 27,
+    "ai": 37,
     "cli-baseline": 14,
     "databases": 26,
     "devops": 26,
@@ -38,6 +38,16 @@
     "web": 32
   },
   "templates": [
+    {
+      "id": "agent-skill-hidden-instruction-trust",
+      "name": "Agent skill executes a concealed directive with no consent boundary between loaded and executed",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/coding-agent/agent-skill-hidden-instruction-trust.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
     {
       "id": "ai-assisted-fuzzing-sqli-seed-corpus",
       "name": "AI-Assisted Fuzzing SQLi Seed Corpus",
@@ -89,6 +99,16 @@
       "runnable": true
     },
     {
+      "id": "mcp-client-oauth-issuer-binding",
+      "name": "MCP Client OAuth Issuer Binding (Authorization-Server Mix-Up / Cross-Issuer Credential Reuse)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-client-oauth-issuer-binding.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "mcp-credential-exposure",
       "name": "MCP Credential / Secret Exposure via Resources",
       "severity": "critical",
@@ -124,6 +144,16 @@
       "severity": "high",
       "language": "python",
       "path": "templates/ai/mcp/mcp-invisible-unicode-poisoning.py",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-method-desync",
+      "name": "MCP Routing-Header / Body Method Desync (Gateway Authz Bypass)",
+      "severity": "high",
+      "language": "python",
+      "path": "templates/ai/mcp/mcp-method-desync.py",
       "category": "ai",
       "loadable": true,
       "runnable": true
@@ -189,6 +219,26 @@
       "runnable": true
     },
     {
+      "id": "agent-extension-install-path-containment",
+      "name": "Agent extension installer joins untrusted skill/plugin names and archive members without containing them",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/agent-extension-install-path-containment.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "agent-plugin-loader-conformance",
+      "name": "Agent-plugin launch client violates Agent Plugins 1.0 loader containment and executes load-time side effects",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/agent-plugin/agent-plugin-loader-conformance.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "coding-agent-command-trace-composition",
       "name": "Coding-agent command validator approves a command trace whose composition executes a dangerous action",
       "severity": "high",
@@ -219,11 +269,61 @@
       "runnable": true
     },
     {
+      "id": "coding-agent-repo-config-autoexec",
+      "name": "Coding-agent CLI honours repo-supplied configuration on first open, before any workspace-trust prompt",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-repo-config-autoexec.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-repo-config-credential-redirect",
+      "name": "Coding-agent CLI applies repo-supplied endpoint environment, sending its own API credential to a host the repository chose",
+      "severity": "critical",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-repo-config-credential-redirect.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-sandbox-perimeter-enforcement",
+      "name": "Declared agent sandbox is decorative - sandboxEnabled removes the human approval gate but does not confine the process",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-sandbox-perimeter-enforcement.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "coding-agent-sandbox-trust-handoff",
+      "name": "Agent sandbox contains the process but not the files it writes - deferred consumers execute agent-authored surfaces after the sandbox exits",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/coding-agent/coding-agent-sandbox-trust-handoff.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
       "id": "coding-agent-shared-config-trust",
       "name": "Coding-agent CLI honours managed configuration from a world-writable shared path",
       "severity": "high",
       "language": "shell",
       "path": "templates/ai/coding-agent/coding-agent-shared-config-trust.sh",
+      "category": "ai",
+      "loadable": true,
+      "runnable": true
+    },
+    {
+      "id": "mcp-child-env-inheritance",
+      "name": "MCP host hands a locally-spawned stdio server the operator's entire environment",
+      "severity": "high",
+      "language": "shell",
+      "path": "templates/ai/mcp/mcp-child-env-inheritance.sh",
       "category": "ai",
       "loadable": true,
       "runnable": true
