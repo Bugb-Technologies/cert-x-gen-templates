@@ -1,0 +1,24 @@
+# Routing for the "New issue" chooser.
+#
+# blank_issues_enabled: false on purpose. A blank issue against this repo is
+# almost always a template report or a template proposal, and both need
+# structure a maintainer can act on without a round-trip - which template, which
+# target, which verdict it emitted. The contact links below cover the cases that
+# genuinely do not belong in this repo's tracker.
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (do not open an issue)
+    url: https://github.com/Bugb-Technologies/cert-x-gen-templates/security/policy
+    about: >-
+      Report vulnerabilities privately by email to security@bugb.io. See
+      SECURITY.md for scope and response times.
+  - name: Question or discussion
+    url: https://github.com/Bugb-Technologies/cert-x-gen/discussions
+    about: >-
+      Ask how something works, float an idea before writing it up, or share what
+      you are building. Discussions live on the engine repo.
+  - name: Bug in the cxg engine itself
+    url: https://github.com/Bugb-Technologies/cert-x-gen/issues
+    about: >-
+      Crashes, scan orchestration, output formats, and CLI flags belong to the
+      engine repo. This repo holds only the templates it runs.

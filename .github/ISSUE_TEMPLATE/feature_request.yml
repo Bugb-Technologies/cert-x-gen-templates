@@ -1,0 +1,66 @@
+name: Feature request / improvement
+description: Repo tooling, CI, docs, playbooks, or a change to an existing template that is not a bug.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a **new security check**, use *Propose a new template* instead — it
+        asks the questions that proposal needs.
+
+        For a change to the **cxg engine** (CLI flags, scan orchestration,
+        output formats), open it on the
+        [engine repo](https://github.com/Bugb-Technologies/cert-x-gen/issues).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is harder than it should be today, and for whom.
+      placeholder: >-
+        Running the CI loader check locally fails on WARN lines from the
+        published template set in ~/.cert-x-gen/templates, so a contributor
+        cannot tell their own file is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would change
+      description: The concrete change. A rough shape is fine.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Repo tooling (scripts/, generate-index.py)
+        - CI (.github/workflows/ci.yml, check_loader, check_hygiene)
+        - Documentation (README, CONTRIBUTING, docs/)
+        - Playbooks (docs/playbooks/)
+        - Fixtures and prove harnesses
+        - An existing template (not a bug — a refinement)
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you file
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I am willing to open the PR for this.
+          required: false

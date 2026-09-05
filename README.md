@@ -4,9 +4,9 @@
 <p align="center">
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/releases"><img src="https://img.shields.io/badge/version-1.1.0-blue?style=flat-square"></a>
 <a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square"></a>
-<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-194-orange?style=flat-square"></a>
-<a href="#supported-languages"><img src="https://img.shields.io/badge/languages-12-purple?style=flat-square"></a>
-<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square"></a>
+<a href="https://github.com/Bugb-Technologies/cert-x-gen-templates"><img src="https://img.shields.io/badge/templates-200-orange?style=flat-square"></a>
+<a href="#-template-overview"><img src="https://img.shields.io/badge/languages-12-purple?style=flat-square"></a>
+<a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 Templates are the core of the [CERT-X-GEN](https://github.com/Bugb-Technologies/cert-x-gen) — a next-generation execution engine for cybersecurity that executes templates written in **real programming languages**, not just YAML.
 
-This repository contains security scanning templates contributed by the CERT-X-GEN team and the security community. We encourage you to contribute by submitting templates via **pull requests** or [GitHub Issues](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new).
+This repository contains security scanning templates contributed by the CERT-X-GEN team and the security community. We encourage you to contribute by submitting templates via **pull requests**, or by opening a [template proposal](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=new_template.yml). Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 ## 🚀 Quick Start
@@ -284,19 +284,24 @@ ls ~/.cert-x-gen/templates/official/templates/skeleton/
 
 CERT-X-GEN templates are powered by contributions from the security community.
 
-**[Template Contributions](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=submit-template.md)** • **[Feature Requests](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=feature_request.md)** • **[Bug Reports](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=bug_report.md)**
+**[Propose a Template](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=new_template.yml)** • **[Feature Requests](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=feature_request.yml)** • **[Bug Reports](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=bug_report.yml)** • **[Contributing Guide](CONTRIBUTING.md)**
 
 ### Contribution Guidelines
 
+Full detail — categories, fixtures, playbooks, and the five CI checks — is in
+**[CONTRIBUTING.md](CONTRIBUTING.md)**. The short version:
+
 1. **Fork** this repository
-2. **Create** your template in the appropriate category directory (e.g., `databases/redis/`, `web/injection/`)
-3. **Follow** the template skeleton structure
-4. **Validate** your template:
+2. **Create** your template in the appropriate category directory (e.g. `templates/databases/redis/`, `templates/web/injection/`)
+3. **Follow** the template skeleton structure and put the `@id`/`@name`/`@severity` annotations in the first 50 lines
+4. **Check that it loads** — the engine loader is what decides, not `cxg template validate`:
    ```bash
-   cxg template validate path/to/your-template.py
+   cxg --disable-update-check -vv template list
+   python3 scripts/generate-index.py   # must exit 0; do NOT commit the result
    ```
-5. **Test** against a local target or test environment
-6. **Submit** a Pull Request
+5. **Prove it both ways** against a synthetic fixture in `fixtures/<template-id>/` — the flawed twin confirms, the fixed twin refutes, and every verdict it can emit (including `skipped`) has a fixture that produces it
+6. **Write the playbook** at [`docs/playbooks/<template-id>.md`](docs/playbooks/) — a mermaid probe flow ending at CONFIRMED / REFUTED / SKIP, plus a competitor table
+7. **Submit** a Pull Request. Do not include `TEMPLATE_REGISTRY.json` or `templates/TEMPLATE_REGISTRY.md` — CI regenerates the registry on `main` after merge and fails a PR that edits either
 
 ### Template Requirements
 
@@ -314,7 +319,8 @@ All templates must:
 Have questions, ideas, or want to discuss security automation?
 
 - **[GitHub Discussions](https://github.com/Bugb-Technologies/cert-x-gen/discussions)** — Ask questions, share ideas
-- **[GitHub Issues](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues)** — Report bugs, request features
+- **[GitHub Issues](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new/choose)** — Report a template bug, propose a template, request a feature
+- **[Contributing Guide](CONTRIBUTING.md)** — How a template gets written, proved, and merged
 
 ## 🔒 Security
 

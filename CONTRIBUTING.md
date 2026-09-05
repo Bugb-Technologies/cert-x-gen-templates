@@ -2,357 +2,397 @@
 
 Thank you for considering contributing to CERT-X-GEN Templates! 🎉
 
+A template in this repository is a **program that decides**, not a pattern that
+matches. It runs against a target, observes something specific, and returns a
+verdict it can defend. Everything below exists to keep that bar.
+
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
-- [How Can I Contribute?](#how-can-i-contribute)
-- [Template Guidelines](#template-guidelines)
-- [Development Workflow](#development-workflow)
-- [Style Guide](#style-guide)
-- [Testing](#testing)
+- [How can I contribute?](#how-can-i-contribute)
+- [What makes a good template](#what-makes-a-good-template)
+- [Repository layout](#repository-layout)
+- [Template anatomy](#template-anatomy)
+- [Fixtures — proving it both ways](#fixtures--proving-it-both-ways)
+- [Playbooks](#playbooks)
+- [Development workflow](#development-workflow)
+- [The five CI checks](#the-five-ci-checks)
+- [Style guide](#style-guide)
+- [Review process](#review-process)
+- [Recognition](#recognition)
+- [Questions?](#questions)
 
 ## Code of Conduct
 
 This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you're expected to uphold this code.
 
-## How Can I Contribute?
+## How can I contribute?
 
-### 1. Reporting Bugs
+### 1. Reporting a template bug
 
-- Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md)
-- Search existing issues first
-- Include template that causes the issue
-- Provide minimal reproduction steps
+- Open a [bug report](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=bug_report.yml)
+- Search existing issues for the template id first
+- Name the template, the target, and which verdict you expected versus got
 
-### 2. Suggesting Enhancements
+Bugs in the **cxg engine itself** (crashes, CLI flags, scan orchestration,
+output formats) belong on the
+[engine repo](https://github.com/Bugb-Technologies/cert-x-gen/issues).
 
-- Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md)
-- Clearly describe the enhancement
-- Explain why it would be useful
+**Security vulnerabilities do not go in the issue tracker.** Email
+**security@bugb.io** — see [SECURITY.md](SECURITY.md).
 
-### 3. Submitting New Templates
+### 2. Proposing a new template
 
-- Use the [New Template template](.github/ISSUE_TEMPLATE/new_template.md)
-- Follow the [Template Guidelines](#template-guidelines)
-- Test your template thoroughly
+- Open a [template proposal](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=new_template.yml)
+- It asks for the weakness class, the target, the oracle, and the
+  CONFIRMED / REFUTED / SKIP conditions — the same things the template's own
+  header and its `prove.sh` will have to answer
+- You do not need working code to open one. Agreeing the oracle first is
+  cheaper than rewriting the template after review
 
-### 4. Improving Documentation
+### 3. Suggesting an improvement
 
-- Fix typos, clarify explanations
-- Add examples
-- Update outdated information
+- Open a [feature request](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues/new?template=feature_request.yml)
+  for repo tooling, CI, docs, playbooks, or a refinement to an existing template
 
-## Template Guidelines
+### 4. Improving documentation
 
-### Template Quality Standards
+Fix typos, clarify explanations, add examples, correct anything outdated. Docs
+PRs are held to the same review bar as templates and are just as welcome.
 
-✅ **Must Have:**
-- Unique template ID
-- Clear description
-- Severity level
-- Author information
-- Test cases
+## What makes a good template
 
-⚠️ **Best Practices:**
-- Handle errors gracefully
-- Provide clear output
-- Include references (CVE, CWE, etc.)
-- Add tags for categorization
-- Document required permissions
+✅ **Must have:**
+
+- A `@id` that is **unique across the whole repo**. A duplicate `@id` is not a
+  warning: the engine keeps one template per id and silently drops the rest, so
+  both templates stop running.
+- The full annotation set in the **first 50 lines** — that is all the engine
+  reads.
+- A **specific oracle**: it fires on a structural conjunction, an observed
+  secret, or a marker the template itself planted. Not on a string, status code,
+  or banner that occurs naturally in an ordinary response.
+- An honest **SKIP** branch. A check that cannot say "the surface I audit is not
+  present here" is asserting the surface rather than establishing it.
+- Graceful failure. Emit an empty findings array; never crash the scan.
+- **No third-party traffic.** A scan touches the target and nothing else — no
+  callback hosts, no public resolvers, no external services.
+
+⚠️ **Best practices:**
+
+- Record every near-miss (a lone tag, a BOM, a credential-*named* resource, a
+  placeholder value) as an `observations` / `soft` entry that the refutation
+  names but never fires on. That is the precision idiom the MCP checks share.
+- Reference CVE / CWE / advisories in `@references`.
+- State the axis your differential holds fixed, and assert it at runtime. A
+  confirmation that let two variables move proves nothing about either.
 
 ❌ **Avoid:**
-- Templates that cause service disruption
-- Templates with hardcoded credentials
-- Overly aggressive scanning
-- False positives
-- Duplicate functionality
 
-### Template Structure
+- Templates that disrupt the service they audit.
+- Hardcoded credentials, or absolute paths (CI rejects them).
+- Duplicate coverage. Two templates that move the same variable are one
+  template.
+- Exploit framing. The template describes an **audit and what it exposes** —
+  not an exploit, manipulation, or confusion.
 
-#### YAML Templates (Recommended)
+## Repository layout
 
-```yaml
-id: unique-template-id
-info:
-  name: Human Readable Name
-  author: Your Name
-  severity: high|medium|low|info
-  description: Clear description of what this detects
-  references:
-    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-XXXX
-  tags:
-    - category
-    - vulnerability-type
+Templates live under `templates/<category>/<subject>/`. The categories are
+fixed:
 
-protocol: tcp|udp|http|https
-port: 6379
-
-inputs:
-  - data: "INFO\r\n"
-    type: text
-
-matchers:
-  - type: word
-    words:
-      - "redis_version"
-    condition: and
-
-extract:
-  - redis_version
-  - os
+```
+ai  cli-baseline  databases  devops  messaging
+monitoring  network  recon  tooling  web
 ```
 
-#### Python Templates
+A **new category directory must also be added to `VALID_CATEGORIES` in
+`.github/scripts/check_hygiene.py`**, or CI fails.
+
+```
+templates/          the checks themselves, one file each
+fixtures/<id>/      synthetic targets, one directory per template id
+tests/              prove harnesses; tests/fixtures/ for large ones
+docs/playbooks/     one human-facing playbook per differentiated template
+scripts/            generate-index.py and friends
+```
+
+**Never put a fixture beside its template.** `discover()` in
+`scripts/generate-index.py` indexes every file under `templates/` that carries a
+language extension, so a `.py` fixture parked there is loaded and run as a
+check.
+
+Non-template companion files under `templates/` can be swallowed by
+`.gitignore` (its C/C++ section ignores `*.lib`, `*.a`, `*.out`, `*.exe`), and
+nothing in CI looks at a file that is not a template. **After adding any
+non-`.sh` file under `templates/`, run `git check-ignore -v <path>`** and add a
+negation if it hits.
+
+## Template anatomy
+
+Metadata is a comment block in the file's **first 50 lines**, in the file's own
+comment syntax:
 
 ```python
 #!/usr/bin/env python3
-"""
-Template: unique-template-id
-Name: Descriptive Name
-Author: Your Name
-Severity: high|medium|low|info
-Description: What this template detects
-"""
-
-import os
-import json
-import sys
-
-def scan(target_host, target_port):
-    """
-    Main scanning logic
-    
-    Args:
-        target_host: Target hostname or IP
-        target_port: Target port number
-        
-    Returns:
-        dict: Finding data or None
-    """
-    try:
-        # Your scanning logic here
-        pass
-    except Exception as e:
-        return None
-
-if __name__ == "__main__":
-    host = os.environ.get("CERT_X_GEN_TARGET_HOST")
-    port = int(os.environ.get("CERT_X_GEN_TARGET_PORT", 0))
-    
-    result = scan(host, port)
-    
-    if result:
-        output = {
-            "findings": [{
-                "id": "unique-template-id",
-                "name": "Descriptive Name",
-                "severity": "high",
-                "description": "Description",
-                "evidence": result,
-                "tags": ["tag1", "tag2"]
-            }]
-        }
-        print(json.dumps(output))
+# @id: mcp-tool-poisoning
+# @name: MCP Tool Poisoning (Model-Directed Instructions in Tool Metadata)
+# @author: Your Name
+# @severity: high
+# @description: One line saying what this observes and what it exposes
+# @tags: mcp, ai, agent, tool-poisoning, cwe-1427
+# @cwe: CWE-1427
+# @cvss: 8.2
+# @target_kinds: http
+# @oracles: property
+# @references: https://modelcontextprotocol.io/specification, https://cwe.mitre.org/data/definitions/1427.html
+# @confidence: 90
+# @version: 2.0.0
 ```
 
-### Directory Placement
+The engine hands the template its target through the environment and reads a
+JSON findings array on stdout. Read a shipped template in your language before
+writing one —
+[`templates/ai/mcp/mcp-tool-poisoning.py`](templates/ai/mcp/mcp-tool-poisoning.py)
+is the reference for the output shape, and
+[`docs/TEMPLATE_GUIDE.md`](docs/TEMPLATE_GUIDE.md) covers the general anatomy.
+Skeletons ship with the published template set:
 
-Place templates in the correct directory:
-
+```bash
+ls ~/.cert-x-gen/templates/official/templates/skeleton/
 ```
-yaml/http/cves/          # CVE-specific web vulnerabilities
-yaml/http/misconfigurations/  # Web misconfigurations
-yaml/network/databases/  # Database checks
-yaml/network/services/   # Service checks
-python/custom/           # Custom Python logic
-```
 
-## Development Workflow
+### `cli` target-kind caveats
 
-### Fork and Clone
+Verified against the CI-pinned `cxg` (`CXG_VERSION` in
+`.github/workflows/ci.yml`), which is behind the engine source — re-check when
+the pin moves.
+
+- **A shell template must `exit 0`, even when it confirms.** The pinned engine
+  discards a shell template's findings entirely on a non-zero exit, and
+  `@allow_nonzero_exit: true` does not change that. Carry the verdict in the
+  emitted JSON's `metadata.status`, never in the exit code.
+- **`CERT_X_GEN_TARGET_KIND` and `CERT_X_GEN_TARGET_INSTRUMENTATION` are not
+  set**, and the `cli://` prefix is left on `CERT_X_GEN_TARGET_HOST`. A `cli`
+  template gets the raw scope string (`cli:///abs/path`) plus
+  `CERT_X_GEN_TARGET_PORT` and `CERT_X_GEN_MODE`; derive the kind and the binary
+  path from that string. This applies to Python templates taking `cli` too.
+- **There is no `--input` / `--arg` / `--stdin-file`.** Extra argv for a spawned
+  binary needs its own environment variable.
+- **Per-finding `cwe_ids` are overwritten by the engine** from the template's
+  own annotations, so a finding's CWE list does not survive as emitted.
+- **`cxg scan --output <path>` replaces a file extension rather than appending
+  one.** A harness that writes `--output scan-agent_x.py` then reads
+  `scan-agent_x.py.json` silently finds nothing. Name report paths without a
+  dot.
+
+## Fixtures — proving it both ways
+
+A template's synthetic target lives in `fixtures/<template-id>/` (or, when it is
+too large, at `tests/fixtures/<template-id>/` with its runner in `tests/`).
+
+Build the **flawed and fixed twins from one source**, and ship a `prove.sh` that
+asserts **both directions** — the flawed twin confirms, the fixed twin refutes.
+A check is only proved when **every verdict it can emit has a fixture that
+produces it, `skipped` included**. Prefer independent switches over a single
+flawed/fixed axis so one source can reach all branches.
+
+Worked examples, in increasing order of subtlety:
+
+| Shape | Example |
+|---|---|
+| Plain flawed/fixed twin | [`fixtures/mcp-invisible-unicode/`](fixtures/mcp-invisible-unicode/) |
+| Adds the SKIP path a differential must keep distinct from a refutation | [`fixtures/mcp-token-audience-confusion/`](fixtures/mcp-token-audience-confusion/) |
+| One server serving both `http` and `cli` from one twin pair | [`fixtures/mcp-excessive-scope-proof/`](fixtures/mcp-excessive-scope-proof/) |
+| Four variants from one source reaching all four branches | [`tests/fixtures/coding-agent-exec-authority/`](tests/fixtures/coding-agent-exec-authority/) |
+| A `cli` template proved both ways | [`tests/run-coding-agent-config-trust.sh`](tests/run-coding-agent-config-trust.sh), [`tests/prove-supply-chain-install-hook.sh`](tests/prove-supply-chain-install-hook.sh) |
+| A **stateful** check whose finding lives in a *sequence* | [`tests/prove-coding-agent-command-trace.sh`](tests/prove-coding-agent-command-trace.sh) |
+| A **two-phase, post-exit boundary** check | [`tests/prove-coding-agent-sandbox-trust-handoff.sh`](tests/prove-coding-agent-sandbox-trust-handoff.sh) |
+
+Behavioural harnesses are slow (minutes) and are **not** among the CI checks —
+run yours by hand before pushing.
+
+## Playbooks
+
+A differentiated template ships a human-facing playbook at
+`docs/playbooks/<template-id>.md`: the case for the check, a ` ```mermaid ` probe-flow
+diagram ending at the CONFIRMED / REFUTED / SKIP decision, a competitor table,
+and why behavioural beats static here. Describe and link the template; never
+paste it.
+
+[`docs/playbooks/coding-agent-execution-authority.md`](docs/playbooks/coding-agent-execution-authority.md)
+is the worked example. No CI check covers this directory, so **validate your
+mermaid before pushing** — GitHub renders it natively and a parse error just
+shows the source.
+
+## Development workflow
+
+### Fork and clone
 
 ```bash
 # Fork on GitHub, then:
 git clone https://github.com/YOUR_USERNAME/cert-x-gen-templates.git
 cd cert-x-gen-templates
-git remote add upstream https://github.com/BugB-Tech/cert-x-gen-templates.git
+git remote add upstream https://github.com/Bugb-Technologies/cert-x-gen-templates.git
 ```
 
-### Create Branch
+### Create a branch
 
 ```bash
-git checkout -b feature/redis-authentication-bypass
+git checkout -b template/mcp-handle-binding-integrity
 ```
 
-### Make Changes
+### Make your changes
 
-1. Add your template
-2. Update CHANGELOG.md
-3. Run `python3 scripts/generate-index.py` as a check — it must exit 0 with no
-   load failures and no id collisions — but **do not commit** the resulting
-   `TEMPLATE_REGISTRY.json`. It is regenerated on `main` after merge, and CI
-   fails a pull request that edits it (or `templates/TEMPLATE_REGISTRY.md`).
+1. Add the template under the right category.
+2. Add its fixture and `prove.sh`; run it both ways.
+3. Add its playbook under `docs/playbooks/`.
+4. Update `CHANGELOG.md`.
 
-### Validate
+**Do not commit `TEMPLATE_REGISTRY.json` or `templates/TEMPLATE_REGISTRY.md`.**
+The JSON registry is regenerated on `main` by the `registry` job in
+`.github/workflows/ci.yml` after every merge, and CI fails a pull request that
+edits either file. Both carry repo-wide counts, which is why two concurrent
+template PRs always used to conflict there and nowhere else. Running
+`python3 scripts/generate-index.py` locally is a *check*, not something to
+commit — restore an accidental edit with:
 
 ```bash
-# Validate single template
-./scripts/validate.sh yaml/network/databases/redis-unauth.yaml
-
-# Validate all templates
-./scripts/validate.sh
+git checkout origin/main -- TEMPLATE_REGISTRY.json
 ```
 
-### Test
+`templates/TEMPLATE_REGISTRY.md` is a human-maintained index. A new category
+does belong in it, but that edit rides the periodic `curation` pass, not your
+template PR.
 
-```bash
-# Test against live target (with permission!)
-cert-x-gen template test --template your-template.yaml --target test.example.com
+**Do not edit `AGENTS.md`** as part of a template PR.
 
-# Use test infrastructure
-cd tests
-python3 test_template.py ../yaml/network/databases/redis-unauth.yaml
-```
+### Run the checks locally
+
+Run checks 1–4 of [the five CI checks](#the-five-ci-checks) before you push.
 
 ### Commit
 
 ```bash
-git add .
-git commit -m "Add Redis authentication bypass template
+git commit -m "Add MCP handle binding integrity template
 
-- Detects Redis instances without authentication
-- Includes metadata extraction
-- Tested against Redis 6.x and 7.x
-- References: CVE-2024-XXXXX
+- Confirms when a handle minted by server A is readable via server B
+- Refutes when the client scopes handles per server
+- Skips when the session exposes no resource handles
+- Fixture: fixtures/mcp-handle-binding-integrity/ (prove.sh, both directions)
 "
 ```
 
-Use meaningful commit messages:
-- First line: Summary (50 chars max)
-- Blank line
-- Detailed explanation
-- References to issues
+First line a summary (50 chars or so), blank line, then what it detects and how
+it was proved, plus any issue references.
 
-### Push and PR
+### Push and open a pull request
 
 ```bash
-git push origin feature/redis-authentication-bypass
+git push origin template/mcp-handle-binding-integrity
 ```
 
-Then open a Pull Request on GitHub.
+Then open a Pull Request. `.github/PULL_REQUEST_TEMPLATE.md` fills in a
+checklist that mirrors what CI enforces — work through it rather than deleting
+it.
 
-## Style Guide
+## The five CI checks
 
-### Naming Conventions
+`.github/workflows/ci.yml` gates every pull request on five checks. Run 1–4
+locally first.
 
-**Template IDs:**
-- Lowercase with hyphens
-- Format: `service-vulnerability-type`
-- Examples: `redis-unauth`, `mysql-default-creds`, `apache-log4j-rce`
-
-**Files:**
-- Match template ID
-- Include extension
-- Examples: `redis-unauth.yaml`, `mysql-default-creds.py`
-
-### YAML Style
-
-```yaml
-# Use 2 spaces for indentation
-id: template-id
-
-# Use descriptive names
-info:
-  name: Human Readable Name  # Not "Check 1"
-  
-# Add blank lines between sections
-protocol: tcp
-
-inputs:
-  - data: "PING\r\n"
-```
-
-### Code Style
-
-**Python:**
-- Follow PEP 8
-- Type hints encouraged
-- Docstrings for functions
-
-**JavaScript:**
-- Use modern ES6+ syntax
-- Async/await over callbacks
-- JSDoc comments
-
-**Shell:**
-- Shellcheck compliant
-- Quote variables
-- Use `set -e`
-
-## Testing
-
-### Unit Tests
-
-For programmatic templates (Python, JavaScript, etc.):
-
-```python
-# tests/test_redis_unauth.py
-def test_redis_unauth_detection():
-    result = scan_redis("localhost", 6379)
-    assert result is not None
-    assert result["severity"] == "high"
-```
-
-### Integration Tests
-
-Test against Docker containers:
+**1. Every template loads through the engine.**
 
 ```bash
-# Start test environment
-docker-compose -f tests/docker-compose.yml up -d redis-no-auth
-
-# Run template
-cert-x-gen scan --template redis-unauth --target localhost:6379
-
-# Cleanup
-docker-compose -f tests/docker-compose.yml down
+cxg --disable-update-check -vv template list --no-color > loader.log 2>&1
+.github/scripts/check_loader.py
 ```
 
-### Manual Testing
+The engine loader — not `cxg template validate`. The two disagree about what is
+valid, and the loader is the side that decides what actually runs; it WARNs once
+per unloadable template and continues, so nothing else in a scan reveals a dead
+template.
 
-Always test against:
-1. Vulnerable target (should detect)
-2. Patched target (should not detect)
-3. Unavailable target (should handle gracefully)
+> Locally this fails on WARN and dedup lines coming from `~/.cert-x-gen/templates`,
+> the published set cxg merges in. Run with a throwaway home to see this repo
+> alone: `HOME=$(mktemp -d) cxg --disable-update-check -vv template list`.
+> CI has no such cache.
 
-## Review Process
+**2. The registry generates cleanly.**
 
-1. **Automated Checks:**
-   - CI validates template syntax
-   - Linting checks code style
-   - Tests must pass
+```bash
+python3 scripts/generate-index.py   # must exit 0, no load_failures, no id_collisions
+```
 
-2. **Maintainer Review:**
-   - Template quality
-   - No false positives
-   - Security implications
-   - Documentation
+Do **not** commit the result. Only files with a recognised language extension
+(see `EXT_LANG` in that script) count as templates; `.lib`, `.md` and friends
+are ignored.
 
-3. **Community Feedback:**
-   - Other contributors may comment
-   - Address feedback promptly
+**3. Generator guard tests.**
+
+```bash
+python3 scripts/test_generate_index.py
+```
+
+**4. Hygiene.**
+
+```bash
+python3 .github/scripts/check_hygiene.py
+```
+
+CI runs this against the registry regenerated in check 2, so run check 2 first.
+It rejects absolute paths, empty names, registry paths outside `templates/`, and
+any template outside the valid categories.
+
+**5. No hand-edited registry.** Pull-request only — see the rule above.
+
+> `scripts/generate-index.py` skips a `tests/` directory; the engine loader does
+> not. A fixture parked under `templates/**/tests/` therefore makes checks 1 and
+> 2 report different totals.
+
+## Style guide
+
+### Naming
+
+- **Template ids:** lowercase, hyphenated, `subject-weakness` shaped —
+  `redis-unauth`, `mcp-handle-binding-integrity`, `coding-agent-repo-config-autoexec`.
+- **Files:** match the template id, plus the language extension —
+  `redis-unauth.py`, `mcp-handle-binding-integrity.py`.
+
+### Code
+
+- **Python:** PEP 8, type hints encouraged, docstrings on functions. A template
+  must be a **single self-contained file** — no imports from a sibling helper.
+  Where an oracle is genuinely shared it is *duplicated*, and a no-drift test
+  pins the copies together (`fixtures/mcp-tool-poisoning/natural_corpus.py`
+  runs three copies of the invisible-Unicode oracle over one corpus and fails on
+  any disagreement — change one copy and you must change the others).
+- **Go:** `gofmt`, standard library where possible.
+- **Shell:** shellcheck-clean, quote variables, `set -euo pipefail` — and see the
+  `exit 0` rule above.
+- **JavaScript:** modern ES6+, async/await, JSDoc comments.
+- **YAML:** two-space indentation, descriptive names, blank lines between
+  sections.
+
+## Review process
+
+1. **Automated checks** — the five above must be green.
+2. **Maintainer review** — oracle precision, false-positive surface, the
+   fixture proving every verdict, terminology, and whether it duplicates an
+   existing check.
+3. **Community feedback** — other contributors may comment; address feedback
+   promptly.
 
 ## Recognition
 
-Contributors are recognized in:
-- CONTRIBUTORS.md
-- Release notes
-- Monthly contributor spotlight
+Contributors are listed in [CONTRIBUTORS.md](CONTRIBUTORS.md) and named in
+release notes.
 
 ## Questions?
 
 - 💬 Discord: [Join our community](https://discord.gg/cert-x-gen)
-- 📧 Email: templates@bugb.tech
-- 🐛 Issues: [GitHub Issues](https://github.com/BugB-Tech/cert-x-gen-templates/issues)
+- 💬 [GitHub Discussions](https://github.com/Bugb-Technologies/cert-x-gen/discussions) — questions and ideas
+- 🐛 [GitHub Issues](https://github.com/Bugb-Technologies/cert-x-gen-templates/issues) — template bugs and proposals
+- 🔒 Security: **security@bugb.io** (see [SECURITY.md](SECURITY.md))
 
 Thank you for contributing! 🚀

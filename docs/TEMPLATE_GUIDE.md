@@ -67,8 +67,28 @@ extract:                          # Data extraction
 
 ## Language-Specific Guides
 
-See [LANGUAGES.md](LANGUAGES.md) for detailed guides for each language.
+Per-language conventions — and the `cli` target-kind caveats that trip people up
+(a shell template must `exit 0` even when it confirms; `CERT_X_GEN_TARGET_KIND`
+is not set) — are in
+[CONTRIBUTING.md](../CONTRIBUTING.md#cli-target-kind-caveats).
+
+Skeletons for all supported languages ship with the published template set:
+
+```bash
+ls ~/.cert-x-gen/templates/official/templates/skeleton/
+```
 
 ## Examples
 
-See [EXAMPLES.md](EXAMPLES.md) for annotated examples.
+The templates in this repository are the annotated examples — read one in your
+language before writing your own:
+
+- [`templates/ai/mcp/mcp-tool-poisoning.py`](../templates/ai/mcp/mcp-tool-poisoning.py) — Python, `http`, a positional/conjunctive oracle with an explicit near-miss `observations` channel
+- [`templates/ai/mcp/mcp-excessive-scope-proof.py`](../templates/ai/mcp/mcp-excessive-scope-proof.py) — one template serving both `http` and `cli`
+- [`templates/databases/postgresql/postgresql-default-credentials.go`](../templates/databases/postgresql/postgresql-default-credentials.go) — Go, binary wire protocol
+- [`templates/network/smtp/smtp-open-relay.py`](../templates/network/smtp/smtp-open-relay.py) — a stateful, multi-step protocol conversation
+
+Each differentiated template also has a human-facing playbook with a mermaid
+probe-flow diagram under [`docs/playbooks/`](playbooks/);
+[`coding-agent-execution-authority.md`](playbooks/coding-agent-execution-authority.md)
+is the worked example.

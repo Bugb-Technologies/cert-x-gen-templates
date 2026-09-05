@@ -1,0 +1,193 @@
+name: Propose a new template
+description: Propose a security check to add. Open this before writing the PR — it is where the design gets agreed.
+title: "[template] "
+labels: ["new-template"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A template in this repo is a **program that decides**, not a pattern that
+        matches. The questions below are the ones a maintainer would ask in
+        review anyway, and they are the same ones the template's own header
+        answers (`@id`, `@severity`, `@target_kinds`, `@oracles`).
+
+        You do not need working code to open this — a clear oracle and a clear
+        SKIP condition are enough to get a "yes, build it". If you already have
+        the template, say so and open the PR too.
+
+        Background reading: [CONTRIBUTING.md](https://github.com/Bugb-Technologies/cert-x-gen-templates/blob/main/CONTRIBUTING.md)
+        and any playbook under [`docs/playbooks/`](https://github.com/Bugb-Technologies/cert-x-gen-templates/tree/main/docs/playbooks)
+        — `coding-agent-execution-authority.md` is the worked example.
+
+  - type: input
+    id: proposed_id
+    attributes:
+      label: Proposed template id
+      description: >-
+        Lowercase, hyphenated, `subject-weakness` shaped, and unique across the
+        repo. A duplicate `@id` is not a warning — the engine keeps one template
+        per id and silently drops the rest.
+      placeholder: "mcp-handle-binding-integrity"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: The directory under `templates/` it belongs in.
+      options:
+        - ai
+        - cli-baseline
+        - databases
+        - devops
+        - messaging
+        - monitoring
+        - network
+        - recon
+        - tooling
+        - web
+    validations:
+      required: true
+
+  - type: textarea
+    id: weakness
+    attributes:
+      label: Weakness class — what is actually wrong
+      description: >-
+        The class of flaw, not the product. Name the CWE if one fits, and say
+        what an operator loses when it is present. Describe an audit and what it
+        exposes — not an exploit.
+      placeholder: |
+        CWE-1427. An MCP client accepts a resource handle re-issued by a
+        different server in the same session, so server B can name a handle
+        minted by server A and read the data behind it. The client's own
+        per-server isolation is what fails.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target_kinds
+    attributes:
+      label: Target kind (`@target_kinds`)
+      description: >-
+        What the template is pointed at. A `cli` template receives only the raw
+        scope string on `CERT_X_GEN_TARGET_HOST` (`cli:///abs/path`) — see
+        CONTRIBUTING for the caveats that come with it.
+      options:
+        - http
+        - cli
+        - "http, cli"
+        - other (say which below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: target
+    attributes:
+      label: Target — what it is pointed at, concretely
+      description: >-
+        The server, binary, config file, or endpoint. If it is a product, name
+        versions you have checked.
+      placeholder: "An MCP client binary invoked as `cli:///usr/local/bin/<client>`; checked against <client> 0.9.x."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: oracle_kind
+    attributes:
+      label: Oracle (`@oracles`)
+      description: How the check decides. Pick the closest; explain below.
+      options:
+        - property — a structural invariant is observably violated
+        - "property, diff — two arms differ on exactly one moved variable"
+        - signal / timeout / exception — the target's own failure mode
+        - detector — a marker the template planted and then observed
+        - sanitizer (asan/ubsan/msan/tsan)
+        - other (say which below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: oracle
+    attributes:
+      label: The oracle, spelled out
+      description: >-
+        What the template observes that makes the finding true. The bar is a
+        structural conjunction or a marker the template itself planted — not a
+        string, status code, or banner that occurs naturally in an ordinary
+        response. If it is a differential, say which single variable moves
+        between the two arms and which ones are held fixed.
+      placeholder: |
+        Two arms, identical except for the directory permissions of the config
+        source (0700 vs 0777); same owner, same content, same allowlist. If the
+        agent executes from the world-writable arm and not the other, the finding
+        is that provenance is not part of the trust decision.
+    validations:
+      required: true
+
+  - type: textarea
+    id: verdicts
+    attributes:
+      label: CONFIRMED / REFUTED / SKIP
+      description: >-
+        Every verdict the check can emit needs a condition, and every one of
+        them needs a fixture that produces it before the PR is done — including
+        `skipped`. A check with no honest SKIP branch usually means the surface
+        it audits is being assumed rather than established.
+      value: |
+        **CONFIRMED when:**
+
+        **REFUTED when:**
+
+        **SKIPPED when:** (the surface is absent, or no genuine boundary exists to test)
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: differentiation
+    attributes:
+      label: Why this is not already covered
+      description: >-
+        Which existing template(s) come closest, and what this one moves that
+        they do not. Two templates that vary the same variable are one template.
+        Also: what does a static/pattern-based scanner get wrong here that a
+        program that runs the target gets right?
+      placeholder: >-
+        Closest is `coding-agent-shared-config-trust`, which varies the
+        permissions of the config directory. This one holds permissions fixed
+        and varies provenance instead.
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Language you intend to write it in
+      placeholder: "Python (or Go, Shell, C, Rust, JavaScript, YAML, ...)"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Scope of the change you are proposing
+      options:
+        - label: >-
+            A synthetic fixture under `fixtures/<template-id>/` (or
+            `tests/fixtures/` if it is large), built as a flawed/fixed twin from
+            one source, with a `prove.sh` that asserts every verdict.
+          required: false
+        - label: >-
+            A playbook at `docs/playbooks/<template-id>.md` with a mermaid probe
+            flow and a competitor table.
+          required: false
+        - label: >-
+            The scan touches the target and nothing else — no calls out to
+            external services, callback hosts, or public resolvers.
+          required: true
+        - label: >-
+            I searched the repo (and `TEMPLATE_REGISTRY.json`) for an existing
+            template covering this.
+          required: true
