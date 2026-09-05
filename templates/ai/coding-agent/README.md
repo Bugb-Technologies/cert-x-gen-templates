@@ -39,6 +39,7 @@ cxg scan --scope cli:///usr/local/bin/youragent \
 | `coding-agent-sandbox-trust-handoff.sh` | Sandbox contains the agent process but not its files: deferred consumers execute agent-authored surfaces after the sandbox exits | CWE-668, CWE-693, CWE-829 | `property` + `detector` (two-phase) |
 | `agent-skill-hidden-instruction-trust.py` | A loaded skill's concealed directive executes with no consent boundary between loaded and executed | CWE-1427, CWE-829, CWE-693 | `property` (sentinel per channel + egress canary) |
 | `coding-agent-repo-config-autoexec.sh` | Repo-supplied configuration honoured on first open of a workspace nobody approved | CWE-1188, CWE-829, CWE-94 | `property` (differential over provenance) |
+| `coding-agent-repo-config-credential-redirect.sh` | Repo-supplied `env` redirects the agent's own base URL, proxy and CA anchors, sending its credential to a host the repository chose — no code execution anywhere | CWE-1188, CWE-522, CWE-829, CWE-200 | `property` + inbound canary sink |
 
 The first three form the **execution-authority pack** and are each a
 **differential**: a control arm in a private `0700` directory must be honoured
@@ -341,7 +342,40 @@ into the lab for every probe run so no real user configuration is read or
 written, and every command a planted surface can declare is
 `printf <nonce> > <lab-file>`; `autoApprove`, `bypassPermissions` and
 `runOn: folderOpen` appear as inert strings because they are what the class is
-about. No CVE is reproduced against any real tool's machine state.
+about. For `coding-agent-repo-config-credential-redirect`, the sink binds
+`127.0.0.1` on an ephemeral port and nothing leaves the loopback interface, the
+only credential in play is a `sk-cxg-decoy-…` string minted for the run that
+authenticates to nothing, and the planted `NODE_EXTRA_CA_CERTS` file is a text
+file saying it is a canary — it is not a certificate and cannot be one. No CVE is reproduced against any real tool's machine state.
+
+## `coding-agent-repo-config-credential-redirect` — what it proves
+
+The check above it plants six **execution** surfaces. This one plants no command
+at all. The same repo-scoped files also carry an `env` map, and an `env` map
+looks like preferences right up to the moment it names `ANTHROPIC_BASE_URL`,
+`OPENAI_BASE_URL`, `HTTPS_PROXY` or `NODE_EXTRA_CA_CERTS` — the four variables
+that decide where the agent's own credential-bearing traffic goes and who is
+trusted to answer it. A tool can gate every hook, MCP server and `folderOpen`
+task, pass `coding-agent-repo-config-autoexec` cleanly, and still merge `env`
+ungated, because `env` did not look like execution. **CVE-2026-21852** is this
+class.
+
+The oracle is not the target's account of itself. The template binds a canary
+sink on `127.0.0.1`, plants the four variables in five surfaces
+(`.claude/settings.json`, `.codex/config.toml`, `.gemini/settings.json`,
+`.vscode/settings.json`, `.<tool>/settings.json`) on a URL path naming the arm
+and the surface, seeds a `sk-cxg-decoy-…` key in the environment and in a
+credential store under the probe's own `$HOME`, and then watches for an arrival:
+
+| Verdict | What was observed |
+|---|---|
+| `confirmed` critical | a request arrived from the **unapproved** checkout **carrying the decoy key** in an `Authorization` / API-key header — the token demonstrably left the machine |
+| `confirmed` high | a request arrived, but no credential was on it — the redirect without the escalation |
+| `refuted` | config-supplied `env` was honoured and the endpoint-control keys were refused, or a workspace-trust gate stands in front of the whole layer — the two are reported as different facts |
+| `skipped` | the tool honoured no config-supplied environment even in a checkout its own trust store records, so no surface was established to test |
+
+Its human case, probe-flow diagram and competitive picture are in the
+[visual playbook](../../../docs/playbooks/coding-agent-repo-config-credential-redirect.md).
 
 ## Proving it both ways
 
@@ -352,6 +386,7 @@ tests/prove-coding-agent-command-trace.sh       # the command-trace composition 
 tests/prove-coding-agent-sandbox-trust-handoff.sh  # the sandbox trust-handoff escape check
 tests/prove-agent-skill-hidden-instruction.sh  # the skill hidden-instruction check
 tests/prove-coding-agent-repo-config-autoexec.sh  # the untrusted-workspace check
+tests/prove-coding-agent-repo-config-credential-redirect.sh  # the credential-redirect check
 ```
 
 Each requires **confirmed on the flawed build, refuted on the fixed one** (the
@@ -388,6 +423,12 @@ surfaces, materialised into twins that differ only in whether
 `workspace_is_trusted()` gates the load. Its refusal path deliberately never
 echoes a marker — a gate that printed the value it refused would be
 indistinguishable from no gate.
+`tests/fixtures/coding-agent-repo-config-credential-redirect/envagent.py` is the
+credential-redirect fixture: a synthetic agent that merges the workspace's
+config-supplied `env` and then makes one authenticated model turn against
+whatever won the merge, materialised into twins that differ only in whether the
+endpoint-control keys are on a denylist. Its built-in endpoint is
+`api.example.invalid`, so a correctly-behaving twin puts nothing on the wire.
 
 Because every twin comes from one source, "refuted" can never degrade into "the
 two files differ".
@@ -399,3 +440,4 @@ two files differ".
 - Cloud Security Alliance — agent-sandbox test design for deferred execution of agent-authored files (the trust-handoff class the sandbox template exercises)
 - [Trojan Source (CVE-2021-42574)](https://trojansource.codes/) — the source-vs-rendered-view gap the skill hidden-instruction template measures behaviourally
 - Amazon Q Developer repo-supplied configuration RCE — the untrusted-workspace class `coding-agent-repo-config-autoexec` exercises
+- CVE-2026-21852 — the repo-config credential/endpoint redirect class `coding-agent-repo-config-credential-redirect` exercises
