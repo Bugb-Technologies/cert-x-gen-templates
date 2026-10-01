@@ -11,7 +11,7 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 CI (`.github/workflows/ci.yml`) gates every PR on five checks; run checks 1-4 locally before pushing:
 1. **Engine loads all templates** — `cxg --disable-update-check -vv template list` then `.github/scripts/check_loader.py`. Locally this fails on WARN/dedup lines from `~/.cert-x-gen/templates` (the published set cxg merges in); run with a throwaway `HOME=$(mktemp -d)` to see this repo alone. CI has no such cache.
 2. **Registry generates cleanly** — `python3 scripts/generate-index.py` must exit 0 and report no `load_failures` and no `id_collisions`. Do **not** commit the result. Only files with a language extension (see `EXT_LANG`) count as templates — `.lib`, `.md`, etc. are ignored.
-3. **Generator guard tests** — `python3 scripts/test_generate_index.py`.
+3. **Generator guard tests** — `python3 scripts/test_generate_index.py`, then `python3 scripts/test_graph_template_gaps.py`.
 4. **Hygiene** — `python3 .github/scripts/check_hygiene.py` (CI runs it against the registry regenerated in check 2, so run check 2 first). A **new category directory under `templates/` must be added to `VALID_CATEGORIES` in `.github/scripts/check_hygiene.py`**, or this fails.
 5. **No hand-edited registry** — PR-only; see the paragraph above. Restore an accidental edit with `git checkout origin/main -- TEMPLATE_REGISTRY.json`.
 
@@ -20,6 +20,8 @@ ignores `*.lib`, `*.a`, `*.out`, `*.exe`, and none of the CI checks look at a fi
 is not a template, so a missing helper is invisible until a scan errors. `cli-baseline.lib`
 shipped absent for exactly this reason. **After adding any non-`.sh` file under `templates/`,
 run `git check-ignore -v <path>`** and add a negation if it hits.
+
+`scripts/graph-template-gaps.py` ranks reachable-sink capabilities and route frameworks no template covers, from optional code-graph answers (see `docs/graph-template-gaps.md`). It decides coverage from **tags**, by the vocabulary in `scripts/graph-gap-map.json`: a template written to close one of its gaps must carry a matching tag (or get a `pinned` entry there), or the report keeps listing the gap.
 
 Template metadata (`@id`, `@name`, `@severity`, …) is read from the **first 50 lines only**; every `@id` must be unique repo-wide or the engine drops all colliders. `templates/TEMPLATE_REGISTRY.md` is a human-maintained index — a new category belongs in it, but that edit rides the `curation` pass, not your template PR.
 

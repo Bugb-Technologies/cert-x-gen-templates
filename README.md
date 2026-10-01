@@ -264,6 +264,7 @@ Please refer to the [CERT-X-GEN documentation](https://github.com/Bugb-Technolog
 - **Template Specification** — Required metadata, output format, environment variables
 - **Language Guides** — Best practices for Python, Go, C, Rust, Shell, and YAML templates
 - **Security Playbooks** — Detailed walkthroughs and learning content on the [BugB Blog](https://bugb.io/blogs)
+- **Template gaps at reachable exposure** — [docs/graph-template-gaps.md](docs/graph-template-gaps.md) ranks the sink classes and frameworks real applications reach that no template here probes, from optional code-graph tooling
 
 ### Template Skeletons
 
