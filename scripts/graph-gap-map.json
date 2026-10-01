@@ -1,0 +1,266 @@
+{
+  "schema": 1,
+  "_readme": "How scripts/graph-template-gaps.py turns a code graph's reachable sinks and route frameworks into template coverage. Data, not code: every judgement the gap report makes lives here so a reviewer can disagree with it line by line. `sink_rules` maps each rule id of the graph's sink catalogue to the vulnerability capabilities a template would have to probe; `callee_refinements` re-read a sink by the call it makes, where one catalogue rule bundles different exposures; `class_fallback` covers a rule this file does not list yet (the report names it, so the map can be extended). A template COVERS a capability when it is in the pool (`template_pool`) and its terms match: its declared tags (`@tags`, or YAML `tags`) against `tags`, or, for a template that declares no tags, the CWE ids and words in its first 50 lines against `cwe` and `tags`. An `ecosystem_specific` capability also needs the template to name the reaching code's ecosystem (or no ecosystem at all). `pinned` and `not_coverage` override the term match for one template, each with the reason a reviewer can check.",
+
+  "template_pool": {
+    "categories": ["web"],
+    "extra_templates": {
+      "mongodb-injection-deep": "Lives under databases/ but drives NoSQL operator injection through the application's HTTP parameters, which is the shape a reached document-store sink needs."
+    }
+  },
+
+  "ecosystems": {
+    "go": {"label": "Go", "terms": ["go", "golang"]},
+    "python": {"label": "Python", "terms": ["python", "pickle", "jinja2", "mako", "django", "flask", "pyyaml"]},
+    "javascript": {"label": "JavaScript/TypeScript", "terms": ["javascript", "js", "node", "nodejs", "node.js", "typescript", "ejs", "pug", "handlebars", "express"]},
+    "java": {"label": "Java/Kotlin", "terms": ["java", "kotlin", "spring", "freemarker", "velocity", "thymeleaf", "ysoserial", "jackson"]},
+    "php": {"label": "PHP", "terms": ["php", "twig", "smarty", "laravel"]},
+    "ruby": {"label": "Ruby", "terms": ["ruby", "rails", "erb"]}
+  },
+
+  "rule_ecosystem_prefixes": {
+    "go.": "go",
+    "py.": "python",
+    "js.": "javascript",
+    "java.": "java",
+    "php.": "php",
+    "ruby.": "ruby"
+  },
+
+  "capabilities": {
+    "sql_injection": {
+      "label": "SQL injection",
+      "cwe": ["CWE-89"],
+      "tags": ["sql-injection", "sqli"]
+    },
+    "nosql_injection": {
+      "label": "NoSQL / document-store injection",
+      "cwe": ["CWE-943"],
+      "tags": ["nosql-injection", "operator-injection"]
+    },
+    "command_injection": {
+      "label": "OS command injection",
+      "cwe": ["CWE-77", "CWE-78"],
+      "tags": ["command-injection", "os-command-injection"]
+    },
+    "code_injection": {
+      "label": "Code / expression evaluation injection",
+      "cwe": ["CWE-94", "CWE-95"],
+      "tags": ["code-injection", "eval-injection", "expression-injection"],
+      "ecosystem_specific": true,
+      "why_ecosystem": "An evaluation payload is written in the target's own language (a JavaScript expression for Node's eval, a Python one for eval)."
+    },
+    "insecure_deserialization": {
+      "label": "Insecure deserialisation over HTTP",
+      "cwe": ["CWE-502"],
+      "tags": ["deserialization", "insecure-deserialization"],
+      "ecosystem_specific": true,
+      "why_ecosystem": "A gadget payload is a serialisation format of one runtime (Java object streams, Python pickle, YAML tags, node-serialize)."
+    },
+    "ssti": {
+      "label": "Server-side template injection",
+      "cwe": ["CWE-1336"],
+      "tags": ["ssti", "template-injection"],
+      "ecosystem_specific": true,
+      "why_ecosystem": "SSTI payloads are engine syntax: a Jinja2 probe proves nothing about Go text/template or EJS."
+    },
+    "xss": {
+      "label": "Cross-site scripting (server-rendered output)",
+      "cwe": ["CWE-79"],
+      "tags": ["xss", "cross-site-scripting"]
+    },
+    "ssrf": {
+      "label": "Server-side request forgery",
+      "cwe": ["CWE-918"],
+      "tags": ["ssrf"]
+    },
+    "path_traversal": {
+      "label": "Path traversal / file disclosure by path",
+      "cwe": ["CWE-22", "CWE-23", "CWE-73"],
+      "tags": ["path-traversal", "directory-traversal", "lfi"]
+    },
+    "archive_extraction": {
+      "label": "Archive extraction traversal (zip slip)",
+      "cwe": [],
+      "tags": ["zip-slip", "archive-traversal"]
+    },
+    "jwt_abuse": {
+      "label": "JWT forgery / claim tampering",
+      "cwe": [],
+      "tags": ["jwt"]
+    },
+    "credential_guessing": {
+      "label": "Password guessing without lockout",
+      "cwe": ["CWE-307"],
+      "tags": ["brute-force", "credential-stuffing", "missing-lockout"]
+    },
+    "weak_hash": {
+      "label": "Weak hash (MD5 / SHA-1) on a reachable path",
+      "cwe": ["CWE-328", "CWE-916"],
+      "tags": ["weak-hash", "md5", "sha1", "unsalted-hash"]
+    },
+    "crypto_integrity": {
+      "label": "Signed / encrypted value tampering and token randomness",
+      "cwe": ["CWE-330", "CWE-338", "CWE-347", "CWE-649"],
+      "tags": ["signature-bypass", "cookie-tampering", "predictable-token", "token-entropy", "padding-oracle"]
+    }
+  },
+
+  "sink_rules": {
+    "go.os_exec": ["command_injection"],
+    "go.syscall_exec": ["command_injection"],
+    "go.os_process": ["command_injection"],
+    "go.database_sql": ["sql_injection"],
+    "go.sqlx": ["sql_injection"],
+    "go.gorm": ["sql_injection"],
+    "go.mongo": ["nosql_injection"],
+    "go.redis": ["nosql_injection"],
+    "go.html_template_trust": ["xss"],
+    "go.template_execute": ["ssti", "xss"],
+    "go.net_http_client": ["ssrf"],
+    "go.net_http_client_methods": ["ssrf"],
+    "go.net_dial": ["ssrf"],
+    "go.tls_dial": ["ssrf"],
+    "go.smtp": ["ssrf"],
+    "go.gomail": ["ssrf"],
+    "go.imap_client": ["ssrf"],
+    "go.websocket_dial": ["ssrf"],
+    "go.os_fs": ["path_traversal"],
+    "go.ioutil_fs": ["path_traversal"],
+    "go.http_serve_file": ["path_traversal"],
+    "go.archive_open": ["archive_extraction"],
+    "go.crypto_hash": ["crypto_integrity"],
+    "go.crypto_cipher": ["crypto_integrity"],
+    "go.crypto_rand": ["crypto_integrity"],
+    "go.bcrypt": ["credential_guessing"],
+    "go.jwt": ["jwt_abuse"],
+
+    "py.subprocess": ["command_injection"],
+    "py.os_exec": ["command_injection"],
+    "py.eval_builtins": ["code_injection"],
+    "py.unsafe_deserialise": ["insecure_deserialization"],
+    "py.dbapi": ["sql_injection"],
+    "py.sqlalchemy": ["sql_injection"],
+    "py.django_db": ["sql_injection"],
+    "py.pymongo": ["nosql_injection"],
+    "py.redis": ["nosql_injection"],
+    "py.flask_render": ["ssti", "xss"],
+    "py.jinja2": ["ssti", "xss"],
+    "py.markupsafe": ["xss"],
+    "py.django_render": ["ssti", "xss"],
+    "py.mako": ["ssti", "xss"],
+    "py.requests": ["ssrf"],
+    "py.urllib": ["ssrf"],
+    "py.http_client": ["ssrf"],
+    "py.socket": ["ssrf"],
+    "py.smtp_imap": ["ssrf"],
+    "py.aiohttp": ["ssrf"],
+    "py.open_builtin": ["path_traversal"],
+    "py.os_fs": ["path_traversal"],
+    "py.shutil": ["path_traversal"],
+    "py.pathlib": ["path_traversal"],
+    "py.flask_send_file": ["path_traversal"],
+    "py.archives": ["archive_extraction"],
+    "py.hashlib": ["crypto_integrity"],
+    "py.secrets": ["crypto_integrity"],
+    "py.jwt": ["jwt_abuse"],
+    "py.password_hash": ["credential_guessing"],
+    "py.ciphers": ["crypto_integrity"],
+
+    "js.child_process": ["command_injection"],
+    "js.vm": ["code_injection"],
+    "js.eval_builtins": ["code_injection"],
+    "js.unsafe_deserialise": ["insecure_deserialization"],
+    "js.sql_drivers": ["sql_injection"],
+    "js.mongo": ["nosql_injection"],
+    "js.redis": ["nosql_injection"],
+    "js.express_render": ["ssti", "xss"],
+    "js.template_engines": ["ssti", "xss"],
+    "js.http_clients": ["ssrf"],
+    "js.node_http": ["ssrf"],
+    "js.fetch_builtin": ["ssrf"],
+    "js.mail": ["ssrf"],
+    "js.fs": ["path_traversal"],
+    "js.send_file": ["path_traversal"],
+    "js.archives": ["archive_extraction"],
+    "js.node_crypto": ["crypto_integrity"],
+    "js.jwt": ["jwt_abuse"],
+    "js.password_hash": ["credential_guessing"],
+    "js.crypto_libs": ["crypto_integrity"],
+
+    "java.runtime_exec": ["command_injection"],
+    "java.process_builder": ["command_injection"],
+    "java.script_engine": ["code_injection"],
+    "java.deserialise": ["insecure_deserialization"],
+    "java.jdbc": ["sql_injection"],
+    "java.jpa": ["sql_injection"],
+    "java.template": ["ssti", "xss"],
+    "java.net": ["ssrf"],
+    "java.files": ["path_traversal"],
+    "java.io_streams": ["path_traversal"],
+    "java.crypto": ["crypto_integrity"],
+
+    "php.exec": ["command_injection"],
+    "php.sql": ["sql_injection"],
+    "php.pdo": ["sql_injection"],
+    "php.network": ["ssrf"],
+    "php.filesystem": ["path_traversal"],
+    "php.crypto": ["crypto_integrity"],
+
+    "ruby.exec": ["command_injection"],
+    "ruby.exec_classes": ["command_injection"],
+    "ruby.deserialise": ["insecure_deserialization"],
+    "ruby.activerecord_raw": ["sql_injection"],
+    "ruby.activerecord": ["sql_injection"],
+    "ruby.render": ["ssti", "xss"],
+    "ruby.network": ["ssrf"],
+    "ruby.open_builtin": ["path_traversal"],
+    "ruby.file": ["path_traversal"],
+    "ruby.crypto": ["crypto_integrity"]
+  },
+
+  "callee_refinements": [
+    {"class": "crypto_secrets", "callee": "(?i)(^|[^a-z])jwts?([^a-z]|$)", "capabilities": ["jwt_abuse"],
+     "why": "Several catalogue rules (java.crypto, js.crypto_libs) bundle JWT libraries with ciphers; a JWT call is JWT exposure, which the jwt templates probe."},
+    {"class": "crypto_secrets", "callee": "(?i)(^|[^a-z0-9])(md5|sha1)([^a-z0-9]|$)", "capabilities": ["weak_hash"],
+     "why": "A hash rule covers MD5 and SHA-256 alike; only the call says which."}
+  ],
+
+  "class_fallback": {
+    "exec": ["command_injection"],
+    "data_layer": ["sql_injection"],
+    "template": ["xss"],
+    "network": ["ssrf"],
+    "filesystem": ["path_traversal"],
+    "crypto_secrets": ["crypto_integrity"]
+  },
+
+  "frameworks": {
+    "express": {"label": "Express", "ecosystem": "javascript", "tags": ["express", "expressjs"], "would_check": "prototype pollution through qs/body-parser, stack traces in the default error handler, X-Powered-By disclosure"},
+    "koa": {"label": "Koa", "ecosystem": "javascript", "tags": ["koa"], "would_check": "koa-body prototype pollution and upload handling"},
+    "fastify": {"label": "Fastify", "ecosystem": "javascript", "tags": ["fastify"], "would_check": "content-type parser confusion and schema-bypass on body validation"},
+    "hono": {"label": "Hono", "ecosystem": "javascript", "tags": ["hono"], "would_check": "router path-normalisation differences behind a proxy"},
+    "restify": {"label": "Restify", "ecosystem": "javascript", "tags": ["restify"], "would_check": "query/body parser prototype pollution"},
+    "flask": {"label": "Flask", "ecosystem": "python", "tags": ["flask", "werkzeug"], "would_check": "Werkzeug debug console exposure and session-cookie forgery from a weak SECRET_KEY"},
+    "fastapi": {"label": "FastAPI", "ecosystem": "python", "tags": ["fastapi"], "would_check": "/docs and /openapi.json exposure that maps the full parameter surface"},
+    "connexion": {"label": "Connexion (OpenAPI-routed Flask)", "ecosystem": "python", "tags": ["connexion", "openapi", "swagger"], "would_check": "exposed OpenAPI spec and Swagger UI, and operations whose spec omits a security requirement"},
+    "django": {"label": "Django", "ecosystem": "python", "tags": ["django"], "would_check": "DEBUG=True technical error pages, exposed admin, and session forgery from a leaked SECRET_KEY"},
+    "gorilla_mux": {"label": "gorilla/mux", "ecosystem": "go", "tags": ["gorilla", "gorilla-mux"], "would_check": "path-cleaning redirects that bypass a prefix-scoped auth middleware"},
+    "net_http": {"label": "Go net/http", "ecosystem": "go", "tags": ["net-http", "golang-net-http"], "would_check": "ServeMux path-cleaning redirects and pattern-precedence auth bypass"},
+    "httprouter": {"label": "httprouter", "ecosystem": "go", "tags": ["httprouter"], "would_check": "trailing-slash and fixed-path redirects that skip a per-route auth check"},
+    "spring": {"label": "Spring", "ecosystem": "java", "tags": ["spring", "spring-boot", "actuator"], "would_check": "actuator endpoint exposure, Spring4Shell-class data binding"}
+  },
+
+  "pinned": {
+    "ssti": {
+      "ssti-engine-fingerprint": {"ecosystems": ["python", "java", "php", "ruby", "javascript"], "reason": "Fingerprints Jinja2, Mako, Twig, Smarty, Freemarker, Velocity, ERB, Handlebars and Pug; its tags name only some of them, and none of its payloads target Go templates."},
+      "server-side-js-injection": {"ecosystems": ["javascript"], "reason": "Declares no tags; its header lists EJS/Pug/Handlebars template-evaluation payloads among its vectors."}
+    }
+  },
+
+  "not_coverage": {
+    "insecure_deserialization": {
+      "deserialization-gadget-scan": "Probes raw TCP services (RMI, JMX) for Java serialisation magic bytes; it never sends a serialised object to an HTTP route, which is where a route-reached ObjectInputStream takes its input."
+    }
+  }
+}

@@ -181,6 +181,11 @@ jobs:
       - name: Generator guard tests
         run: python3 scripts/test_generate_index.py
 
+      # The gap finder's tests use synthetic graph answers and a stand-in
+      # graph server, so they need no graph tooling on the runner.
+      - name: Gap finder tests
+        run: python3 scripts/test_graph_template_gaps.py
+
       # ---------------------------------------------------------------------
       # 4. Hygiene: no absolute paths or empty names in the registry, no
       #    template outside the ten valid categories.
