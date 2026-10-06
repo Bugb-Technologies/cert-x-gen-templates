@@ -399,8 +399,9 @@ def render_registry_markdown(repo_root, registry):
         "> **Loadable:** %d | **Runnable:** %d"
         % (counts["loadable"], counts["runnable"]),
         ">",
+        # @comment -- "blog link points at www.bugb.io directly; bare bugb.io only redirects there"
         "> **Playbooks & learning content:** `docs/playbooks/` and the "
-        "[BugB Blog](https://bugb.io/blogs)",
+        "[BugB Blog](https://www.bugb.io/blogs)",
         "",
         "---",
         "",
