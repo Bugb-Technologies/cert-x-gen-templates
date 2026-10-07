@@ -10,7 +10,7 @@ package main
 // @cvss: 5.3
 // @references: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md, https://grpc.io/docs/guides/reflection/
 // @confidence: 95
-// @version: 1.0.0
+// @version: 1.1.0
 
 /*
 gRPC Reflection API Exposure Detection Template
@@ -36,6 +36,15 @@ DETECTION STRATEGY:
 3. List all registered services
 4. Extract method definitions
 5. Assess severity based on exposed service types
+
+VERDICTS (template contract):
+- Reflection answers a ListServices query (v1alpha or v1) -> one finding.
+- Reflection is Unimplemented on both v1alpha and v1     -> empty findings
+  array, which cxg records as REFUTED (the server is not vulnerable).
+- The probe could not complete (connection refused, timeout, any other RPC
+  error) -> a JSON {"error": ...} object on stdout and exit status 1, which
+  cxg records as ERRORED. An unreachable target is never reported as either
+  vulnerable or safe.
 
 INDICATORS OF VULNERABILITY:
 - Reflection service responds successfully
@@ -64,14 +73,18 @@ ATTACK IMPACT:
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection/grpc_reflection_v1"
 	"google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
+	"google.golang.org/grpc/status"
 )
 
 // Metadata structure for template information
@@ -141,7 +154,73 @@ func isSensitiveServiceName(serviceName string) bool {
 	return false
 }
 
-// queryReflectionAPI queries the gRPC reflection service
+// errReflectionUnavailable means the server answered, but does not implement
+// the reflection service: the secure configuration, not a probe failure.
+var errReflectionUnavailable = errors.New("reflection service not implemented")
+
+// isUnimplemented reports whether err is the gRPC status a server returns for
+// a service it does not register.
+func isUnimplemented(err error) bool {
+	return status.Code(err) == codes.Unimplemented
+}
+
+// listServicesV1Alpha asks the v1alpha reflection service for every service name.
+func listServicesV1Alpha(ctx context.Context, conn *grpc.ClientConn) ([]string, error) {
+	stream, err := grpc_reflection_v1alpha.NewServerReflectionClient(conn).ServerReflectionInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := stream.Send(&grpc_reflection_v1alpha.ServerReflectionRequest{
+		MessageRequest: &grpc_reflection_v1alpha.ServerReflectionRequest_ListServices{ListServices: "*"},
+	}); err != nil {
+		return nil, err
+	}
+	resp, err := stream.Recv()
+	if err != nil {
+		return nil, err
+	}
+	list := resp.GetListServicesResponse()
+	if list == nil {
+		return nil, fmt.Errorf("no list services response")
+	}
+	names := []string{}
+	for _, svc := range list.Service {
+		names = append(names, svc.Name)
+	}
+	return names, nil
+}
+
+// listServicesV1 asks the v1 reflection service for every service name.
+func listServicesV1(ctx context.Context, conn *grpc.ClientConn) ([]string, error) {
+	stream, err := grpc_reflection_v1.NewServerReflectionClient(conn).ServerReflectionInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := stream.Send(&grpc_reflection_v1.ServerReflectionRequest{
+		MessageRequest: &grpc_reflection_v1.ServerReflectionRequest_ListServices{ListServices: "*"},
+	}); err != nil {
+		return nil, err
+	}
+	resp, err := stream.Recv()
+	if err != nil {
+		return nil, err
+	}
+	list := resp.GetListServicesResponse()
+	if list == nil {
+		return nil, fmt.Errorf("no list services response")
+	}
+	names := []string{}
+	for _, svc := range list.Service {
+		names = append(names, svc.Name)
+	}
+	return names, nil
+}
+
+// queryReflectionAPI queries the gRPC reflection service.
+//
+// It returns errReflectionUnavailable when the server is reachable but
+// implements neither reflection version, and any other error when the probe
+// itself could not complete.
 func queryReflectionAPI(host string, port int, timeout time.Duration) (*GRPCReflectionResult, error) {
 	result := &GRPCReflectionResult{
 		Services:          []string{},
@@ -163,47 +242,30 @@ func queryReflectionAPI(host string, port int, timeout time.Duration) (*GRPCRefl
 	}
 	defer conn.Close()
 
-	// Create reflection client
-	client := grpc_reflection_v1alpha.NewServerReflectionClient(conn)
-	stream, err := client.ServerReflectionInfo(ctx)
+	// v1alpha is what most servers register; v1 is the stable name newer
+	// servers may register instead. Only when BOTH are Unimplemented is
+	// reflection off.
+	names, err := listServicesV1Alpha(ctx, conn)
+	if err != nil && isUnimplemented(err) {
+		names, err = listServicesV1(ctx, conn)
+		if err != nil && isUnimplemented(err) {
+			return result, errReflectionUnavailable
+		}
+	}
 	if err != nil {
 		return result, fmt.Errorf("reflection request failed: %w", err)
 	}
 
-	// Request list of services
-	err = stream.Send(&grpc_reflection_v1alpha.ServerReflectionRequest{
-		MessageRequest: &grpc_reflection_v1alpha.ServerReflectionRequest_ListServices{
-			ListServices: "*",
-		},
-	})
-	if err != nil {
-		return result, fmt.Errorf("send request failed: %w", err)
-	}
-
-	// Receive response
-	resp, err := stream.Recv()
-	if err != nil {
-		return result, fmt.Errorf("receive response failed: %w", err)
-	}
-
-	// Extract services from response
-	listServicesResp := resp.GetListServicesResponse()
-	if listServicesResp == nil {
-		return result, fmt.Errorf("no list services response")
-	}
-
 	result.ReflectionEnabled = true
 
-	for _, service := range listServicesResp.Service {
-		serviceName := service.Name
-		
+	for _, serviceName := range names {
 		// Skip the reflection service itself
 		if strings.Contains(serviceName, "grpc.reflection") {
 			continue
 		}
 
 		result.Services = append(result.Services, serviceName)
-		
+
 		// Check for sensitive service names
 		if isSensitiveServiceName(serviceName) {
 			result.HasSensitiveNames = true
@@ -212,36 +274,27 @@ func queryReflectionAPI(host string, port int, timeout time.Duration) (*GRPCRefl
 	}
 
 	result.ServiceCount = len(result.Services)
-	
+
 	return result, nil
 }
 
-// testVulnerability is the main detection function
-func testVulnerability(host string, port int, timeout int) []Finding {
+// testVulnerability is the main detection function.
+//
+// An empty slice with a nil error means "not vulnerable": the server answered
+// and reflection is not implemented. A non-nil error means the probe could not
+// reach a verdict, and the caller must report it as an error, not as a finding.
+func testVulnerability(host string, port int, timeout int) ([]Finding, error) {
 	findings := []Finding{}
 	target := fmt.Sprintf("%s:%d", host, port)
 
 	// Query reflection API
 	testResult, err := queryReflectionAPI(host, port, time.Duration(timeout)*time.Second)
+	if errors.Is(err, errReflectionUnavailable) {
+		// Reflection disabled: the secure configuration. No finding.
+		return findings, nil
+	}
 	if err != nil {
-		// Connection or reflection not available
-		findings = append(findings, Finding{
-			Target:       target,
-			TemplateID:   Metadata["id"].(string),
-			TemplateName: Metadata["name"].(string),
-			Severity:     "info",
-			Confidence:   50,
-			Title:        "gRPC Reflection Not Available",
-			MatchedAt:    target,
-			Description:  fmt.Sprintf("gRPC reflection service not accessible: %v", err),
-			Evidence: map[string]interface{}{
-				"error":             err.Error(),
-				"reflection_enabled": false,
-			},
-			Tags:      Metadata["tags"].([]string),
-			Timestamp: time.Now().UTC().Format(time.RFC3339),
-		})
-		return findings
+		return nil, err
 	}
 
 	// Analyze results and determine severity
@@ -250,12 +303,7 @@ func testVulnerability(host string, port int, timeout int) []Finding {
 	title := "gRPC Reflection Enabled"
 	description := "gRPC server has reflection API enabled."
 
-	if !testResult.ReflectionEnabled {
-		// Should not reach here, but handle gracefully
-		severity = "info"
-		title = "gRPC Reflection Disabled"
-		description = "gRPC server does not expose reflection API (secure configuration)."
-	} else if testResult.ServiceCount == 0 {
+	if testResult.ServiceCount == 0 {
 		// Reflection enabled but no services (unusual)
 		severity = "low"
 		title = "gRPC Reflection Enabled (No Services)"
@@ -265,7 +313,7 @@ func testVulnerability(host string, port int, timeout int) []Finding {
 		severity = "medium"
 		confidence = 80
 		title = "gRPC Reflection Enabled (Limited Exposure)"
-		description = fmt.Sprintf("Reflection API exposes %d service(s). Limited information disclosure.", 
+		description = fmt.Sprintf("Reflection API exposes %d service(s). Limited information disclosure.",
 			testResult.ServiceCount)
 	} else if testResult.HasSensitiveNames {
 		// Sensitive service names exposed
@@ -323,7 +371,7 @@ func testVulnerability(host string, port int, timeout int) []Finding {
 	}
 
 	findings = append(findings, finding)
-	return findings
+	return findings, nil
 }
 
 func main() {
@@ -366,7 +414,20 @@ func main() {
 	}
 
 	// Run detection with 10s timeout
-	findings := testVulnerability(host, port, 10)
+	findings, err := testVulnerability(host, port, 10)
+	if err != nil {
+		// No verdict: report an error (exit 1) so cxg records the run as
+		// errored rather than as confirmed or refuted.
+		errorResult := map[string]interface{}{
+			"error":    fmt.Sprintf("gRPC reflection probe failed against %s:%d: %v", host, port, err),
+			"findings": []Finding{},
+		}
+		errorJSON, _ := json.Marshal(errorResult)
+		fmt.Println(string(errorJSON))
+		// cxg reports stderr (not stdout) as the reason a run errored.
+		fmt.Fprintln(os.Stderr, errorResult["error"])
+		os.Exit(1)
+	}
 
 	// Build output
 	result := map[string]interface{}{

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`grpc-reflection-abuse` no longer reports a finding when reflection is
+  off** (template 1.1.0). A server that answered with `Unimplemented` produced
+  an INFO "gRPC Reflection Not Available" finding, and cxg counts any finding
+  as confirmed, so a fixed server still read as confirmed. Reflection that is
+  `Unimplemented` on both `grpc.reflection.v1alpha` and `grpc.reflection.v1`
+  now yields an empty findings array (cxg: refuted). A probe that cannot reach
+  a verdict — connection refused, timeout, any other RPC error — prints
+  `{"error": …}` and exits 1 (cxg: errored), so an unreachable target is never
+  read as vulnerable or as safe. The template also queries `v1` when a server
+  registers only the stable reflection service.
+
 ## [1.2.0] - 2026-08-13
 
 **162 templates**, all of which load through the engine and hold a unique id.
