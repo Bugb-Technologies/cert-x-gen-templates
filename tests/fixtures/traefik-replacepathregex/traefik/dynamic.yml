@@ -1,0 +1,33 @@
+# Dynamic configuration reproducing the advisory's vulnerable shape:
+#  - an UNAUTHENTICATED prefix router whose ReplacePathRegex lacks a slash
+#    separator (^/api(.*)), the pattern the advisory names as exploitable;
+#  - a SEPARATE router that gates /admin behind basicAuth.
+# The lab credential below (admin:labpass) is a throwaway for loopback testing only.
+http:
+  routers:
+    public-api:
+      rule: "PathPrefix(`/api`)"
+      entryPoints: [web]
+      middlewares: [rewrite-api]
+      service: backend
+      priority: 1
+    protected-admin:
+      rule: "PathPrefix(`/admin`)"
+      entryPoints: [web]
+      middlewares: [admin-auth]
+      service: backend
+      priority: 2
+  middlewares:
+    rewrite-api:
+      replacePathRegex:
+        regex: "^/api(.*)"
+        replacement: "/$1"
+    admin-auth:
+      basicAuth:
+        users:
+          - "admin:$2y$05$VR3/BzARrxMyPyZ/SRW9MOrMM20dJtb9XozfPmkkz0bJgDgG7mDk6"
+  services:
+    backend:
+      loadBalancer:
+        servers:
+          - url: "http://backend:80"
