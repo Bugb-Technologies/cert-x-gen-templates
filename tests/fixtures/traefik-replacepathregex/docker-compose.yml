@@ -1,0 +1,34 @@
+# Loopback reproduction lab for Traefik CVE-2026-65600 (ReplacePathRegex
+# path-traversal auth bypass). All published ports bind to 127.0.0.1 only.
+# TRAEFIK_IMAGE selects the vulnerable arm (traefik:v3.7.6) or the fixed arm
+# (traefik:v3.7.7). The backend is a path-normalizing static server, which is
+# the advisory's precondition: it resolves a forwarded /../admin to /admin.
+services:
+  backend:
+    image: python:3.12-alpine
+    command: ["python", "-m", "http.server", "80", "--directory", "/srv"]
+    volumes:
+      - ./html:/srv:ro
+    expose:
+      - "80"
+
+  traefik:
+    image: ${TRAEFIK_IMAGE:-traefik:v3.7.6}
+    command: ["--configfile=/etc/traefik/traefik.yml"]
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - backend
+
+  # Unrelated service: an ordinary static server with no Traefik and no /api
+  # route, used to show the template produces no finding against a non-target.
+  control:
+    image: python:3.12-alpine
+    command: ["python", "-m", "http.server", "80", "--directory", "/srv"]
+    volumes:
+      - ./html:/srv:ro
+    ports:
+      - "127.0.0.1:8090:80"

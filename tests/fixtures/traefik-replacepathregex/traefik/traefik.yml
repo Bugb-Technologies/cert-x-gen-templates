@@ -1,0 +1,13 @@
+# Static configuration for the CVE-2026-65600 reproduction lab.
+entryPoints:
+  web:
+    address: ":80"
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: false
+log:
+  level: INFO
+accessLog: {}
+api:
+  dashboard: false
